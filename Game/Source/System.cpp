@@ -34,7 +34,6 @@ void System::Run()
 	MSG msg;
 	bool done, result;
 
-
 	// Initialize the message structure.
 	ZeroMemory(&msg, sizeof(MSG));
 
@@ -90,7 +89,6 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 	WNDCLASSEX wcex;
 	DEVMODE dmScreenSettings;
 	int posX, posY;
-
 
 	// Get an external pointer to this object.
 	ApplicationHandle = this;
@@ -204,14 +202,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_CLOSE:
-	{
-					 PostQuitMessage(0);
-					 return 0;
-	}
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+		case WM_CLOSE:
+		{
+						 PostQuitMessage(0);
+						 return 0;
+		}
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
