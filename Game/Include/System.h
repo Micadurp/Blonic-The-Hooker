@@ -7,11 +7,18 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
-
-#include"Menu.h"
+#include "GamePlay.h"
+#include "Direct3D.h"
+#include "Menu.h"
 
 //move this
+/////////////
+// GLOBALS //
+/////////////
 const bool FULL_SCREEN = false;
+const bool VSYNC_ENABLED = true;
+const float SCREEN_DEPTH = 1000.0f;
+const float SCREEN_NEAR = 0.1f;
 
 class System
 {
@@ -32,6 +39,8 @@ private:
 	gameState;
 	
 	Menu * menu;
+	GamePlay* gamePlay;
+	Direct3D* direct3D;
 
 public:
 	System();

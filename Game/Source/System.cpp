@@ -23,9 +23,22 @@ bool System::Initialize()
 
 	///////////////
 
-	gameState = GameState::gMenu;
+	gameState = GameState::gGamePlay;
 
 	menu = new Menu();
+
+	gamePlay = new GamePlay();
+	if (!gamePlay)
+	{
+		return false;
+	}
+
+	result = direct3D.Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);	
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
+		return false;
+	}
 
 	return true;
 }
@@ -88,7 +101,7 @@ bool System::Frame()
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-
+		gamePlay->Update();
 		break;
 
 	case GameState::gMenu:
@@ -105,6 +118,7 @@ bool System::Frame()
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
+		gamePlay->Render(direct3D);
 
 		break;
 
