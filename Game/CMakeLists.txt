@@ -7,15 +7,17 @@ project(${PROJECT_NAME})
 
 # Set the files used in the target
 file(GLOB_RECURSE HEADERS Headers/ *.h)
+file(GLOB_RECURSE HLSL Headers/Shaders *.hlsl)
 file(GLOB_RECURSE SOURCES Source/ *.cpp)
 include_directories(Include)
 create_source_group("Header Files" "${CMAKE_CURRENT_SOURCE_DIR}/Include" ${HEADERS})
+create_source_group("Source Files" "${CMAKE_CURRENT_SOURCE_DIR}/Include/Shaders" ${HLSL})
 create_source_group("Source Files" "${CMAKE_CURRENT_SOURCE_DIR}/Source" ${SOURCES})
 set(LIBRARIES ${EXTERNAL_LIBRARIES})
 link_directories(${OUTPUT_FOLDER}) # lib files
 
 # Add the target
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_executable(${PROJECT_NAME} ${HEADERS} ${HLSL} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 # Set SUBSYSTEM:CONSOLE
