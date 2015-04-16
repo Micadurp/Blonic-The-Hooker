@@ -57,6 +57,7 @@ public:
 	Model(std::string modelName);
 	~Model();
 
-	virtual void Render();
+	virtual void Update();
+	void Render();
 };
 #endif

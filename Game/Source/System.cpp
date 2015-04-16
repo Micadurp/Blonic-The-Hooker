@@ -121,6 +121,9 @@ bool System::Frame()
 #pragma endregion
 
 #pragma region Draw
+
+	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
@@ -136,6 +139,8 @@ bool System::Frame()
 
 		break;
 	}
+
+	direct3D->EndScene();
 #pragma endregion
 
 	return true;
