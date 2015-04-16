@@ -33,7 +33,7 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = direct3D.Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);	
+	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);	
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
