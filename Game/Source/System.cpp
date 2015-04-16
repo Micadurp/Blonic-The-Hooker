@@ -23,7 +23,9 @@ bool System::Initialize()
 
 	///////////////
 
-	gameState = GameState::Menu;
+	gameState = GameState::gMenu;
+
+	menu = new Menu();
 
 	return true;
 }
@@ -85,15 +87,15 @@ bool System::Frame()
 #pragma region Update
 	switch (gameState)
 	{
-	case GameState::GamePlay:
+	case GameState::gGamePlay:
 
 		break;
 
-	case GameState::Menu:
-
+	case GameState::gMenu:
+		menu->Update();
 		break;
 
-	case GameState::Pause:
+	case GameState::gPause:
 
 		break;
 	}
@@ -102,15 +104,15 @@ bool System::Frame()
 #pragma region Draw
 	switch (gameState)
 	{
-	case GameState::GamePlay:
+	case GameState::gGamePlay:
 
 		break;
 
-	case GameState::Menu:
-
+	case GameState::gMenu:
+		menu->Render();
 		break;
 
-	case GameState::Pause:
+	case GameState::gPause:
 
 		break;
 	}

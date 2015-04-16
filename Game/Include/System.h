@@ -8,6 +8,7 @@
 
 #include <Windows.h>
 
+#include"Menu.h"
 
 //move this
 const bool FULL_SCREEN = false;
@@ -24,12 +25,13 @@ private:
 
 	enum GameState
 	{
-		Menu,
-		GamePlay,
-		Pause
+		gMenu,
+		gGamePlay,
+		gPause
 	}
 	gameState;
 	
+	Menu * menu;
 
 public:
 	System();
