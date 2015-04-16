@@ -97,7 +97,7 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 	hinstance = GetModuleHandle(NULL);
 
 	// Give the application a name.
-	applicationName = L"Blonic Adventure 2";
+	applicationName = L"Blonic Adventure 2: the lk";
 
 	// Setup the windows class with default settings.
 	wcex.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
