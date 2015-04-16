@@ -10,6 +10,7 @@ System::~System()
 
 bool System::Initialize()
 {
+	//Window Handeling////
 	int screenWidth, screenHeight;
 	bool result;
 
@@ -19,6 +20,10 @@ bool System::Initialize()
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
+
+	///////////////
+
+	gameState = GameState::Menu;
 
 	return true;
 }
@@ -76,6 +81,41 @@ void System::Run()
 
 bool System::Frame()
 {
+
+#pragma region Update
+	switch (gameState)
+	{
+	case GameState::GamePlay:
+
+		break;
+
+	case GameState::Menu:
+
+		break;
+
+	case GameState::Pause:
+
+		break;
+	}
+#pragma endregion
+
+#pragma region Draw
+	switch (gameState)
+	{
+	case GameState::GamePlay:
+
+		break;
+
+	case GameState::Menu:
+
+		break;
+
+	case GameState::Pause:
+
+		break;
+	}
+#pragma endregion
+
 	return true;
 }
 

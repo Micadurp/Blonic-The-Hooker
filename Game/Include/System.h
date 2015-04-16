@@ -22,6 +22,15 @@ private:
 	HINSTANCE hinstance;
 	HWND hwnd;
 
+	enum GameState
+	{
+		Menu,
+		GamePlay,
+		Pause
+	}
+	gameState;
+	
+
 public:
 	System();
 	virtual ~System();
