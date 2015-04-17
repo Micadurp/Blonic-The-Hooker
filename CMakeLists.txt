@@ -43,7 +43,10 @@ add_subdirectory(Game)
 add_custom_target(_resourceCopy ALL 
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Assets ${OUTPUT_FOLDER}
 	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Assets ${CMAKE_BINARY_DIR}/Game
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Game/Include/Shaders ${OUTPUT_FOLDER}
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Game/Include/Shaders ${CMAKE_BINARY_DIR}/Game
 )
+
 
 # Set the default configuration
 if (COMPILE_RELEASE_BUILD)
