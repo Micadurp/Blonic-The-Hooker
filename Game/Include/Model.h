@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include "DDSTextureLoader.h"
 
 #include <fstream>
 #include <istream>
@@ -56,10 +57,11 @@ protected:
 	ID3D11Buffer* meshIndexBuff;
 	int indexCount;
 
-	ID3D11ShaderResourceView* textureShaderResource;
-	std::wstring textureName;
+	ID3D11ShaderResourceView* textureShaderResource = NULL;
+	ID3D11ShaderResourceView * normalShaderResource = NULL;
 
 	int nrOfVertices;
+
 
 	//change
 	UINT32 vertexSize = sizeof(Vertex);

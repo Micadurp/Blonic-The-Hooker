@@ -12,7 +12,7 @@ Menu::~Menu()
 
 int Menu::Update()
 {
-	return 0;
+	return -1;
 }
 
 void Menu::Render()

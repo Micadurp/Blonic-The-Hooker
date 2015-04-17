@@ -46,5 +46,5 @@ void GamePlay::Render(ID3D11DeviceContext* deviceContext)
 {
 	renderer->SetShader(deviceContext);
 	cube->Render(deviceContext);
-	deviceContext->DrawIndexed(cube->GetIndexCount(), 0, 0);
+	
 }

@@ -1,4 +1,13 @@
+Texture2D txDiffuse : register(t0);
 
+SamplerState sampAni
+{
+	Filter = ANISOTROPIC;
+	MaxAnisotropy = 4;
+	AddressU = WRAP;
+	AddressV = WRAP;
+
+};
 
 struct GS_OUT
 {
@@ -9,5 +18,7 @@ struct GS_OUT
 
 float4 PS_main(GS_OUT input) : SV_TARGET
 {
-	return float4(1,0,0,1);
+	float4 diffuse = txDiffuse.Sample(sampAni, input.tex);
+
+	return diffuse;
 }

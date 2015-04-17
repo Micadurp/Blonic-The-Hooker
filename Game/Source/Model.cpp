@@ -11,6 +11,9 @@ Model::~Model()
 
 void Model::Initialize(std::wstring modelName, ID3D11Device* device)
 {
+	meshVertexBuff = NULL;
+	meshIndexBuff = NULL;
+
 	indexCount = 0;
 	LoadObj(modelName, device);
 }
@@ -62,18 +65,20 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+	if (textureShaderResource)
+		deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
 
-	//deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
+	deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	return;
 }
-
 
 bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 {
 	HRESULT hr = 0;
 
 	std::wifstream fileIn(filename.c_str());	//Open file
+	std::wstring meshMatLib;					//String to hold our obj material library filename
 
 	//Arrays to store our model's information
 	std::vector<DWORD> indices;
@@ -306,11 +311,38 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 						}
 
 						meshTriangles++;	//One triangle down
-
 					}
 				}
 				break;
+							case 'm':	//mtllib - material library filename
+								checkChar = fileIn.get();
+								if (checkChar == 't')
+								{
+									checkChar = fileIn.get();
+									if (checkChar == 'l')
+									{
+										checkChar = fileIn.get();
+										if (checkChar == 'l')
+										{
+											checkChar = fileIn.get();
+											if (checkChar == 'i')
+											{
+												checkChar = fileIn.get();
+												if (checkChar == 'b')
+												{
+													checkChar = fileIn.get();
+													if (checkChar == ' ')
+													{
+														//Store the material libraries file name
+														fileIn >> meshMatLib;
+													}
+												}
+											}
+										}
+									}
+								}
 
+								break;
 			default:
 				break;
 			}
@@ -329,6 +361,93 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	}
 
 	meshSubsetIndexStart.push_back(vIndex); //There won't be another index start after our last subset, so set it here
+
+
+#pragma region Load mtl file
+	//Close the obj file, and open the mtl file
+	fileIn.close();
+	fileIn.open(meshMatLib.c_str());
+
+
+	//kdset - If our diffuse color was not set, we can use the ambient color (which is usually the same)
+	//If the diffuse color WAS set, then we don't need to set our diffuse color to ambient
+	bool kdset = false;
+
+	if (fileIn)
+	{
+		while (fileIn)
+		{
+			checkChar = fileIn.get();	//Get next char
+
+			switch (checkChar)
+			{
+				//Check for comment
+			case '#':
+				checkChar = fileIn.get();
+				while (checkChar != '\n')
+					checkChar = fileIn.get();
+				break;
+				//Get the diffuse map (texture)
+			case 'm':
+				checkChar = fileIn.get();
+				if (checkChar == 'a')
+				{
+					checkChar = fileIn.get();
+					if (checkChar == 'p')
+					{
+						checkChar = fileIn.get();
+						if (checkChar == '_')
+						{
+							//map_Kd - Diffuse map
+							checkChar = fileIn.get();
+							if (checkChar == 'K')
+							{
+								checkChar = fileIn.get();
+								if (checkChar == 'd')
+								{
+									std::wstring fileNamePath;
+
+									fileIn.get();	//Remove whitespace between map_Kd and file
+
+									//Get the file path - We read the pathname char by char since
+									//pathnames can sometimes contain spaces, so we will read until
+									//we find the file extension
+									bool texFilePathEnd = false;
+									while (!texFilePathEnd)
+									{
+										checkChar = fileIn.get();
+
+										fileNamePath += checkChar;
+
+										if (checkChar == '.')
+										{
+											for (int i = 0; i < 3; ++i)
+												fileNamePath += fileIn.get();
+
+											texFilePathEnd = true;
+										}
+									}
+									
+									hr = DirectX::CreateDDSTextureFromFile(device, fileNamePath.c_str(), NULL, &textureShaderResource);
+								}
+							}
+
+						}
+					}
+				}
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	else
+	{
+		return false;
+	}
+
+#pragma endregion
 
 	//sometimes "g" is defined at the very top of the file, then again before the first group of faces.
 	//This makes sure the first subset does not conatain "0" indices.
