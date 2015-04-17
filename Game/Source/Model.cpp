@@ -16,6 +16,8 @@ void Model::Initialize(std::wstring modelName, ID3D11Device* device)
 
 	indexCount = 0;
 	LoadObj(modelName, device);
+
+	CreateShaders(device);
 }
 
 void Model::Shutdown()
@@ -35,12 +37,13 @@ void Model::Shutdown()
 		meshVertexBuff = 0;
 	}
 
-	if (geometryShaderCB)
+	if (pixelShaderMaterialCB)
 	{
-		geometryShaderCB->Release();
-		geometryShaderCB = 0;
+		pixelShaderMaterialCB->Release();
+		pixelShaderMaterialCB = 0;
 	}
 }
+
 void Model::Update()
 {
 
@@ -67,6 +70,9 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 
 	if (textureShaderResource)
 		deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
+
+	if (pixelShaderMaterialCB)
+		deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 
@@ -314,6 +320,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 					}
 				}
 				break;
+
 							case 'm':	//mtllib - material library filename
 								checkChar = fileIn.get();
 								if (checkChar == 't')
@@ -388,6 +395,57 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 					checkChar = fileIn.get();
 				break;
 				//Get the diffuse map (texture)
+			case 'K':
+				checkChar = fileIn.get();
+				if (checkChar == 'd')	//Diffuse Color
+				{
+					checkChar = fileIn.get();	//remove space
+
+					fileIn >> material.Kd.x;
+					fileIn >> material.Kd.y;
+					fileIn >> material.Kd.z;
+				}
+
+				//Ambient Color (We'll store it in diffuse if there isn't a diffuse already)
+				if (checkChar == 'a')
+				{
+					checkChar = fileIn.get();	//remove space
+					if (!kdset)
+					{	
+						fileIn >> material.Ka.x;
+						fileIn >> material.Ka.y;
+						fileIn >> material.Ka.z;
+					}
+				}
+				break;
+
+			case 'T':
+				checkChar = fileIn.get();
+				if (checkChar == 'r')
+				{
+					checkChar = fileIn.get();	//remove space
+					float Transparency;
+					fileIn >> Transparency;
+
+					material.Tr = Transparency;
+
+				}
+				break;
+
+			case 'd':
+				checkChar = fileIn.get();
+				if (checkChar == ' ')
+				{
+					float Transparency;
+					fileIn >> Transparency;
+
+					//'d' - 0 being most transparent, and 1 being opaque, opposite of Tr
+					Transparency = 1.0f - Transparency;
+
+					material.d = Transparency;
+				}
+				break;
+
 			case 'm':
 				checkChar = fileIn.get();
 				if (checkChar == 'a')
@@ -519,6 +577,33 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	indexCount =  meshSubsetIndexStart[meshSubsetIndexStart.size() - 1];
 
 	return true;
+}
+
+bool Model::CreateShaders(ID3D11Device* device)
+{
+	D3D11_BUFFER_DESC materialDesc;
+	D3D11_SUBRESOURCE_DATA materialSubResource;
+
+	memset(&materialDesc, 0, sizeof(materialDesc));
+
+	materialSubResource.pSysMem = &material;
+	materialSubResource.SysMemPitch = 0;
+	materialSubResource.SysMemSlicePitch = 0;
+
+
+	materialDesc.ByteWidth = sizeof(Material);
+	materialDesc.Usage = D3D11_USAGE_DEFAULT;
+	materialDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	materialDesc.MiscFlags = 0;
+	materialDesc.StructureByteStride = 0;
+
+
+	HRESULT hr = device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
+
+	if (hr)
+		return true;
+
+	return false;
 }
 
 int Model::GetIndexCount()

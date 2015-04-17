@@ -52,6 +52,20 @@ protected:
 			normal.z = nZ;
 		}
 	};
+
+	struct Material
+	{
+		float Ns;
+		float Ni;
+		float d;
+		float Tr;
+		DirectX::XMFLOAT3 Tf;
+		int illum;
+		DirectX::XMFLOAT3 Ka;
+		DirectX::XMFLOAT3 Kd;
+		DirectX::XMFLOAT3 Ks;
+		DirectX::XMFLOAT3 Ke;
+	} material;
 	
 	ID3D11Buffer* meshVertexBuff;
 	ID3D11Buffer* meshIndexBuff;
@@ -66,10 +80,7 @@ protected:
 	//change
 	UINT32 vertexSize = sizeof(Vertex);
 
-	ID3D11Buffer*   geometryShaderCB;
-	D3D11_BUFFER_DESC geometryShaderDesc;
-
-	D3D11_SUBRESOURCE_DATA geometryShaderData;
+	ID3D11Buffer*   pixelShaderMaterialCB;
 public:
 	Model();
 	~Model();
@@ -82,6 +93,8 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	bool LoadObj(std::wstring filename, ID3D11Device* device);
+
+	bool CreateShaders(ID3D11Device* device);
 
 	int GetIndexCount();
 };

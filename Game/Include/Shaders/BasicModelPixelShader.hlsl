@@ -9,6 +9,20 @@ SamplerState sampAni
 
 };
 
+cbuffer MaterialConstant: register(b0)
+{
+	float Ns;
+	float Ni;
+	float d;
+	float Tr;
+	float3 Tf;
+	int illum;
+	float3 Ka;
+	float3 Kd;
+	float3 Ks;
+	float3 Ke;
+}
+
 struct GS_OUT
 {
 	float4 pos : SV_POSITION;
@@ -18,7 +32,7 @@ struct GS_OUT
 
 float4 PS_main(GS_OUT input) : SV_TARGET
 {
-	float4 diffuse = txDiffuse.Sample(sampAni, input.tex);
+	float4 diffuse = float4(Kd,1);// txDiffuse.Sample(sampAni, input.tex);
 
 	return diffuse;
 }
