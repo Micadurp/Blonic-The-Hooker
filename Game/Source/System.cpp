@@ -25,26 +25,37 @@ bool System::Initialize()
 
 	gameState = GameState::gGamePlay;
 
-	menu = new Menu();
-
-	gamePlay = new GamePlay();
-	if (!gamePlay)
-	{
-		return false;
-	}
-
 	direct3D = new Direct3D();
 	if (!direct3D)
 	{
 		return false;
 	}
 
-	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);	
+	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
 		return false;
 	}
+
+	menu = new Menu();
+	if (!menu)
+	{
+		return false;
+	}
+
+	gamePlay = new GamePlay();
+	if (!gamePlay)
+	{
+		return false;
+	}
+	result = gamePlay->Initialize(direct3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
+		return false;
+	}
+
 
 	return true;
 }
@@ -127,7 +138,7 @@ bool System::Frame()
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Render(direct3D);
+		gamePlay->Render(direct3D->GetDeviceContext());
 
 		break;
 

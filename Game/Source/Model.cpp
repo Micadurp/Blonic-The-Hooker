@@ -2,14 +2,6 @@
 
 Model::Model()
 {
-
-	indexCount = 0;
-}
-
-Model::Model(std::wstring modelName, ID3D11Device* device)
-{
-	indexCount = 0;
-	LoadObj(modelName, device);
 }
 
 Model::~Model()
@@ -17,6 +9,35 @@ Model::~Model()
 
 }
 
+void Model::Initialize(std::wstring modelName, ID3D11Device* device)
+{
+	indexCount = 0;
+	LoadObj(modelName, device);
+}
+
+void Model::Shutdown()
+{
+
+	// Release the index buffer.
+	if (meshIndexBuff)
+	{
+		meshIndexBuff->Release();
+		meshIndexBuff = 0;
+	}
+
+	// Release the vertex buffer.
+	if (meshVertexBuff)
+	{
+		meshVertexBuff->Release();
+		meshVertexBuff = 0;
+	}
+
+	if (geometryShaderCB)
+	{
+		geometryShaderCB->Release();
+		geometryShaderCB = 0;
+	}
+}
 void Model::Update()
 {
 
@@ -29,7 +50,7 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 
 
 	// Set vertex buffer stride and offset.
-	stride = sizeof(VertexType);
+	stride = sizeof(Vertex);
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
@@ -42,7 +63,7 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 
-	deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
+	//deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
 
 	return;
 }
@@ -60,7 +81,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	std::vector<DirectX::XMFLOAT3> vertNorm;
 	std::vector<DirectX::XMFLOAT2> vertTexCoord;
 
-	int meshSubsets;
+	int meshSubsets = 0;
 	std::vector<int> meshSubsetIndexStart;
 
 	//Vertex definition indices
@@ -329,8 +350,8 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 
 	std::wstring lastStringRead;
 
-	std::vector<VertexType> vertices;
-	VertexType tempVert;
+	std::vector<Vertex> vertices;
+	Vertex tempVert;
 
 	//Create our vertices using the information we got 
 	//from the file and store them in a vector
@@ -363,7 +384,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(Model::VertexType) * vertices.size();
+	vertexBufferDesc.ByteWidth = sizeof(Model::Vertex) * vertices.size();
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -379,4 +400,9 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	indexCount =  meshSubsetIndexStart[meshSubsetIndexStart.size() - 1];
 
 	return true;
+}
+
+int Model::GetIndexCount()
+{
+	return indexCount;
 }

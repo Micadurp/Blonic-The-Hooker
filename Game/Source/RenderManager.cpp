@@ -8,14 +8,13 @@ RenderManager::RenderManager(ID3D11Device* device)
 	ID3DBlob* pVS = nullptr;
 	D3DCompileFromFile(L"BasicModelVertexShader.hlsl", nullptr, nullptr, "VS_main", "vs_5_0", 0, NULL, &pVS, nullptr);
 
-	//gDevice->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &basicModelVertexShader);
+	device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &basicModelVertexShader);
 
 	//create input layout (verified using vertex shader)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-
-
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 	device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &basicModelVertexLayout);
 	pVS->Release();
@@ -49,4 +48,15 @@ RenderManager::~RenderManager()
 bool RenderManager::SameShader()
 {
 	return false;
+}
+
+void RenderManager::SetShader(ID3D11DeviceContext* deviceContext)
+{
+	// Set the vertex input layout.
+	deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 }

@@ -23,9 +23,11 @@ private:
 
 
 public:
-	RenderManager();
+	RenderManager(ID3D11Device* device);
 	~RenderManager();
 
 	bool SameShader();
+
+	void SetShader(ID3D11DeviceContext* deviceContext);
 };
 #endif
