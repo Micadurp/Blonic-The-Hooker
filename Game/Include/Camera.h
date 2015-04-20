@@ -22,7 +22,7 @@ public:
 	void SetPosition(float x, float y, float z);
 	XMFLOAT3 GetPosition();
 
-	void Render();
+	void Update();
 	XMMATRIX GetViewMatrix();
 
 

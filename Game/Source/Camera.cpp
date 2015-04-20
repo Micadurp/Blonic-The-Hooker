@@ -24,7 +24,7 @@ XMFLOAT3 Camera::GetPosition()
 {
 	return camPos;
 }
-void Camera::Render()
+void Camera::Update()
 {
 	XMStoreFloat4x4(&viewMatrix, XMMatrixLookAtLH(XMLoadFloat3(&camPos), XMLoadFloat3(&camLook), XMLoadFloat3(&camUp)));
 }

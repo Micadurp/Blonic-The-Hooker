@@ -55,7 +55,7 @@ bool GamePlay::Initialize(ID3D11Device* device)
 
 void GamePlay::Update()
 {
-	camera->Render();
+	camera->Update();
 }
 
 void GamePlay::Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix)
