@@ -71,8 +71,8 @@ protected:
 	ID3D11Buffer* meshIndexBuff;
 	int indexCount;
 
-	ID3D11ShaderResourceView* textureShaderResource = NULL;
-	ID3D11ShaderResourceView* normalShaderResource = NULL;
+	ID3D11ShaderResourceView* textureShaderResource;
+	ID3D11ShaderResourceView* normalShaderResource;
 
 	int nrOfVertices;
 
@@ -86,7 +86,7 @@ public:
 	~Model();
 
 
-	void Initialize(std::wstring modelName, ID3D11Device* device);
+	bool Initialize(std::wstring modelName, ID3D11Device* device);
 	void Shutdown();
 
 	virtual void Update();

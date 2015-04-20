@@ -2,6 +2,11 @@
 
 Model::Model()
 {
+	textureShaderResource = nullptr;
+	normalShaderResource = nullptr;
+	meshVertexBuff = nullptr;
+	meshIndexBuff = nullptr;
+	indexCount = 0;
 }
 
 Model::~Model()
@@ -9,15 +14,24 @@ Model::~Model()
 
 }
 
-void Model::Initialize(std::wstring modelName, ID3D11Device* device)
+bool Model::Initialize(std::wstring modelName, ID3D11Device* device)
 {
-	meshVertexBuff = NULL;
-	meshIndexBuff = NULL;
+	bool result = true;
 
-	indexCount = 0;
-	LoadObj(modelName, device);
+	result = LoadObj(modelName, device);
+	if (result)
+	{
+		return false;
+	}
 
-	CreateShaders(device);
+	result = CreateShaders(device);
+	if (result)
+	{
+		return false;
+	}
+
+
+	return true;
 }
 
 void Model::Shutdown()
@@ -35,6 +49,18 @@ void Model::Shutdown()
 	{
 		meshVertexBuff->Release();
 		meshVertexBuff = 0;
+	}
+
+	if (textureShaderResource)
+	{
+		textureShaderResource->Release();
+		textureShaderResource = 0;
+	}
+
+	if (normalShaderResource)
+	{
+		normalShaderResource->Release();
+		normalShaderResource = 0;
 	}
 
 	if (pixelShaderMaterialCB)
@@ -72,7 +98,7 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 		deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
 
 	if (pixelShaderMaterialCB)
-		deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+//		deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
 	deviceContext->DrawIndexed(indexCount, 0, 0);
 
