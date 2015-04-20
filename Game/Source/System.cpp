@@ -177,7 +177,7 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// Give the application a name.
 
-	applicationName = L"Blonic Adventure 2: the lk";
+	applicationName = L"Blonic Adventure 2: Get Hooked";
 
 
 	// Setup the windows class with default settings.
