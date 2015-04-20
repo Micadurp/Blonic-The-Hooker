@@ -21,16 +21,24 @@ void GamePlay::Shutdown()
 
 bool GamePlay::Initialize(ID3D11Device* device)
 {
-	cube = new Model();
-	if (!cube)
-	{
-		return false;
-	}	
+
 	renderer = new RenderManager(device);
 	if (!renderer)
 	{
 		return false;
 	}
+
+	camera = new Camera();
+	if (!camera)
+	{
+		return false;
+	}
+
+	cube = new Model();
+	if (!cube)
+	{
+		return false;
+	}	
 
 	cube->Initialize(L"cube.obj", device);
 

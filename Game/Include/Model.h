@@ -72,7 +72,7 @@ protected:
 	int indexCount;
 
 	ID3D11ShaderResourceView* textureShaderResource = NULL;
-	ID3D11ShaderResourceView * normalShaderResource = NULL;
+	ID3D11ShaderResourceView* normalShaderResource = NULL;
 
 	int nrOfVertices;
 

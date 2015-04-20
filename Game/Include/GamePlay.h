@@ -4,12 +4,14 @@
 #include "Direct3D.h"
 #include "Model.h"
 #include "RenderManager.h"
+#include "Camera.h"
 
 class GamePlay
 {
 private:
 	RenderManager* renderer;
 	Model* cube;
+	Camera* camera;
 public:
 	GamePlay();
 	virtual ~GamePlay();
