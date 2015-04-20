@@ -11,6 +11,13 @@ GamePlay::~GamePlay()
 }
 void GamePlay::Shutdown()
 {
+	if (renderer)
+	{
+		renderer->Shutdown();
+		delete renderer;
+		renderer = 0;
+	}
+
 	if (cube)
 	{
 		cube->Shutdown();
@@ -22,11 +29,12 @@ void GamePlay::Shutdown()
 bool GamePlay::Initialize(ID3D11Device* device)
 {
 
-	renderer = new RenderManager(device);
+	renderer = new RenderManager();
 	if (!renderer)
 	{
 		return false;
 	}
+	renderer->Initilize(device);
 
 	camera = new Camera();
 	if (!camera)
@@ -47,12 +55,12 @@ bool GamePlay::Initialize(ID3D11Device* device)
 
 void GamePlay::Update()
 {
-
+	camera->Render();
 }
 
-void GamePlay::Render(ID3D11DeviceContext* deviceContext)
+void GamePlay::Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix)
 {
-	renderer->SetShader(deviceContext);
+	renderer->SetShader(deviceContext, XMMatrixTranslation(0.0f, 0.0f, 5.0f), camera->GetViewMatrix(), projectionMatrix);
 	cube->Render(deviceContext);
 	
 }

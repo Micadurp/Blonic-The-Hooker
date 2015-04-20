@@ -20,7 +20,7 @@ public:
 	void Shutdown();
 
 	void Update();
-	void Render(ID3D11DeviceContext* deviceContext);
+	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix);
 };
 
 #endif

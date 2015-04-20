@@ -138,7 +138,8 @@ bool System::Frame()
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Render(direct3D->GetDeviceContext());
+		gamePlay->Render(direct3D->GetDeviceContext(), direct3D->GetProjectionMatrix());
+
 
 		break;
 

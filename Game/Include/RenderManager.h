@@ -3,10 +3,18 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 class RenderManager
 {
 private:
+
+	struct VertexShaderBuffer
+	{
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX viewProjection;
+	};
+
 	ID3D11InputLayout* basicModelVertexLayout = nullptr;
 
 	ID3D11VertexShader* basicModelVertexShader = nullptr;
@@ -23,11 +31,14 @@ private:
 
 
 public:
-	RenderManager(ID3D11Device* device);
+	RenderManager();
 	~RenderManager();
 
+	bool Initilize(ID3D11Device* device);
+
+	void Shutdown();
 	bool SameShader();
 
-	void SetShader(ID3D11DeviceContext* deviceContext);
+	bool SetShader(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &worldMatrix, const DirectX::XMMATRIX &viewMatrix, const DirectX::XMMATRIX &projectionMatrix);
 };
 #endif
