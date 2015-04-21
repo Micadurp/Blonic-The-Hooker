@@ -62,6 +62,13 @@ bool System::Initialize()
 
 void System::Shutdown()
 {
+	if (gamePlay)
+	{
+		gamePlay->Shutdown();
+		delete gamePlay;
+		gamePlay = 0;
+	}
+
 	// Shutdown the window.
 	ShutdownWindows();
 }

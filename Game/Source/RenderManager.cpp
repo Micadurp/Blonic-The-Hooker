@@ -2,7 +2,14 @@
 
 RenderManager::RenderManager()
 {
-
+	basicModelVertexLayout = nullptr;
+	basicModelVertexShader = nullptr;
+	basicModelGeometryShader = nullptr;
+	basicModelPixelShader = nullptr;
+	basicModelVSCB = nullptr;
+	basicModelGSCB = nullptr;
+	basicModelPSCB = nullptr;
+	depthStencilView = nullptr;
 }
 
 RenderManager::~RenderManager()
@@ -118,6 +125,13 @@ void RenderManager::Shutdown()
 	{
 		basicModelVertexShader->Release();
 		basicModelVertexShader = 0;
+	}
+
+	// Release the vertex shader.
+	if (depthStencilView)
+	{
+		depthStencilView->Release();
+		depthStencilView = 0;
 	}
 }
 

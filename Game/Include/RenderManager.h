@@ -21,9 +21,9 @@ private:
 	ID3D11GeometryShader* basicModelGeometryShader = nullptr;
 	ID3D11PixelShader* basicModelPixelShader = nullptr;
 
-	ID3D11Buffer*   basicModelVSCB = NULL; // Basic model vertex shader constant buffer
-	ID3D11Buffer*   basicModelGSCB = NULL; // Basic model pixel shader constant buffer
-	ID3D11Buffer*   basicModelPSCB = NULL; // Basic model geometry shader constant buffer
+	ID3D11Buffer*   basicModelVSCB; // Basic model vertex shader constant buffer
+	ID3D11Buffer*   basicModelGSCB; // Basic model pixel shader constant buffer
+	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
 
 	ID3D11DepthStencilView* depthStencilView;
