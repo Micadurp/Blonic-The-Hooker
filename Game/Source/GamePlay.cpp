@@ -18,12 +18,12 @@ void GamePlay::Shutdown()
 		renderer = 0;
 	}
 
-	if (cube)
+	/*if (cube)
 	{
 		cube->Shutdown();
 		delete cube;
 		cube = 0;
-	}
+	}*/
 }
 
 bool GamePlay::Initialize(ID3D11Device* device)
@@ -42,13 +42,14 @@ bool GamePlay::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	cube = new Model();
-	if (!cube)
+	models = new Model*[]
 	{
-		return false;
-	}	
-
-	cube->Initialize(L"cube.obj", device);
+		new Model(),
+		new Model(),
+		new Model(),
+	};
+	for (int n = 0; n < sizeof(models) -1; n++)
+		models[n]->Initialize(L"Cube", device);
 
 	return true;
 }
@@ -61,6 +62,7 @@ void GamePlay::Update()
 void GamePlay::Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix)
 {
 	renderer->SetShader(deviceContext, XMMatrixTranslation(0.0f, 0.0f, 5.0f), camera->GetViewMatrix(), projectionMatrix);
-	cube->Render(deviceContext);
-	
+
+	for (int n = 0; n < sizeof(models); n++)
+		models[n]->Render(deviceContext);
 }
