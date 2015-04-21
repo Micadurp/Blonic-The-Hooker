@@ -98,7 +98,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 		_deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
 
 	if (pixelShaderMaterialCB)
-//		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
 	_deviceContext->DrawIndexed(indexCount, 0, 0);
 
