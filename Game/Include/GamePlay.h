@@ -16,11 +16,11 @@ public:
 	GamePlay();
 	virtual ~GamePlay();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* _device);
 	void Shutdown();
 
 	void Update();
-	void Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix);
+	void Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix);
 };
 
 #endif

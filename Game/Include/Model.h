@@ -37,19 +37,19 @@ protected:
 			normal.y = 0;
 			normal.z = 0;
 		}
-		Vertex(float x, float y, float z, float U, float V, float nX, float nY, float nZ)
+		Vertex(float _x, float _y, float _z, float _U, float _V, float _nX, float _nY, float _nZ)
 		{
-			position.x = x;
-			position.y = y;
-			position.z = z;
+			position.x = _x;
+			position.y = _y;
+			position.z = _z;
 			position.w = 0;
 
-			texture.x = U;
-			texture.y = V;
+			texture.x = _U;
+			texture.y = _V;
 
-			normal.x = nX;
-			normal.y = nY;
-			normal.z = nZ;
+			normal.x = _nX;
+			normal.y = _nY;
+			normal.z = _nZ;
 		}
 	};
 
@@ -86,15 +86,15 @@ public:
 	~Model();
 
 
-	bool Initialize(std::wstring modelName, ID3D11Device* device);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	void Shutdown();
 
 	virtual void Update();
-	void Render(ID3D11DeviceContext* deviceContext);
+	void Render(ID3D11DeviceContext* _deviceContext);
 
-	bool LoadObj(std::wstring filename, ID3D11Device* device);
+	bool LoadObj(std::wstring _filename, ID3D11Device* _device);
 
-	bool CreateShaders(ID3D11Device* device);
+	bool CreateShaders(ID3D11Device* _device);
 
 	int GetIndexCount();
 };

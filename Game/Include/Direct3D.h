@@ -44,10 +44,10 @@ public:
 	Direct3D();
 	~Direct3D();
 
-	bool Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear);
+	bool Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear);
 	void Shutdown();
 
-	void BeginScene(float red, float green, float blue, float alpha);
+	void BeginScene(float _red, float _green, float _blue, float _alpha);
 	void EndScene();
 
 	ID3D11Device* GetDevice();

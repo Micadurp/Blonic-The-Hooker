@@ -34,11 +34,11 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* device);
+	bool Initilize(ID3D11Device* _device);
 
 	void Shutdown();
 	bool SameShader();
 
-	bool SetShader(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &worldMatrix, const DirectX::XMMATRIX &viewMatrix, const DirectX::XMMATRIX &projectionMatrix);
+	bool SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 };
 #endif
