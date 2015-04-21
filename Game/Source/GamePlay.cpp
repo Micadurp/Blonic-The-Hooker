@@ -28,6 +28,7 @@ void GamePlay::Shutdown()
 
 bool GamePlay::Initialize(ID3D11Device* _device)
 {
+	bool result;
 
 	renderer = new RenderManager();
 	if (!renderer)
@@ -48,7 +49,11 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 		return false;
 	}	
 
-	cube->Initialize(L"cube.obj", _device);
+	result = cube->Initialize(L"cube.obj", _device);
+	if (!result)
+	{
+		return false;
+	}
 
 	return true;
 }
