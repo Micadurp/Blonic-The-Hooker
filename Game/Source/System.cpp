@@ -62,6 +62,13 @@ bool System::Initialize()
 
 void System::Shutdown()
 {
+	if (gamePlay)
+	{
+		gamePlay->Shutdown();
+		delete gamePlay;
+		gamePlay = 0;
+	}
+
 	// Shutdown the window.
 	ShutdownWindows();
 }
@@ -158,12 +165,12 @@ bool System::Frame()
 	return true;
 }
 
-LRESULT CALLBACK System::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK System::MessageHandler(HWND _hwnd, UINT _umsg, WPARAM _wparam, LPARAM _lparam)
 {
-	return DefWindowProc(hwnd, umsg, wparam, lparam);
+	return DefWindowProc(_hwnd, _umsg, _wparam, _lparam);
 }
 
-void System::InitializeWindows(int& screenWidth, int& screenHeight)
+void System::InitializeWindows(int& _screenWidth, int& _screenHeight)
 {
 	WNDCLASSEX wcex;
 	DEVMODE dmScreenSettings;
@@ -177,7 +184,7 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 
 	// Give the application a name.
 
-	applicationName = L"Blonic Adventure 2: the lk";
+	applicationName = L"Blonic Adventure 2: Get Hooked";
 
 
 	// Setup the windows class with default settings.
@@ -198,8 +205,8 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 	RegisterClassEx(&wcex);
 
 	// Determine the resolution of the clients desktop screen.
-	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-	screenHeight = GetSystemMetrics(SM_CYSCREEN);
+	_screenWidth = GetSystemMetrics(SM_CXSCREEN);
+	_screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Setup the screen settings depending on whether it is running in full screen or in windowed mode.
 	if (FULL_SCREEN)
@@ -207,8 +214,8 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 		// If full screen set the screen to maximum size of the users desktop and 32bit.
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
-		dmScreenSettings.dmPelsHeight = (unsigned long)screenHeight;
+		dmScreenSettings.dmPelsWidth = (unsigned long)_screenWidth;
+		dmScreenSettings.dmPelsHeight = (unsigned long)_screenHeight;
 		dmScreenSettings.dmBitsPerPel = 32;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -221,12 +228,12 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 	else
 	{
 		// If windowed then set it to 800x600 resolution.
-		screenWidth = 800;
-		screenHeight = 600;
+		_screenWidth = 800;
+		_screenHeight = 600;
 
 		// Place the window in the middle of the screen.
-		posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-		posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
+		posX = (GetSystemMetrics(SM_CXSCREEN) - _screenWidth) / 2;
+		posY = (GetSystemMetrics(SM_CYSCREEN) - _screenHeight) / 2;
 	}
 
 	// Create the window with the screen settings and get the handle to it.
@@ -236,8 +243,8 @@ void System::InitializeWindows(int& screenWidth, int& screenHeight)
 		WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU,
 		posX,
 		posY,
-		screenWidth,
-		screenHeight,
+		_screenWidth,
+		_screenHeight,
 		nullptr,
 		nullptr,
 		hinstance,
@@ -279,9 +286,9 @@ void System::ShutdownWindows()
 	return;
 }
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam)
 {
-	switch (message)
+	switch (_message)
 	{
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -293,5 +300,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	return DefWindowProc(_hWnd, _message, _wParam, _lParam);
 }

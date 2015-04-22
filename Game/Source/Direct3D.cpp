@@ -11,7 +11,7 @@ Direct3D::~Direct3D()
 
 }
 
-bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
+bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear)
 {
 	HRESULT result;
 	IDXGIFactory* factory;
@@ -32,7 +32,7 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_BLEND_DESC blendStateDescription;
 
 	// Store the vsync setting.
-	vsync_enabled = vsync;
+	vsync_enabled = _vsync;
 
 	// Create a DirectX graphics interface factory.
 	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
@@ -80,9 +80,9 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	// When a match is found store the numerator and denominator of the refresh rate for that monitor.
 	for (i = 0; i<numModes; i++)
 	{
-		if (displayModeList[i].Width == (unsigned int)screenWidth)
+		if (displayModeList[i].Width == (unsigned int)_screenWidth)
 		{
-			if (displayModeList[i].Height == (unsigned int)screenHeight)
+			if (displayModeList[i].Height == (unsigned int)_screenHeight)
 			{
 				numerator = displayModeList[i].RefreshRate.Numerator;
 				denominator = displayModeList[i].RefreshRate.Denominator;
@@ -130,8 +130,8 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDesc.BufferCount = 1;
 
 	// Set the width and height of the back buffer.
-	swapChainDesc.BufferDesc.Width = screenWidth;
-	swapChainDesc.BufferDesc.Height = screenHeight;
+	swapChainDesc.BufferDesc.Width = _screenWidth;
+	swapChainDesc.BufferDesc.Height = _screenHeight;
 
 	// Set regular 32-bit surface for the back buffer.
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -152,14 +152,14 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
 	// Set the handle for the window to render to.
-	swapChainDesc.OutputWindow = hwnd;
+	swapChainDesc.OutputWindow = _hwnd;
 
 	// Turn multisampling off.
 	swapChainDesc.SampleDesc.Count = 1;
 	swapChainDesc.SampleDesc.Quality = 0;
 
 	// Set to full screen or windowed mode.
-	if (fullscreen)
+	if (_fullscreen)
 	{
 		swapChainDesc.Windowed = false;
 	}
@@ -223,8 +223,8 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
 	// Set up the description of the depth buffer.
-	depthBufferDesc.Width = screenWidth;
-	depthBufferDesc.Height = screenHeight;
+	depthBufferDesc.Width = _screenWidth;
+	depthBufferDesc.Height = _screenHeight;
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -319,8 +319,8 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	deviceContext->RSSetState(rasterState);
 
 	// Setup the viewport for rendering.
-	viewport.Width = (float)screenWidth;
-	viewport.Height = (float)screenHeight;
+	viewport.Width = (float)_screenWidth;
+	viewport.Height = (float)_screenHeight;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 	viewport.TopLeftX = 0.0f;
@@ -331,16 +331,16 @@ bool Direct3D::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Setup the projection matrix.
 	fieldOfView = (float)XM_PI / 4.0f;
-	screenAspect = (float)screenWidth / (float)screenHeight;
+	screenAspect = (float)_screenWidth / (float)_screenHeight;
 
 	// Create the projection matrix for 3D rendering.
-	projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, screenNear, screenDepth);
+	projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, _screenNear, _screenDepth);
 
 	// Initialize the world matrix to the identity matrix.
 	worldMatrix = XMMatrixIdentity();
 
 	// Create an orthographic projection matrix for 2D rendering.
-	orthoMatrix = XMMatrixOrthographicLH((float)screenWidth, (float)screenHeight, screenNear, screenDepth);
+	orthoMatrix = XMMatrixOrthographicLH((float)_screenWidth, (float)_screenHeight, _screenNear, _screenDepth);
 
 	// Clear the blend state description.
 	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
@@ -434,16 +434,16 @@ void Direct3D::Shutdown()
 	return;
 }
 
-void Direct3D::BeginScene(float red, float green, float blue, float alpha)
+void Direct3D::BeginScene(float _red, float _green, float _blue, float _alpha)
 {
 	float color[4];
 
 
 	// Setup the color to clear the buffer to.
-	color[0] = red;
-	color[1] = green;
-	color[2] = blue;
-	color[3] = alpha;
+	color[0] = _red;
+	color[1] = _green;
+	color[2] = _blue;
+	color[3] = _alpha;
 
 	// Clear the back buffer.
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
@@ -507,10 +507,10 @@ XMMATRIX Direct3D::GetOrthoMatrix()
 	return orthoMatrix;
 }
 
-void Direct3D::GetVideoCardInfo(char* cardName, int& memory)
+void Direct3D::GetVideoCardInfo(char* _cardName, int& _memory)
 {
-	strcpy_s(cardName, 128, videoCardDescription);
-	memory = videoCardMemory;
+	strcpy_s(_cardName, 128, videoCardDescription);
+	_memory = videoCardMemory;
 	return;
 }
 

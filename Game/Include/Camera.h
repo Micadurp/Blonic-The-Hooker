@@ -19,7 +19,7 @@ public:
 	Camera();
 	~Camera();
 
-	void SetPosition(float x, float y, float z);
+	void SetPosition(float _x, float _y, float _z);
 	XMFLOAT3 GetPosition();
 
 	void Update();

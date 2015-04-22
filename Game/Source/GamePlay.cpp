@@ -26,15 +26,16 @@ void GamePlay::Shutdown()
 	}*/
 }
 
-bool GamePlay::Initialize(ID3D11Device* device)
+bool GamePlay::Initialize(ID3D11Device* _device)
 {
+	bool result;
 
 	renderer = new RenderManager();
 	if (!renderer)
 	{
 		return false;
 	}
-	renderer->Initilize(device);
+	renderer->Initilize(_device);
 
 	camera = new Camera();
 	if (!camera)
@@ -48,8 +49,11 @@ bool GamePlay::Initialize(ID3D11Device* device)
 		new Model(),
 		new Model(),
 	};
+
 	for (int n = 0; n < sizeof(models) -1; n++)
-		models[n]->Initialize(L"Cube", device);
+		models[n]->Initialize(L"Cube", _device);
+
+
 
 	return true;
 }
@@ -59,10 +63,12 @@ void GamePlay::Update()
 	camera->Update();
 }
 
-void GamePlay::Render(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &projectionMatrix)
+void GamePlay::Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix)
 {
-	renderer->SetShader(deviceContext, XMMatrixTranslation(0.0f, 0.0f, 5.0f), camera->GetViewMatrix(), projectionMatrix);
+	for (int n = 0; n < sizeof(models)-1; n++)
+	{
+		renderer->SetShader(_deviceContext, XMMatrixTranslation(n * 1.3f, 0.0f, 5.0f), camera->GetViewMatrix(), _projectionMatrix);
+		models[n]->Render(_deviceContext);
+	}
 
-	for (int n = 0; n < sizeof(models); n++)
-		models[n]->Render(deviceContext);
 }

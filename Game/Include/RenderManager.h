@@ -21,9 +21,9 @@ private:
 	ID3D11GeometryShader* basicModelGeometryShader = nullptr;
 	ID3D11PixelShader* basicModelPixelShader = nullptr;
 
-	ID3D11Buffer*   basicModelVSCB = NULL; // Basic model vertex shader constant buffer
-	ID3D11Buffer*   basicModelGSCB = NULL; // Basic model pixel shader constant buffer
-	ID3D11Buffer*   basicModelPSCB = NULL; // Basic model geometry shader constant buffer
+	ID3D11Buffer*   basicModelVSCB; // Basic model vertex shader constant buffer
+	ID3D11Buffer*   basicModelGSCB; // Basic model pixel shader constant buffer
+	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
 
 	ID3D11DepthStencilView* depthStencilView;
@@ -34,11 +34,11 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* device);
+	bool Initilize(ID3D11Device* _device);
 
 	void Shutdown();
 	bool SameShader();
 
-	bool SetShader(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX &worldMatrix, const DirectX::XMMATRIX &viewMatrix, const DirectX::XMMATRIX &projectionMatrix);
+	bool SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 };
 #endif

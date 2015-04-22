@@ -2,7 +2,11 @@
 
 Model::Model()
 {
-
+	textureShaderResource = nullptr;
+	normalShaderResource = nullptr;
+	meshVertexBuff = nullptr;
+	meshIndexBuff = nullptr;
+	indexCount = 0;
 }
 
 Model::~Model()
@@ -10,15 +14,24 @@ Model::~Model()
 
 }
 
-void Model::Initialize(std::wstring modelName, ID3D11Device* device)
+bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device)
 {
-	meshVertexBuff = NULL;
-	meshIndexBuff = NULL;
+	bool result = true;
 
-	indexCount = 0;
-	LoadObj(modelName, device);
+	result = LoadObj(_modelName, _device);
+	if (!result)
+	{
+		return false;
+	}
 
-	CreateShaders(device);
+	result = CreateShaders(_device);
+	if (!result)
+	{
+		return false;
+	}
+
+
+	return true;
 }
 
 void Model::Shutdown()
@@ -38,6 +51,18 @@ void Model::Shutdown()
 		meshVertexBuff = 0;
 	}
 
+	if (textureShaderResource)
+	{
+		textureShaderResource->Release();
+		textureShaderResource = 0;
+	}
+
+	if (normalShaderResource)
+	{
+		normalShaderResource->Release();
+		normalShaderResource = 0;
+	}
+
 	if (pixelShaderMaterialCB)
 	{
 		pixelShaderMaterialCB->Release();
@@ -50,7 +75,7 @@ void Model::Update()
 
 }
 
-void Model::Render(ID3D11DeviceContext* deviceContext)
+void Model::Render(ID3D11DeviceContext* _deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
@@ -61,30 +86,31 @@ void Model::Render(ID3D11DeviceContext* deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
-	deviceContext->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);
+	_deviceContext->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);
 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	if (textureShaderResource)
-		deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
+		_deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
 
 	if (pixelShaderMaterialCB)
-		deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
-	deviceContext->DrawIndexed(indexCount, 0, 0);
+	_deviceContext->DrawIndexed(indexCount, 0, 0);
 
 	return;
 }
 
-bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
+bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 {
 	HRESULT hr = 0;
 
-	std::wifstream fileIn((filename + L".obj").c_str() );	//Open file
+	std::wifstream fileIn((_filename + L".obj").c_str());	//Open file
+
 	std::wstring meshMatLib;					//String to hold our obj material library filename
 
 	//Arrays to store our model's information
@@ -360,7 +386,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	{
 		//create message
 		std::wstring message = L"Could not open: ";
-		message += filename;
+		message += _filename;
 
 		MessageBox(0, message.c_str(),	//display message
 			L"Error", MB_OK);
@@ -487,7 +513,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 										}
 									}
 									
-									hr = DirectX::CreateDDSTextureFromFile(device, fileNamePath.c_str(), NULL, &textureShaderResource);
+									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &textureShaderResource);
 								}
 							}
 
@@ -555,7 +581,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	D3D11_SUBRESOURCE_DATA iinitData;
 
 	iinitData.pSysMem = &indices[0];
-	device->CreateBuffer(&indexBufferDesc, &iinitData, &meshIndexBuff);
+	_device->CreateBuffer(&indexBufferDesc, &iinitData, &meshIndexBuff);
 
 	//Create Vertex Buffer
 	D3D11_BUFFER_DESC vertexBufferDesc;
@@ -571,7 +597,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 
 	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
 	vertexBufferData.pSysMem = &vertices[0];
-	device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &meshVertexBuff);
+	_device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &meshVertexBuff);
 
 
 
@@ -580,7 +606,7 @@ bool Model::LoadObj(std::wstring filename, ID3D11Device* device)
 	return true;
 }
 
-bool Model::CreateShaders(ID3D11Device* device)
+bool Model::CreateShaders(ID3D11Device* _device)
 {
 	D3D11_BUFFER_DESC materialDesc;
 	D3D11_SUBRESOURCE_DATA materialSubResource;
@@ -599,12 +625,14 @@ bool Model::CreateShaders(ID3D11Device* device)
 	materialDesc.StructureByteStride = 0;
 
 
-	HRESULT hr = device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
+	HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
 
-	if (hr)
-		return true;
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
-	return false;
+	return true;
 }
 
 int Model::GetIndexCount()

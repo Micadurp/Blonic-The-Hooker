@@ -15,9 +15,9 @@ Camera::~Camera()
 }
 
 
-void Camera::SetPosition(float x, float y, float z)
+void Camera::SetPosition(float _x, float _y, float _z)
 {
-	camPos = XMFLOAT3(x, y, z);
+	camPos = XMFLOAT3(_x, _y, _z);
 }
 
 XMFLOAT3 Camera::GetPosition()
