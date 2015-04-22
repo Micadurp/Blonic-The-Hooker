@@ -10,6 +10,7 @@
 #include "GamePlay.h"
 #include "Direct3D.h"
 #include "Menu.h"
+#include "PlayerInputs.h"
 
 //move this
 /////////////
@@ -41,6 +42,7 @@ private:
 	Menu* menu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
+	PlayerInputs* input;
 
 public:
 	System();
