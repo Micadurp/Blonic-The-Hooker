@@ -119,10 +119,10 @@ void System::Run()
 		}
 
 		// Check if the user pressed escape and wants to quit.
-		/*if (input->IsEscapePressed() == true)
+		if (input->IsEscapePressed() == true)
 		{
 			done = true;
-		}*/
+		}
 	}
 
 	return;
@@ -133,6 +133,8 @@ bool System::Frame()
 {
 
 #pragma region Update
+	input->Update(0);
+
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
