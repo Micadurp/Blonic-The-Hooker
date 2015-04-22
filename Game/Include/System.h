@@ -39,7 +39,7 @@ private:
 	}
 	gameState;
 	
-	Menu * menu;
+	Menu* menu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
 	PlayerInputs* input;

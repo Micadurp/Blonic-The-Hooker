@@ -1,3 +1,8 @@
+cbuffer VertexBuffer
+{
+	matrix worldMatrix;
+	matrix viewProjection;
+};
 
 struct VS_IN
 {
@@ -18,7 +23,9 @@ VS_OUT VS_main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	output.pos = input.pos;
+	output.pos = mul(input.pos, worldMatrix);
+	output.pos = mul(output.pos, viewProjection);
+
 	output.tex = input.tex;
 	output.normal = input.normal;
 
