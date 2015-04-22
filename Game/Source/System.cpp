@@ -56,6 +56,17 @@ bool System::Initialize()
 		return false;
 	}
 
+	input = new PlayerInputs();
+	if (!input)
+	{
+		return false;
+	}
+	result = input->Initialize(hwnd, hinstance);
+	if (!result)
+	{
+		return false;
+	}
+
 
 	return true;
 }
