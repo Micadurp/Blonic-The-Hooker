@@ -11,18 +11,11 @@ GamePlay::~GamePlay()
 }
 void GamePlay::Shutdown()
 {
-	if (renderer)
-	{
-		renderer->Shutdown();
-		delete renderer;
-		renderer = 0;
-	}
-
 	/*if (cube)
 	{
-		cube->Shutdown();
-		delete cube;
-		cube = 0;
+	cube->Shutdown();
+	delete cube;
+	cube = 0;
 	}*/
 }
 

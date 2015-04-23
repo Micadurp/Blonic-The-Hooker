@@ -165,7 +165,7 @@ bool System::Frame()
 #pragma region Draw
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
-
+	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
@@ -314,14 +314,14 @@ LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lPar
 {
 	switch (_message)
 	{
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
-		case WM_CLOSE:
-		{
-						 PostQuitMessage(0);
-						 return 0;
-		}
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	case WM_CLOSE:
+	{
+					 PostQuitMessage(0);
+					 return 0;
+	}
 	}
 
 	return DefWindowProc(_hWnd, _message, _wParam, _lParam);
