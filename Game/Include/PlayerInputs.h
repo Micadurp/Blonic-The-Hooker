@@ -12,20 +12,20 @@ using namespace DirectX;
 class PlayerInputs
 {
 	private:
-		XMFLOAT2 in_yawPitch;
-		XMFLOAT2 in_movement;
+		XMFLOAT2 m_yawPitch;
+		XMFLOAT2 m_movement;
 
-		bool in_isEscapePressed;
+		bool m_isEscapePressed;
 
-		bool in_escapeStillPressed;
-		bool in_returnStillPressed;
-		bool in_spaceStillPressed;
+		bool m_escapeStillPressed;
+		bool m_returnStillPressed;
+		bool m_spaceStillPressed;
 
-		IDirectInputDevice8* in_keyboard;
-		IDirectInputDevice8* in_mouse;
+		IDirectInputDevice8* m_keyboard;
+		IDirectInputDevice8* m_mouse;
 
-		DIMOUSESTATE in_mouseLastState;
-		LPDIRECTINPUT8 in_directInput;
+		DIMOUSESTATE m_mouseLastState;
+		LPDIRECTINPUT8 m_directInput;
 
 		void UpdateKeyboardStates(BYTE* keyboard);
 
@@ -37,7 +37,7 @@ class PlayerInputs
 		void Update(double time);
 
 		XMFLOAT2 GetYawPitch() const;
-		XMFLOAT2 GetMovement() const;
+		XMFLOAT2* GetMovement();
 		bool IsEscapePressed() const;
 
 		void ReleaseCOM();

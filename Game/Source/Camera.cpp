@@ -2,13 +2,18 @@
 
 Camera::Camera()
 {
-	XMStoreFloat4x4(&viewMatrix, XMMatrixIdentity());
-
-	camPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	camLook = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	camUp = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_defaultForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f );
+	m_defaultRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f );
+	m_cameraForward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+	m_cameraRight = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f );
 
 	gravity = XMFLOAT3(0.0f, -0.2f, 0.0f);
+
+	m_camPos = XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f);
+	m_camLook = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	m_camUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	XMStoreFloat4x4(&m_viewMatrix, XMMatrixLookAtLH(m_camPos, m_camLook, m_camUp));
 }
 
 
@@ -17,35 +22,71 @@ Camera::~Camera()
 }
 
 
+void Camera::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation)
+{
+	// Rotation matrix from mouse input
+	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(_rotation.y, _rotation.x, 0.0f);
+
+	// Align vectors and look at position according to mouse input
+	m_camLook = XMVector3TransformCoord(m_defaultForward, cameraRotationMatrix);
+	m_camLook =XMVector3Normalize(m_camLook);
+
+	m_cameraRight = XMVector3TransformCoord(m_defaultRight, cameraRotationMatrix);
+	m_cameraForward = XMVector3TransformCoord(m_defaultForward, cameraRotationMatrix);
+
+	m_camUp = XMVector3Cross(m_cameraForward, m_cameraRight);
+
+	// New position from keyboard inputs
+	m_camPos += _movement->x * m_cameraRight;
+	m_camPos += _movement->y * m_cameraForward;
+
+	// Reset input movement variable
+	_movement->x = 0.0f;
+	_movement->y = 0.0f;
+
+	// Position look at accordingly to keyboard input
+	m_camLook += m_camPos;
+
+	// Create new view matrix
+	XMStoreFloat4x4(&m_viewMatrix, XMMatrixLookAtLH(m_camPos, m_camLook, m_camUp));
+}
+
 void Camera::SetPosition(float _x, float _y, float _z)
 {
-	camPos = XMFLOAT3(_x, _y, _z);
+	m_camPos = XMVectorSet(_x, _y, _z, 0.0f);
 }
 
 XMFLOAT3 Camera::GetPosition()
 {
-	return camPos;
+	XMFLOAT3 _camPos;
+	XMStoreFloat3(&_camPos, m_camPos);
+
+	return _camPos;
 }
+
 void Camera::Update()
 {
-	XMStoreFloat4x4(&viewMatrix, XMMatrixLookAtLH(XMLoadFloat3(&camPos), XMLoadFloat3(&camLook), XMLoadFloat3(&camUp)));
+	XMStoreFloat4x4(&m_viewMatrix, XMMatrixLookAtLH(m_camPos, m_camLook, m_camUp));
 }
 
 XMMATRIX Camera::GetViewMatrix()
 {
-	return XMLoadFloat4x4(&viewMatrix);
+	return XMLoadFloat4x4(&m_viewMatrix);
 }
 
 XMFLOAT3 Camera::getCamLook()
 {
-	return camLook;
+	XMFLOAT3 _camLook;
+	XMStoreFloat3(&_camLook, m_camLook);
+
+	return _camLook;
 }
 
 XMVECTOR Camera::Collision( std::vector<XMFLOAT3>& _vertPos, std::vector<DWORD>& _indices)
 {
 	CollisionPacket collisionPack;
 	collisionPack.ellipsoidSpace = XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f);
-	collisionPack.w_Position = XMLoadFloat3(&camPos);
+	collisionPack.w_Position = m_camPos;
 	collisionPack.w_Velocity = XMLoadFloat3(&velocity);
 
 	// Transform velocity vector to the ellipsoid space (e_ denotes ellipsoid space)
@@ -159,6 +200,235 @@ XMVECTOR Camera::CollideWithWorld(CollisionPacket& _cP, std::vector<XMFLOAT3>& _
 	_cP.e_Position = newPosition;
 	_cP.e_Velocity = newVelocityVector;
 	return CollideWithWorld(_cP, _vertPos, _indices);
+}
+
+
+bool Camera::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XMVECTOR &_p1, XMVECTOR &_p2, XMVECTOR &_triNormal)
+{
+	// Check to see if triangle is facing velocity vector
+	float facing = XMVectorGetX(XMVector3Dot(_triNormal, _cP.e_normalizedVelocity));
+	if (facing <= 0)
+	{
+		XMVECTOR velocity = _cP.e_Velocity;
+		XMVECTOR position = _cP.e_Position;
+
+		float t0, t1;
+
+		bool sphereInPlane = false;
+
+		// First the point in the plane
+		float x = XMVectorGetX(_p0);
+		float y = XMVectorGetY(_p0);
+		float z = XMVectorGetZ(_p0);
+
+		// Next the planes normal
+		float A = XMVectorGetX(_triNormal);
+		float B = XMVectorGetY(_triNormal);
+		float C = XMVectorGetZ(_triNormal);
+
+		float D = -((A*x) + (B*y) + (C*z));
+
+		float planeConstant = D;
+
+		float signedDistFromPositionToTriPlane = XMVectorGetX(XMVector3Dot(position, _triNormal)) + planeConstant;
+
+		float planeNormalDotVelocity = XMVectorGetX(XMVector3Dot(_triNormal, velocity));
+
+		/////////////////////////////////////Sphere Plane Collision Test////////////////////////////////////////////
+		// Check to see if the velocity vector is parallel with the plane
+		if (planeNormalDotVelocity == 0.0f)
+		{
+			if (fabs(signedDistFromPositionToTriPlane) >= 1.0f)
+			{
+				// sphere not in plane, and velocity is
+				// parallel to plane, no collision possible
+				return false;
+			}
+			else
+			{
+				sphereInPlane = true;
+			}
+		}
+		else
+		{
+			// finding when both front and back of sphere touches plane
+			t0 = (1.0f - signedDistFromPositionToTriPlane) / planeNormalDotVelocity;
+			t1 = (-1.0f - signedDistFromPositionToTriPlane) / planeNormalDotVelocity;
+
+			// t0 will become the front
+			if (t0 > t1)
+			{
+				float temp = t0;
+				t0 = t1;
+				t1 = temp;
+			}
+
+			// no intersect this frame
+			if (t0 > 1.0f || t1 < 0.0f)
+			{
+				return false;
+			}
+
+			// If t0 is smaller than 0 then we will make it 0
+			// and if t1 is greater than 1 we will make it 1
+			if (t0 < 0.0) t0 = 0.0;
+			if (t1 > 1.0) t1 = 1.0;
+		}
+
+		////////////////////////////////Sphere-(Inside Triangle) Collision Test///////////////////////////////////////
+		XMVECTOR collisionPoint;		// Point on plane where collision occured
+		bool collidingWithTri = false;
+		float t = 1.0;					// Time 
+
+		// If the sphere is not IN the triangles plane, we continue the sphere to inside of triangle test
+		if (!sphereInPlane)
+		{
+			XMVECTOR planeIntersectionPoint = (position + t0 * velocity - _triNormal);
+
+			// Now we call the function that checks if a point on a triangle's plane is inside the triangle
+			if (checkPointInTriangle(planeIntersectionPoint, _p0, _p1, _p2))
+			{
+				collidingWithTri = true;
+				t = t0;
+				collisionPoint = planeIntersectionPoint;
+			}
+		}
+
+		/////////////////////////////////////Sphere-Vertex Collision Test//////////////////////////////////////////////
+		if (collidingWithTri == false)
+		{
+			float a, b, c; // Equation Parameters
+
+			float velocityLengthSquared = XMVectorGetX(XMVector3Length(velocity));
+			velocityLengthSquared *= velocityLengthSquared;
+
+			a = velocityLengthSquared;
+
+			float newT;
+
+			// P0 - Collision test with sphere and p0
+			b = 2.0f * (XMVectorGetX(XMVector3Dot(velocity, position - _p0)));
+			c = XMVectorGetX(XMVector3Length((_p0 - position)));
+			c = (c*c) - 1.0f;
+			if (getLowestRoot(a, b, c, t, &newT)) {	// Check if the equation can be solved
+				t = newT;
+				collidingWithTri = true;
+				collisionPoint = _p0;
+			}
+
+			// P1 - Collision test with sphere and p1
+			b = 2.0*(XMVectorGetX(XMVector3Dot(velocity, position - _p1)));
+			c = XMVectorGetX(XMVector3Length((_p1 - position)));
+			c = (c*c) - 1.0;
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				t = newT;
+				collidingWithTri = true;
+				collisionPoint = _p1;
+			}
+
+			// P2 - Collision test with sphere and p2
+			b = 2.0*(XMVectorGetX(XMVector3Dot(velocity, position - _p2)));
+			c = XMVectorGetX(XMVector3Length((_p2 - position)));
+			c = (c*c) - 1.0;
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				t = newT;
+				collidingWithTri = true;
+				collisionPoint = _p2;
+			}
+
+			//////////////////////////////////////////////Sphere-Edge Collision Test//////////////////////////////////////////////
+
+			// Edge (p0, p1):
+			XMVECTOR edge = _p1 - _p0;
+			XMVECTOR spherePositionToVertex = _p0 - position;
+			float edgeLengthSquared = XMVectorGetX(XMVector3Length(edge));
+			edgeLengthSquared *= edgeLengthSquared;
+			float edgeDotVelocity = XMVectorGetX(XMVector3Dot(edge, velocity));
+			float edgeDotSpherePositionToVertex = XMVectorGetX(XMVector3Dot(edge, spherePositionToVertex));
+			float spherePositionToVertexLengthSquared = XMVectorGetX(XMVector3Length(spherePositionToVertex));
+			spherePositionToVertexLengthSquared = spherePositionToVertexLengthSquared * spherePositionToVertexLengthSquared;
+
+			// Equation parameters
+			a = edgeLengthSquared * -velocityLengthSquared + (edgeDotVelocity * edgeDotVelocity);
+			b = edgeLengthSquared * (2.0f * XMVectorGetX(XMVector3Dot(velocity, spherePositionToVertex))) - (2.0f * edgeDotVelocity * edgeDotSpherePositionToVertex);
+			c = edgeLengthSquared * (1.0f - spherePositionToVertexLengthSquared) + (edgeDotSpherePositionToVertex * edgeDotSpherePositionToVertex);
+
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				float f = (edgeDotVelocity * newT - edgeDotSpherePositionToVertex) / edgeLengthSquared;
+				if (f >= 0.0f && f <= 1.0f) {
+					// If the collision with the edge happened, we set the results
+					t = newT;
+					collidingWithTri = true;
+					collisionPoint = _p0 + f * edge;
+				}
+			}
+
+			// Edge (p1, p2):
+			edge = _p2 - _p1;
+			spherePositionToVertex = _p1 - position;
+			edgeLengthSquared = XMVectorGetX(XMVector3Length(edge));
+			edgeLengthSquared = edgeLengthSquared * edgeLengthSquared;
+			edgeDotVelocity = XMVectorGetX(XMVector3Dot(edge, _cP.e_Velocity));
+			edgeDotSpherePositionToVertex = XMVectorGetX(XMVector3Dot(edge, spherePositionToVertex));
+			spherePositionToVertexLengthSquared = XMVectorGetX(XMVector3Length(spherePositionToVertex));
+			spherePositionToVertexLengthSquared = spherePositionToVertexLengthSquared * spherePositionToVertexLengthSquared;
+
+			a = edgeLengthSquared * -velocityLengthSquared + (edgeDotVelocity * edgeDotVelocity);
+			b = edgeLengthSquared * (2.0f * XMVectorGetX(XMVector3Dot(velocity, spherePositionToVertex))) - (2.0f * edgeDotVelocity * edgeDotSpherePositionToVertex);
+			c = edgeLengthSquared * (1.0f - spherePositionToVertexLengthSquared) + (edgeDotSpherePositionToVertex * edgeDotSpherePositionToVertex);
+
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				float f = (edgeDotVelocity * newT - edgeDotSpherePositionToVertex) / edgeLengthSquared;
+				if (f >= 0.0f && f <= 1.0f) {
+					t = newT;
+					collidingWithTri = true;
+					collisionPoint = _p1 + f * edge;
+				}
+			}
+
+			// Edge (p2, p0):
+			edge = _p0 - _p2;
+			spherePositionToVertex = _p2 - position;
+			edgeLengthSquared = XMVectorGetX(XMVector3Length(edge));
+			edgeLengthSquared = edgeLengthSquared * edgeLengthSquared;
+			edgeDotVelocity = XMVectorGetX(XMVector3Dot(edge, velocity));
+			edgeDotSpherePositionToVertex = XMVectorGetX(XMVector3Dot(edge, spherePositionToVertex));
+			spherePositionToVertexLengthSquared = XMVectorGetX(XMVector3Length(spherePositionToVertex));
+			spherePositionToVertexLengthSquared = spherePositionToVertexLengthSquared * spherePositionToVertexLengthSquared;
+
+			a = edgeLengthSquared * -velocityLengthSquared + (edgeDotVelocity * edgeDotVelocity);
+			b = edgeLengthSquared * (2.0f * XMVectorGetX(XMVector3Dot(velocity, spherePositionToVertex))) - (2.0f * edgeDotVelocity * edgeDotSpherePositionToVertex);
+			c = edgeLengthSquared * (1.0f - spherePositionToVertexLengthSquared) + (edgeDotSpherePositionToVertex * edgeDotSpherePositionToVertex);
+
+			if (getLowestRoot(a, b, c, t, &newT)) {
+				float f = (edgeDotVelocity * newT - edgeDotSpherePositionToVertex) / edgeLengthSquared;
+				if (f >= 0.0f && f <= 1.0f) {
+					t = newT;
+					collidingWithTri = true;
+					collisionPoint = _p2 + f * edge;
+				}
+			}
+		}
+
+		if (collidingWithTri == true)
+		{
+			// Find the distance to the collision
+			float distToCollision = t * XMVectorGetX(XMVector3Length(velocity));
+
+			// check if this is the first triangle that has been collided with OR it is 
+			// the closest triangle yet that was collided with
+			if (_cP.foundCollision == false || distToCollision < _cP.nearestDistance) {
+
+				// Collision response information
+				_cP.nearestDistance = distToCollision;
+				_cP.intersectionPoint = collisionPoint;
+
+				_cP.foundCollision = true;
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 

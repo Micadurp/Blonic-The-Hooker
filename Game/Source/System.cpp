@@ -18,6 +18,13 @@ bool System::Initialize()
 	screenWidth = 0;
 	screenHeight = 0;
 
+	countsPerSecond = 0.0f;
+	counterStart = 0.0f;
+	frameCount = 0.0f;
+	fps = 0.0f;
+	frameTimeOld = 0.0f;
+	frameTime = 0.0f;
+
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
@@ -80,6 +87,11 @@ void System::Shutdown()
 		gamePlay = 0;
 	}
 
+
+	input->ReleaseCOM();
+	delete input;
+	input = 0;
+
 	// Shutdown the window.
 	ShutdownWindows();
 }
@@ -110,8 +122,18 @@ void System::Run()
 		}
 		else
 		{
+			frameCount++;
+			if (GetTime() > 1.0f)
+			{
+				fps = frameCount;
+				frameCount = 0;
+				StartTimer();
+			}
+
+			frameTime = GetFrameTime();
+
 			// Otherwise do the frame processing.
-			result = Frame();
+			result = Frame(frameTime);
 			if (!result)
 			{
 				done = true;
@@ -129,8 +151,9 @@ void System::Run()
 
 }
 
-bool System::Frame()
+bool System::Frame(double time)
 {
+	input->Update(time);
 
 #pragma region Update
 	input->Update(0);
@@ -138,7 +161,8 @@ bool System::Frame()
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Update();
+
+		gamePlay->Update(input->GetMovement(), input->GetYawPitch());
 		break;
 
 	case GameState::gMenu:
@@ -314,4 +338,40 @@ LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lPar
 	}
 
 	return DefWindowProc(_hWnd, _message, _wParam, _lParam);
+}
+
+
+void System::StartTimer()
+{
+	LARGE_INTEGER frequencyCount;
+	QueryPerformanceFrequency(&frequencyCount);
+
+	countsPerSecond = double(frequencyCount.QuadPart);
+
+	QueryPerformanceCounter(&frequencyCount);
+	counterStart = frequencyCount.QuadPart;
+}
+
+double System::GetTime()
+{
+	LARGE_INTEGER currentTime;
+	QueryPerformanceCounter(&currentTime);
+	return double(currentTime.QuadPart - counterStart) / countsPerSecond;
+}
+
+double System::GetFrameTime()
+{
+	LARGE_INTEGER currentTime;
+	__int64 tickCount;
+	QueryPerformanceCounter(&currentTime);
+
+	tickCount = currentTime.QuadPart - frameTimeOld;
+	frameTimeOld = currentTime.QuadPart;
+
+	if (tickCount < 0.0f)
+	{
+		tickCount = 0;
+	}
+
+	return float(tickCount) / countsPerSecond;
 }
