@@ -9,7 +9,6 @@ RenderManager::RenderManager()
 	basicModelVSCB = nullptr;
 	basicModelGSCB = nullptr;
 	basicModelPSCB = nullptr;
-	depthStencilView = nullptr;
 }
 
 RenderManager::~RenderManager()
@@ -135,12 +134,7 @@ void RenderManager::Shutdown()
 		basicModelVertexShader = 0;
 	}
 
-	// Release the vertex shader.
-	if (depthStencilView)
-	{
-		depthStencilView->Release();
-		depthStencilView = 0;
-	}
+
 }
 
 bool RenderManager::SameShader()
@@ -180,4 +174,14 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext, const DirectX
 	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+}
+
+void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
+{
+	defferedRenderer->FirstPass(_deviceContext, _depthStencilView);
+}
+
+void RenderManager::DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer)
+{
+	defferedRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
 }

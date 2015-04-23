@@ -208,7 +208,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	}
 
 	// Create the render target view with the back buffer pointer.
-	result = device->CreateRenderTargetView(backBufferPtr, NULL, &renderTargetView);
+	result = device->CreateRenderTargetView(backBufferPtr, NULL, &backBuffer);
 	if (FAILED(result))
 	{
 		return false;
@@ -294,7 +294,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	}
 
 	// Bind the render target view and depth stencil buffer to the output render pipeline.
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
 
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	rasterDesc.AntialiasedLineEnable = false;
@@ -407,10 +407,10 @@ void Direct3D::Shutdown()
 		depthStencilBuffer = 0;
 	}
 
-	if (renderTargetView)
+	if (backBuffer)
 	{
-		renderTargetView->Release();
-		renderTargetView = 0;
+		backBuffer->Release();
+		backBuffer = 0;
 	}
 
 	if (deviceContext)
@@ -446,12 +446,12 @@ void Direct3D::BeginScene(float _red, float _green, float _blue, float _alpha)
 	color[3] = _alpha;
 
 	// Clear the back buffer.
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
+	deviceContext->ClearRenderTargetView(backBuffer, color);
 
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
 
 	return;
 }
@@ -485,7 +485,7 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext()
 
 void Direct3D::SetBackBufferRenderTarget()
 {
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
 }
 
 void Direct3D::ResetViewport()
@@ -493,6 +493,15 @@ void Direct3D::ResetViewport()
 	deviceContext->RSSetViewports(1, &viewport);
 }
 
+ID3D11DepthStencilView * Direct3D::GetDepthStencilView()
+{
+	return depthStencilView;
+}
+
+ ID3D11RenderTargetView * Direct3D::GetBackBufferRenderTarget()
+{
+	 return backBuffer;
+}
 
 XMMATRIX Direct3D::GetProjectionMatrix()
 {

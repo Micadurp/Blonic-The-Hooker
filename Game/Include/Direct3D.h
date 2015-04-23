@@ -28,7 +28,7 @@ private:
 	IDXGISwapChain* swapChain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
-	ID3D11RenderTargetView* renderTargetView;
+	ID3D11RenderTargetView* backBuffer;
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilView* depthStencilView;
@@ -55,6 +55,9 @@ public:
 
 	void SetBackBufferRenderTarget();
 	void ResetViewport();
+
+	ID3D11DepthStencilView * GetDepthStencilView();
+	ID3D11RenderTargetView * GetBackBufferRenderTarget();
 
 	XMMATRIX GetProjectionMatrix();
 	XMMATRIX GetWorldMatrix();

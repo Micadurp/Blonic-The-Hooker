@@ -130,8 +130,8 @@ void PlayerInputs::Update(double time)
 	// Mouse movement controls rotation
 	if (mouseCurrentState.lX != m_mouseLastState.lX || mouseCurrentState.lY != m_mouseLastState.lY)
 	{
-		m_yawPitch.x += m_mouseLastState.lX * 0.001f;		// Yaw axis rotation
-		m_yawPitch.y += m_mouseLastState.lY * 0.001f;		// Pitch axis rotation
+		m_yawPitch.x += m_mouseLastState.lX * 0.01f;		// Yaw axis rotation
+		m_yawPitch.y += m_mouseLastState.lY * 0.01f;		// Pitch axis rotation
 	}
 
 	// Mouse left click event

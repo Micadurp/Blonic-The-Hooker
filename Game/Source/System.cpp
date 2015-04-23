@@ -51,7 +51,7 @@ bool System::Initialize()
 		return false;
 	}
 	result = renderer->Initilize(direct3D->GetDevice(), screenWidth, screenHeight);
-
+	
 	menu = new Menu();
 	if (!menu)
 	{
@@ -67,6 +67,11 @@ bool System::Initialize()
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
+		return false;
+	}
+	camera = new Camera();
+	if (!camera)
+	{
 		return false;
 	}
 
@@ -178,7 +183,10 @@ bool System::Frame(double time)
 	{
 	case GameState::gGamePlay:
 
-		gamePlay->Update(input->GetMovement(), input->GetYawPitch());
+		camera->Move(input->GetMovement(), input->GetYawPitch());
+
+		camera->Update();
+		gamePlay->Update();
 		break;
 
 	case GameState::gMenu:
@@ -194,8 +202,11 @@ bool System::Frame(double time)
 #pragma region Draw
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
-	renderer->SetShader(direct3D->GetDeviceContext(), XMMatrixIdentity(), XMMatrixIdentity(), direct3D->GetProjectionMatrix());
 
+	renderer->SetShader(direct3D->GetDeviceContext(), XMMatrixIdentity(), camera->GetViewMatrix(), direct3D->GetProjectionMatrix());
+
+	renderer->DeferredFirstPass(direct3D->GetDeviceContext(), direct3D->GetDepthStencilView());
+	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
@@ -211,7 +222,7 @@ bool System::Frame(double time)
 
 		break;
 	}
-
+	renderer->DeferredRenderer(direct3D->GetDeviceContext(), direct3D->GetDepthStencilView(),direct3D->GetBackBufferRenderTarget());
 	direct3D->EndScene();
 #pragma endregion
 

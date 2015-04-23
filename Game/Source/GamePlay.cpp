@@ -23,11 +23,7 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 {
 	bool result;
 
-	camera = new Camera();
-	if (!camera)
-	{
-		return false;
-	}
+	
 
 	models = new Model*[]
 	{
@@ -44,11 +40,9 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 	return true;
 }
 
-void GamePlay::Update(XMFLOAT2 *_movement, XMFLOAT2 _rotation)
+void GamePlay::Update()
 {
-	camera->Move(_movement, _rotation);
-
-	camera->Update();
+	
 }
 
 void GamePlay::Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix)

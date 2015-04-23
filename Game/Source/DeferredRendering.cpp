@@ -134,7 +134,7 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
 
-	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets - 1, shaderResourceView);
+	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets, shaderResourceView);
 
 
 	_deviceContext->Draw(4, 0);

@@ -28,8 +28,6 @@ private:
 	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
 
-	ID3D11DepthStencilView* depthStencilView;
-
 	DeferredRendering * defferedRenderer;
 
 public:
@@ -42,5 +40,8 @@ public:
 	bool SameShader();
 
 	bool SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
+
+	void DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView);
+	void DeferredRenderer( ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
 };
 #endif
