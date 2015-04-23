@@ -44,8 +44,10 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 	return true;
 }
 
-void GamePlay::Update()
+void GamePlay::Update(XMFLOAT2 *_movement, XMFLOAT2 _rotation)
 {
+	camera->Move(_movement, _rotation);
+
 	camera->Update();
 }
 

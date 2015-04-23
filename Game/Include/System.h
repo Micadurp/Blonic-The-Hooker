@@ -31,6 +31,15 @@ private:
 	HINSTANCE hinstance;
 	HWND hwnd;
 
+	double countsPerSecond;
+	__int64 counterStart;
+
+	int frameCount;
+	int fps;
+
+	__int64 frameTimeOld;
+	double frameTime;
+
 	enum GameState
 	{
 		gMenu,
@@ -56,9 +65,13 @@ public:
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	bool Frame();
+	bool Frame(double time);
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
+
+	void StartTimer();
+	double GetTime();
+	double GetFrameTime();
 
 
 };

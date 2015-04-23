@@ -2,13 +2,13 @@
 
 PlayerInputs::PlayerInputs()
 {
-	in_yawPitch = { 0.0f, 0.0f };		// x = yaw rotation, y = pitch
-	in_movement = { 0.0f, 0.0f };		// x = left/right, y = forward/backward
+	m_yawPitch = { 0.0f, 0.0f };		// x = yaw rotation, y = pitch
+	m_movement = { 0.0f, 0.0f };		// x = left/right, y = forward/backward
 
-	in_keyboard = nullptr;
-	in_mouse = nullptr;
+	m_keyboard = nullptr;
+	m_mouse = nullptr;
 
-	in_escapeStillPressed = false;
+	m_escapeStillPressed = false;
 }
 
 PlayerInputs::~PlayerInputs()
@@ -19,10 +19,10 @@ bool PlayerInputs::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 {
 	HRESULT hr;
 
-	DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&in_directInput, NULL);
+	DirectInput8Create(hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&m_directInput, NULL);
 
 	// Initialize keyboard device
-	hr = in_directInput->CreateDevice(GUID_SysKeyboard, &in_keyboard, NULL);
+	hr = m_directInput->CreateDevice(GUID_SysKeyboard, &m_keyboard, NULL);
 	if (FAILED(hr))
 	{
 		MessageBox(wndHandle, L"Input keyboard device", L"Failed to create", MB_OK);
@@ -30,7 +30,7 @@ bool PlayerInputs::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 	}
 
 	// Initialize mouse device
-	hr = in_directInput->CreateDevice(GUID_SysMouse, &in_mouse, NULL);
+	hr = m_directInput->CreateDevice(GUID_SysMouse, &m_mouse, NULL);
 	if (FAILED(hr))
 	{
 		MessageBox(wndHandle, L"Input mouse device", L"Failed to create", MB_OK);
@@ -38,32 +38,35 @@ bool PlayerInputs::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 	}
 
 	// Set keyboard data format, expected input
-	hr = in_keyboard->SetDataFormat(&c_dfDIKeyboard);
+	hr = m_keyboard->SetDataFormat(&c_dfDIKeyboard);
 	if (FAILED(hr))
 	{
 		MessageBox(wndHandle, L"Keyboard data format", L"Failed to set", MB_OK);
 		return false;
 	}
 
-	hr = in_keyboard->SetCooperativeLevel(wndHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+	hr = m_keyboard->SetCooperativeLevel(wndHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 	if (FAILED(hr))
 	{
 		return false;
 	}
 
 	// Set mouse data format, expected input
-	hr = in_mouse->SetDataFormat(&c_dfDIMouse);
+	hr = m_mouse->SetDataFormat(&c_dfDIMouse);
 	if (FAILED(hr))
 	{
 		MessageBox(wndHandle, L"Mouse data format", L"Failed to set", MB_OK);
 		return false;
 	}
 
-	hr = in_mouse->SetCooperativeLevel(wndHandle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
+	hr = m_mouse->SetCooperativeLevel(wndHandle, DISCL_EXCLUSIVE | DISCL_NOWINKEY | DISCL_FOREGROUND);
 	if (FAILED(hr))
 	{
 		return false;
 	}
+
+	m_mouse->Acquire();
+	m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), &m_mouseLastState);
 
 	return true;
 }
@@ -73,16 +76,16 @@ void PlayerInputs::Update(double time)
 	DIMOUSESTATE mouseCurrentState;
 	BYTE keyboardState[256];
 
-	in_keyboard->Acquire();
-	in_mouse->Acquire();
+	m_keyboard->Acquire();
+	m_mouse->Acquire();
 
 	// Store mouse current state
-	in_mouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
+	m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), &mouseCurrentState);
 
 	// Store keyboard current state
-	in_keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
+	m_keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 
-	float speed = 40.0f * time;
+	float speed = 10.0f * time;
 
 	// ------------------------------
 	//
@@ -93,19 +96,19 @@ void PlayerInputs::Update(double time)
 	// Keyboard inputs --------------
 	if (keyboardState[DIK_A] & 0x80)
 	{
-		in_movement.x -= speed;
+		m_movement.x -= speed;
 	}
 	if (keyboardState[DIK_D] & 0x80)
 	{
-		in_movement.x += speed;
+		m_movement.x += speed;
 	}
 	if (keyboardState[DIK_W] & 0x80)
 	{
-		in_movement.y += speed;
+		m_movement.y += speed;
 	}
 	if (keyboardState[DIK_S] & 0x80)
 	{
-		in_movement.y -= speed;
+		m_movement.y -= speed;
 	}
 	if (keyboardState[DIK_SPACE] & 0x80)
 	{
@@ -123,12 +126,10 @@ void PlayerInputs::Update(double time)
 
 	// Mouse inputs -----------------
 	// Mouse movement controls rotation
-	if (mouseCurrentState.lX != in_mouseLastState.lX || mouseCurrentState.lY != in_mouseLastState.lY)
+	if (mouseCurrentState.lX != m_mouseLastState.lX || mouseCurrentState.lY != m_mouseLastState.lY)
 	{
-		in_yawPitch.x += in_mouseLastState.lX * 0.001f;
-		in_yawPitch.y += in_mouseLastState.lY * 0.001f;
-
-		in_mouseLastState = mouseCurrentState;
+		m_yawPitch.x += m_mouseLastState.lX * 0.001f;		// Yaw axis rotation
+		m_yawPitch.y += m_mouseLastState.lY * 0.001f;		// Pitch axis rotation
 	}
 
 	// Mouse left click event
@@ -144,29 +145,30 @@ void PlayerInputs::Update(double time)
 	}
 	// ------------------------------
 
+	m_mouseLastState = mouseCurrentState;
 	UpdateKeyboardStates(keyboardState);
 }
 
 void PlayerInputs::UpdateKeyboardStates(BYTE* keyboardState)
 {
-	in_escapeStillPressed = keyboardState[DIK_ESCAPE] & 0x80;
-	in_returnStillPressed = keyboardState[DIK_RETURN] & 0x80;
-	in_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
+	m_escapeStillPressed = keyboardState[DIK_ESCAPE] & 0x80;
+	m_returnStillPressed = keyboardState[DIK_RETURN] & 0x80;
+	m_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
 }
 
 XMFLOAT2 PlayerInputs::GetYawPitch() const
 {
-	return in_yawPitch;
+	return m_yawPitch;
 }
 
-XMFLOAT2 PlayerInputs::GetMovement() const
+XMFLOAT2* PlayerInputs::GetMovement()
 {
-	return in_movement;
+	return &m_movement;
 }
 
 void PlayerInputs::ReleaseCOM()
 {
-	in_keyboard->Unacquire();
-	in_mouse->Unacquire();
-	in_directInput->Release();
+	m_keyboard->Unacquire();
+	m_mouse->Unacquire();
+	m_directInput->Release();
 }
