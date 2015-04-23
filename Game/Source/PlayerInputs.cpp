@@ -8,6 +8,8 @@ PlayerInputs::PlayerInputs()
 	m_keyboard = nullptr;
 	m_mouse = nullptr;
 
+	m_isEscapePressed = false;
+
 	m_escapeStillPressed = false;
 }
 
@@ -118,9 +120,9 @@ void PlayerInputs::Update(double time)
 	{
 		// Do stuff
 	}
-	if (keyboardState[DIK_ESCAPE] & 0x80)
+	if (keyboardState[DIK_ESCAPE] & 0x80 && !m_escapeStillPressed)
 	{
-		// Do stuff
+		m_isEscapePressed = !m_isEscapePressed;
 	}
 	// ------------------------------
 
@@ -164,6 +166,11 @@ XMFLOAT2 PlayerInputs::GetYawPitch() const
 XMFLOAT2* PlayerInputs::GetMovement()
 {
 	return &m_movement;
+}
+
+bool PlayerInputs::IsEscapePressed() const
+{
+	return m_isEscapePressed;
 }
 
 void PlayerInputs::ReleaseCOM()
