@@ -42,9 +42,10 @@ private:
 
 	ID3D11PixelShader * deferredPixelShader;
 public:
-	DeferredRendering(ID3D11Device* device, int _screenWidth, int _screenHeight);
+	DeferredRendering();
 	~DeferredRendering();
 
+	void Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
 
 	void FirstPass(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView);
 	void Render(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView, ID3D11RenderTargetView* gBackbufferRTV);

@@ -50,7 +50,7 @@ bool System::Initialize()
 	{
 		return false;
 	}
-	renderer->Initilize(direct3D->GetDevice());
+	result = renderer->Initilize(direct3D->GetDevice(), screenWidth, screenHeight);
 
 	menu = new Menu();
 	if (!menu)
@@ -76,6 +76,7 @@ bool System::Initialize()
 		return false;
 	}
 	result = input->Initialize(hwnd, hinstance);
+
 	if (!result)
 	{
 		return false;
@@ -191,12 +192,12 @@ bool System::Frame(double time)
 #pragma region Draw
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
-	
+	renderer->SetShader(direct3D->GetDeviceContext(), XMMatrixIdentity(), XMMatrixIdentity(), direct3D->GetProjectionMatrix());
+
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
 		gamePlay->Render(direct3D->GetDeviceContext(), direct3D->GetProjectionMatrix());
-
 
 		break;
 

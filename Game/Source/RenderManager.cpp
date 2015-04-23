@@ -14,10 +14,10 @@ RenderManager::RenderManager()
 
 RenderManager::~RenderManager()
 {
-	
+
 }
 
-bool RenderManager::Initilize(ID3D11Device* _device)
+bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _screenHeight)
 {
 	HRESULT result;
 
@@ -74,6 +74,14 @@ bool RenderManager::Initilize(ID3D11Device* _device)
 	}
 #pragma endregion
 
+	defferedRenderer = new DeferredRendering();
+	if (!defferedRenderer)
+	{
+		return false;
+	}
+	defferedRenderer->Initilize(_device, _screenWidth, _screenHeight);
+	
+	return true;
 }
 
 void RenderManager::Shutdown()

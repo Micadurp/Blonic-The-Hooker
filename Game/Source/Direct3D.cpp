@@ -182,17 +182,17 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.
-	result = D3D11CreateDeviceAndSwapChain(NULL, 
-		D3D_DRIVER_TYPE_HARDWARE, 
-		NULL, 
-		0, 
-		&featureLevel, 
+	result = D3D11CreateDeviceAndSwapChain(NULL,
+		D3D_DRIVER_TYPE_HARDWARE,
+		NULL,
+		0,
+		&featureLevel,
 		1,
-		D3D11_SDK_VERSION, 
-		&swapChainDesc, 
-		&swapChain, 
-		&device, 
-		NULL, 
+		D3D11_SDK_VERSION,
+		&swapChainDesc,
+		&swapChain,
+		&device,
+		NULL,
 		&deviceContext);
 
 	if (FAILED(result))
@@ -451,6 +451,8 @@ void Direct3D::BeginScene(float _red, float _green, float _blue, float _alpha)
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
 	return;
 }
 
@@ -524,7 +526,7 @@ void Direct3D::TurnOnAlphaBlending()
 	blendFactor[1] = 0.75f;
 	blendFactor[2] = 0.75f;
 	blendFactor[3] = 1.0f;
-		
+
 	deviceContext->OMSetBlendState(alphaEnableBlendingState, blendFactor, 0xffffffff);
 }
 

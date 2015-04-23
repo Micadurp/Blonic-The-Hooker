@@ -5,6 +5,8 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include"DeferredRendering.h"
+
 class RenderManager
 {
 private:
@@ -28,13 +30,13 @@ private:
 
 	ID3D11DepthStencilView* depthStencilView;
 
-
+	DeferredRendering * defferedRenderer;
 
 public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* _device);
+	bool Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
 
 	void Shutdown();
 	bool SameShader();

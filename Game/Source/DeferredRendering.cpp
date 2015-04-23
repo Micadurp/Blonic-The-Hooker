@@ -1,6 +1,16 @@
 #include"DeferredRendering.h"
 
-DeferredRendering::DeferredRendering(ID3D11Device* _device, int _screenWidth, int _screenHeight)
+DeferredRendering::DeferredRendering()
+{
+
+}
+
+DeferredRendering::~DeferredRendering()
+{
+
+}
+
+void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight)
 {
 	nrOfRenderTargets = 2;
 	vertexSize = sizeof(Vertex);
@@ -95,11 +105,6 @@ DeferredRendering::DeferredRendering(ID3D11Device* _device, int _screenWidth, in
 
 	for (int n = 0; n < nrOfRenderTargets; n++)
 		renderTargetTextureMap[n]->Release();
-
-}
-
-DeferredRendering::~DeferredRendering()
-{
 
 }
 
