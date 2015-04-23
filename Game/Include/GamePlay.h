@@ -10,7 +10,7 @@ class GamePlay
 {
 private:
 	RenderManager* renderer;
-	Model* cube;
+	Model** models;
 	Camera* camera;
 public:
 	GamePlay();

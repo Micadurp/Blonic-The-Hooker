@@ -62,7 +62,7 @@ XMFLOAT3 Camera::GetPosition()
 	return _camPos;
 }
 
-void Camera::Render()
+void Camera::Update()
 {
 	XMStoreFloat4x4(&m_viewMatrix, XMMatrixLookAtLH(m_camPos, m_camLook, m_camUp));
 }

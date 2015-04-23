@@ -29,7 +29,7 @@ public:
 	void SetPosition(float _x, float _y, float _z);
 	XMFLOAT3 GetPosition();
 
-	void Render();
+	void Update();
 	XMMATRIX GetViewMatrix();
 
 	XMFLOAT3 getCamLook();

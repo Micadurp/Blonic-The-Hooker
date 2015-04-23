@@ -31,7 +31,7 @@ struct GS_OUT
 };
 
 float4 PS_main(GS_OUT input) : SV_TARGET
-{
+{ 
 	float4 diffuse = txDiffuse.Sample(sampAni, input.tex);
 
 	return diffuse;

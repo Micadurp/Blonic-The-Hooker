@@ -109,7 +109,8 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 {
 	HRESULT hr = 0;
 
-	std::wifstream fileIn(_filename.c_str());	//Open file
+	std::wifstream fileIn((_filename + L".obj").c_str());	//Open file
+
 	std::wstring meshMatLib;					//String to hold our obj material library filename
 
 	//Arrays to store our model's information

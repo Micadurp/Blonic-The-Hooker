@@ -14,6 +14,8 @@ private:
 public:
 	Button();
 	~Button();
+
+	bool IntersectBox();
 };
 
 #endif
