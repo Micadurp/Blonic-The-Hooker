@@ -19,7 +19,7 @@ public:
 	bool Initialize(ID3D11Device* _device);
 	void Shutdown();
 
-	void Update();
+	void Update(XMFLOAT2* _movement, XMFLOAT2 _rotation);
 	void Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix);
 };
 
