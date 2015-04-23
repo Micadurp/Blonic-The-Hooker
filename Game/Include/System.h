@@ -38,7 +38,8 @@ private:
 		gPause
 	}
 	gameState;
-	
+
+	RenderManager* renderer;
 	Menu* menu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;

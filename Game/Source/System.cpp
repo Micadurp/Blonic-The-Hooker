@@ -38,6 +38,13 @@ bool System::Initialize()
 		return false;
 	}
 
+	renderer = new RenderManager();
+	if (!renderer)
+	{
+		return false;
+	}
+	renderer->Initilize(direct3D->GetDevice());
+
 	menu = new Menu();
 	if (!menu)
 	{
@@ -80,6 +87,12 @@ void System::Shutdown()
 		gamePlay = 0;
 	}
 
+	if (renderer)
+	{
+		renderer->Shutdown();
+		delete renderer;
+		renderer = 0;
+	}
 	// Shutdown the window.
 	ShutdownWindows();
 }
@@ -121,7 +134,7 @@ void System::Run()
 		// Check if the user pressed escape and wants to quit.
 		/*if (input->IsEscapePressed() == true)
 		{
-			done = true;
+		done = true;
 		}*/
 	}
 
