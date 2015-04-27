@@ -100,18 +100,35 @@ void PlayerInputs::Update()
 	{
 		m_keyboardStateObject.key_a_pressed = true;
 	}
+	else
+	{
+		m_keyboardStateObject.key_a_pressed = false;
+	}
 	if (keyboardState[DIK_D] & 0x80)
 	{
 		m_keyboardStateObject.key_d_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_d_pressed = false;
 	}
 	if (keyboardState[DIK_W] & 0x80)
 	{
 		m_keyboardStateObject.key_w_pressed = true;
 	}
+	else
+	{
+		m_keyboardStateObject.key_w_pressed = false;
+	}
 	if (keyboardState[DIK_S] & 0x80)
 	{
 		m_keyboardStateObject.key_s_pressed = true;
 	}
+	else
+	{
+		m_keyboardStateObject.key_s_pressed = false;
+	}
+
 	if (keyboardState[DIK_SPACE] & 0x80)
 	{
 		// Do stuff
@@ -150,35 +167,6 @@ void PlayerInputs::UpdateInputStates(BYTE* keyboardState, DIMOUSESTATE mouseStat
 	m_escapeStillPressed = keyboardState[DIK_ESCAPE] & 0x80;
 	m_returnStillPressed = keyboardState[DIK_RETURN] & 0x80;
 	m_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
-
-	
-	if (!keyboardState[DIK_A] & 0x80)
-	{
-		m_keyboardStateObject.key_a_pressed = false;
-	}
-	if (!keyboardState[DIK_D] & 0x80)
-	{
-		m_keyboardStateObject.key_d_pressed = false;
-	}
-	if (!keyboardState[DIK_W] & 0x80)
-	{
-		m_keyboardStateObject.key_w_pressed = false;
-	}
-	if (!keyboardState[DIK_S] & 0x80)
-	{
-		m_keyboardStateObject.key_s_pressed = false;
-	}
-
-
-	if (!mouseState.rgbButtons[0])
-	{
-		m_mouseStateObject.btn_left_pressed = false;
-	}
-
-	if (!mouseState.rgbButtons[1])
-	{
-		m_mouseStateObject.btn_right_pressed = false;
-	}
 }
 
 KeyboardStateStruct PlayerInputs::GetKeyboardState() const

@@ -10,7 +10,7 @@ class GamePlay
 {
 private:
 	RenderManager* renderer;
-	Model** models;
+	vector<Model*> models;
 	Player* player;
 
 	std::vector<XMFLOAT3> collidableGeometryPositions;
