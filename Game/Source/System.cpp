@@ -149,7 +149,7 @@ void System::Run()
 
 }
 
-bool System::Frame(double time)
+bool System::Frame(double _time)
 {
 #pragma region Update
 
@@ -157,8 +157,8 @@ bool System::Frame(double time)
 	{
 	case GameState::gGamePlay:
 
-		gamePlay->Update(time);
-		break;
+		gamePlay->Update(_time);
+	break;
 
 	case GameState::gMenu:
 		menu->Update();

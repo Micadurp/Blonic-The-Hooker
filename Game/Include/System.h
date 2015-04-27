@@ -63,7 +63,7 @@ public:
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	bool Frame(double time);
+	bool Frame(double _time);
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 

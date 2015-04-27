@@ -14,10 +14,19 @@ Camera::~Camera()
 {
 }
 
+bool Camera::Initialize()
+{
+	return true;
+}
+
 void Camera::UpdateViewMatrix(XMFLOAT4 _camPos, XMFLOAT4 _camLook, XMFLOAT4 _camUp)
 {
 	// Create new view matrix
 	XMStoreFloat4x4(&m_viewMatrix, XMMatrixLookAtLH(XMLoadFloat4(&_camPos), XMLoadFloat4(&_camLook), XMLoadFloat4(&_camUp)));
+}
+
+void Camera::Update(double time)
+{
 }
 
 void Camera::SetPosition(float _x, float _y, float _z)
@@ -25,10 +34,6 @@ void Camera::SetPosition(float _x, float _y, float _z)
 	m_camPos = { _x, _y, _z, 0.0f };
 }
 
-void Camera::Update(double time)
-{
-
-}
 
 XMFLOAT4 Camera::GetPosition()
 {

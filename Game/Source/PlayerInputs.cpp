@@ -2,9 +2,6 @@
 
 PlayerInputs::PlayerInputs()
 {
-	//m_yawPitch = { 0.0f, 0.0f };		// x = yaw rotation, y = pitch
-	//m_movement = { 0.0f, 0.0f };		// x = left/right, y = forward/backward
-
 	m_keyboard = nullptr;
 	m_mouse = nullptr;
 
@@ -152,19 +149,19 @@ void PlayerInputs::UpdateInputStates(BYTE* keyboardState, DIMOUSESTATE mouseStat
 	m_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
 
 	
-	if (!keyboardState[DIK_A] & 0x80)
+	if (!(keyboardState[DIK_A] & 0x80))
 	{
 		m_keyboardStateObject.key_a_pressed = false;
 	}
-	if (!keyboardState[DIK_D] & 0x80)
+	if (!(keyboardState[DIK_D] & 0x80))
 	{
 		m_keyboardStateObject.key_d_pressed = false;
 	}
-	if (!keyboardState[DIK_W] & 0x80)
+	if (!(keyboardState[DIK_W] & 0x80))
 	{
 		m_keyboardStateObject.key_w_pressed = false;
 	}
-	if (!keyboardState[DIK_S] & 0x80)
+	if (!(keyboardState[DIK_S] & 0x80))
 	{
 		m_keyboardStateObject.key_s_pressed = false;
 	}

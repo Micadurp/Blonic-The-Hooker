@@ -19,7 +19,8 @@ void GamePlay::Shutdown()
 	}*/
 }
 
-bool GamePlay::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance)
+
+bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance)
 {
 	bool result;
 
@@ -28,11 +29,14 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hIn
 	{
 		return false;
 	}
-	result = player->Initialize(wndHandle, hInstance);
+
+	result = player->Initialize(_wndHandle, _hInstance);
+
 	if (!result)
 	{
 		return false;
 	}
+
 
 	models = new Model*[]
 	{
@@ -42,6 +46,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hIn
 		new Model(),
 		new Model(),
 		new Model(),
+		new Model()
 	};
 
 	for (int n = 0; n < 1; n++)
@@ -63,8 +68,6 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hIn
 void GamePlay::Update(double time)
 {
 	player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
-
-	//camera->Update();
 }
 
 void GamePlay::Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix)

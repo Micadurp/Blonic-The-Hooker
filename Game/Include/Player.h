@@ -49,18 +49,18 @@ class Player : public Camera
 
 		XMFLOAT3 m_gravity;
 		XMFLOAT3 m_velocity;
-		HookShot* hookshot;
+		HookShot* m_hookshot;
 
-		bool lastpick;
+		bool m_lastpick;
 
 	public:
 		Player();
 		virtual ~Player();
 
-		bool Initialize(HWND &wndHandle, HINSTANCE &hInstance);
+		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance);
 
-		void Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
-		void Move(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		void Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
 
 		void ChangeHookState(vector<Model*> models);
 

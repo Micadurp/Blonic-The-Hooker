@@ -22,6 +22,8 @@ public:
 	Camera();
 	virtual ~Camera();
 
+	virtual bool Initialize();
+
 	void SetPosition(float _x, float _y, float _z);
 	XMFLOAT4 GetPosition();
 

@@ -13,18 +13,19 @@ private:
 	Model** models;
 	Player* player;
 
-	std::vector<XMFLOAT3> collidableGeometryPositions;
-	std::vector<DWORD> collidableGeometryIndices;
+	vector<XMFLOAT3> collidableGeometryPositions;
+	vector<DWORD> collidableGeometryIndices;
+
 public:
 	GamePlay();
 	virtual ~GamePlay();
 
-	bool Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance);
-	void Shutdown();
-
-	void Update(double time);
 	void Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix);
 
+	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance);
+	void Shutdown();
+
+	void Update(double _time);
 };
 
 #endif
