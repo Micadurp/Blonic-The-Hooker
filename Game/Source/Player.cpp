@@ -4,6 +4,8 @@ Player::Player()
 {
 	m_input = new PlayerInputs();
 
+	m_position = { 0.0f, 0.0f };
+
 	m_defaultForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_defaultRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
@@ -41,17 +43,42 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
 	// Check inputs
-	m_input->Update(time);
+	m_input->Update();
+
+	// Get input values
+	m_keyboard = m_input->GetKeyboardState();
+	m_mouse = m_input->GetMouseState();
 
 	// Update camera position and rotation according to inputs
-	Move(m_input->GetMovement(), m_input->GetYawPitch(), collidableGeometryPositions, collidableGeometryIndices);
+	Move(time, collidableGeometryPositions, collidableGeometryIndices);
 }
 
 
-void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+void Player::Move(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
+	float speed = 10.0f * time;
+
+	// Change camera position according to keyboard inputs
+	if (m_keyboard.key_a_pressed)
+	{
+		m_position.x -= speed;
+	}
+	if (m_keyboard.key_d_pressed)
+	{
+		m_position.x += speed;
+	}
+	if (m_keyboard.key_w_pressed)
+	{
+		m_position.y += speed;
+	}
+	if (m_keyboard.key_s_pressed)
+	{
+		m_position.y -= speed;
+	}
+
+
 	// Rotation matrix from mouse input
-	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(_rotation.y, _rotation.x, 0.0f);
+	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(m_mouse.y_pos, m_mouse.x_pos, 0.0f);
 
 	// Temporary convert to XMVECTOR
 	XMVECTOR temp_camPos = XMVectorSet(m_camPos.x, m_camPos.y, m_camPos.z, m_camPos.w);
@@ -67,7 +94,7 @@ void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3>
 
 	//First person camera, doesnt move on y axis
 	XMMATRIX RotateYTempMatrix;
-	RotateYTempMatrix = XMMatrixRotationY(_rotation.x);
+	RotateYTempMatrix = XMMatrixRotationY(m_mouse.x_pos);
 
 	XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), RotateYTempMatrix));
 	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), RotateYTempMatrix));
@@ -75,8 +102,8 @@ void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3>
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
 	// New position from keyboard inputs
-	temp_camPos += _movement->x * XMLoadFloat4(&m_currentRight);
-	temp_camPos += _movement->y * XMLoadFloat4(&m_currentForward);
+	temp_camPos += m_position.x * XMLoadFloat4(&m_currentRight);
+	temp_camPos += m_position.y * XMLoadFloat4(&m_currentForward);
 
 	if (hookshot->active)
 	{
@@ -85,14 +112,14 @@ void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3>
 	}
 	else
 	{
-		XMStoreFloat3(&m_velocity, _movement->x * XMLoadFloat4(&m_currentRight) + _movement->y * XMLoadFloat4(&m_currentForward));
+		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward));
 	}
 
 	XMStoreFloat4(&m_camPos, Collision(collidableGeometryPositions, collidableGeometryIndices));
 
 	// Reset input movement variable
-	_movement->x = 0.0f;
-	_movement->y = 0.0f;
+	m_position.x = 0.0f;
+	m_position.y = 0.0f;
 
 	// Position look at accordingly to keyboard input
 	temp_camLook += temp_camPos;
@@ -514,14 +541,14 @@ bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _ro
 
 void Player::ChangeHookState(vector<Model*> models)
 {
-	bool pick = m_input->LeftMouseClick();
-	if (!lastpick&&pick)
+	MouseStateStruct mousestate = m_input->GetMouseState();
+	if (!lastpick && mousestate.btn_left_pressed)
 	{
-		if (pick && CheckHookState())
+		if (CheckHookState())
 		{
 			TurnOffHookShot();
 		}
-		else if (pick)
+		else
 		{
 			for (int n = 1; n < 6; n++)
 			{
@@ -532,7 +559,7 @@ void Player::ChangeHookState(vector<Model*> models)
 			}
 		}
 	}
-	lastpick = pick;
+	lastpick = mousestate.btn_left_pressed;
 
 }
 

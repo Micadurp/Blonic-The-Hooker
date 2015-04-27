@@ -37,6 +37,11 @@ class Player : public Camera
 
 		PlayerInputs* m_input;
 
+		KeyboardStateStruct m_keyboard;
+		MouseStateStruct m_mouse;
+
+		XMFLOAT2 m_position;
+
 		XMFLOAT4 m_defaultForward;
 		XMFLOAT4 m_defaultRight;
 		XMFLOAT4 m_currentForward;
@@ -55,11 +60,13 @@ class Player : public Camera
 		bool Initialize(HWND &wndHandle, HINSTANCE &hInstance);
 
 		void Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
-		void Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		void Move(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 
 		void ChangeHookState(vector<Model*> models);
 
 	private:
+		void Move(double time);
+
 		// Collision Detection and Response Function Prototypes
 		XMVECTOR Collision(vector<XMFLOAT3>& vertPos,		// An array holding the polygon soup vertex positions
 			vector<DWORD>& indices);						// An array holding the polygon soup indices (triangles)
