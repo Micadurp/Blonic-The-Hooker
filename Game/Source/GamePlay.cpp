@@ -25,15 +25,12 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 
 	
 
-	models = new Model*[]
-	{
-		new Model(),
-			new Model(),
-			new Model(),
-	};
 
-	for (int n = 0; n < sizeof(models)-1; n++)
-		models[n]->Initialize(L"Cube", _device);
+		models.push_back(new Model());
+
+
+		for (int n = 0; n < models.size(); n++)
+			models[n]->Initialize(L"Cube", _device);
 
 
 
@@ -47,9 +44,8 @@ void GamePlay::Update()
 
 void GamePlay::Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix)
 {
-	for (int n = 0; n < sizeof(models)-1; n++)
-	{
+
+	for (int n = 0; n < models.size(); n++)
 		models[n]->Render(_deviceContext);
-	}
 
 }

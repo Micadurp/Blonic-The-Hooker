@@ -1,16 +1,19 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 
+#include <vector>
+
 #include "Direct3D.h"
 #include "Model.h"
-#include "RenderManager.h"
 #include "Camera.h"
+
+
 
 class GamePlay
 {
 private:
 	RenderManager* renderer;
-	Model** models;
+	std::vector< Model*> models;
 	
 public:
 	GamePlay();
