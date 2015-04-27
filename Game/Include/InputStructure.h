@@ -1,3 +1,6 @@
+#ifndef INPUTSTRUCTURE_H
+#define INPUTSTRUCTURE_H
+
 struct KeyboardStateStruct
 {
 	bool key_w_pressed = false;
@@ -13,3 +16,5 @@ struct MouseStateStruct
 	bool btn_left_pressed = false;
 	bool btn_right_pressed = false;
 };
+
+#endif

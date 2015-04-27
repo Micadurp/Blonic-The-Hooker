@@ -2,9 +2,6 @@
 
 PlayerInputs::PlayerInputs()
 {
-	//m_yawPitch = { 0.0f, 0.0f };		// x = yaw rotation, y = pitch
-	//m_movement = { 0.0f, 0.0f };		// x = left/right, y = forward/backward
-
 	m_keyboard = nullptr;
 	m_mouse = nullptr;
 

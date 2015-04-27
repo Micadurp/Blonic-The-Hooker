@@ -15,10 +15,10 @@ Player::Player()
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
 	
-	hookshot = new HookShot();
-	hookshot->active = false;
-	hookshot->object = XMMatrixIdentity();
-	hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	m_hookshot = new HookShot();
+	m_hookshot->active = false;
+	m_hookshot->object = XMMatrixIdentity();
+	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Player::~Player()
@@ -54,9 +54,9 @@ void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositio
 }
 
 
-void Player::Move(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
-	float speed = 10.0f * time;
+	float speed = 15.0f * (float)_time;
 
 	// Change camera position according to keyboard inputs
 	if (m_keyboard.key_a_pressed)
@@ -100,11 +100,11 @@ void Player::Move(double time, std::vector<XMFLOAT3> collidableGeometryPositions
 	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), RotateYTempMatrix));
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
-
-	if (hookshot->active)
+	
+	if (m_hookshot->active)
 	{
-		MoveTowards(hookshot->object);
-		XMStoreFloat3(&m_velocity, hookshot->velocity);
+		MoveTowards(m_hookshot->object);
+		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 	}
 	else
 	{
@@ -148,7 +148,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	collisionPack.collisionRecursionDepth = 0;
 	XMVECTOR finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
 
-	if (!hookshot->active)
+	if (!m_hookshot->active)
 	{	//// Add gravity pull
 		collisionPack.e_Velocity = -XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
 		collisionPack.e_Position = finalPosition;
@@ -540,7 +540,7 @@ bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _ro
 void Player::ChangeHookState(vector<Model*> models)
 {
 	MouseStateStruct mousestate = m_input->GetMouseState();
-	if (!lastpick && mousestate.btn_left_pressed)
+	if (!m_lastpick && mousestate.btn_left_pressed)
 	{
 		if (CheckHookState())
 		{
@@ -557,7 +557,7 @@ void Player::ChangeHookState(vector<Model*> models)
 			}
 		}
 	}
-	lastpick = mousestate.btn_left_pressed;
+	m_lastpick = mousestate.btn_left_pressed;
 
 }
 
@@ -565,19 +565,19 @@ void Player::MoveTowards(const XMMATRIX &object)
 {
 	XMVECTOR vec = object.r[3] - XMLoadFloat4(&m_camPos);
 	vec = XMVector3Normalize(vec);
-	hookshot->velocity = vec;
-	hookshot->object = object;
-	hookshot->active = true;
+	m_hookshot->velocity = vec;
+	m_hookshot->object = object;
+	m_hookshot->active = true;
 }
 
 void Player::TurnOffHookShot()
 {
-	hookshot->active = false;
+	m_hookshot->active = false;
 }
 
 bool Player::CheckHookState()
 {
-	return hookshot->active;
+	return m_hookshot->active;
 }
 
 bool Player::TestIntersection(Model* obj)
