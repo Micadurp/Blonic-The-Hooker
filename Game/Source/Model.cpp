@@ -15,11 +15,11 @@ Model::~Model()
 
 }
 
-bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device)
+bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices)
 {
 	bool result = true;
 
-	result = LoadObj(_modelName, _device);
+	result = LoadObj(_modelName, _device, collidableGeometryPositions, collidableGeometryIndices);
 	if (!result)
 	{
 		return false;
@@ -106,7 +106,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 	return;
 }
 
-bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
+bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices)
 {
 	HRESULT hr = 0;
 
@@ -603,6 +603,25 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 
 
 	indexCount =  meshSubsetIndexStart[meshSubsetIndexStart.size() - 1];
+
+	int vertexOffset = collidableGeometryPositions->size();	// Vertex offset
+
+	// Temp arrays because we need to store the geometry in world space
+	XMVECTOR tempVertexPosVec;
+	XMFLOAT3 tempVertF3;
+
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		tempVertexPosVec = XMLoadFloat4(&vertices[i].position);
+		tempVertexPosVec = XMVector3TransformCoord(tempVertexPosVec, XMLoadFloat4x4(&objMatrix));
+		XMStoreFloat3(&tempVertF3, tempVertexPosVec);
+		collidableGeometryPositions->push_back(tempVertF3);
+	}
+
+	for (int i = 0; i < indices.size(); i++)
+	{
+		collidableGeometryIndices->push_back(indices[i] + vertexOffset);
+	}
 
 	return true;
 }

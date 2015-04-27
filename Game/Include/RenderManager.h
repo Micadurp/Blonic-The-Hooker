@@ -39,6 +39,7 @@ public:
 	void Shutdown();
 	bool SameShader();
 
-	bool SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
+	bool SetShader(ID3D11DeviceContext* _deviceContext);
+	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 };
 #endif

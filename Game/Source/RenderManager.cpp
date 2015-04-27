@@ -140,7 +140,21 @@ bool RenderManager::SameShader()
 	return false;
 }
 
-bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
+bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
+{
+
+	// Set the vertex input layout.
+	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+
+	return true;
+}
+
+bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -165,11 +179,4 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext, const DirectX
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
 
-	// Set the vertex input layout.
-	_deviceContext->IASetInputLayout(basicModelVertexLayout);
-
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
-	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
-	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 }

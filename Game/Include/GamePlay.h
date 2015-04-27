@@ -4,23 +4,27 @@
 #include "Direct3D.h"
 #include "Model.h"
 #include "RenderManager.h"
-#include "Camera.h"
+#include "Player.h"
 
 class GamePlay
 {
 private:
 	RenderManager* renderer;
 	Model** models;
-	Camera* camera;
+	Player* player;
+
+	std::vector<XMFLOAT3> collidableGeometryPositions;
+	std::vector<DWORD> collidableGeometryIndices;
 public:
 	GamePlay();
 	virtual ~GamePlay();
 
-	bool Initialize(ID3D11Device* _device);
+	bool Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance);
 	void Shutdown();
 
-	void Update(XMFLOAT2* _movement, XMFLOAT2 _rotation);
-	void Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix);
+	void Update(double time);
+	void Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix);
+
 };
 
 #endif

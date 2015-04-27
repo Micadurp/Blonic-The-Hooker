@@ -3,6 +3,7 @@
 
 #include "Camera.h"
 #include "PlayerInputs.h";
+#include "Model.h";
 
 using namespace std;
 
@@ -27,6 +28,13 @@ class Player : public Camera
 			int collisionRecursionDepth;
 		};
 
+		struct HookShot
+		{
+			XMVECTOR velocity;
+			XMMATRIX object;
+			bool active;
+		};
+
 		PlayerInputs* m_input;
 
 		XMFLOAT4 m_defaultForward;
@@ -36,6 +44,9 @@ class Player : public Camera
 
 		XMFLOAT3 m_gravity;
 		XMFLOAT3 m_velocity;
+		HookShot* hookshot;
+
+		bool lastpick;
 
 	public:
 		Player();
@@ -43,8 +54,10 @@ class Player : public Camera
 
 		bool Initialize(HWND &wndHandle, HINSTANCE &hInstance);
 
-		virtual void Update(double time);
-		void Move(XMFLOAT2* _movement, XMFLOAT2 _rotation);
+		void Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		void Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+
+		void ChangeHookState(vector<Model*> models);
 
 	private:
 		// Collision Detection and Response Function Prototypes
@@ -65,7 +78,14 @@ class Player : public Camera
 		bool CheckPointInTriangle(const XMVECTOR& point, const XMVECTOR& triV1, const XMVECTOR& triV2, const XMVECTOR& triV3);
 
 		// Solves the quadratic eqation, and returns the lowest root if equation is solvable, returns false if not solvable
-		bool GetLowestRoot(float a, float b, float c, float maxR, float* root);
+		bool GetLowestRoot(float a, float b, float c, float maxR, float* root); 
+
+		void MoveTowards(const XMMATRIX &object);
+		void TurnOffHookShot();
+		bool CheckHookState();
+
+		bool TestIntersection(Model* obj);
+		bool RaySphereIntersect(XMVECTOR rayOrigin, XMVECTOR rayDirection, float radius);
 };
 
 #endif

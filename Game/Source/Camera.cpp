@@ -25,6 +25,11 @@ void Camera::SetPosition(float _x, float _y, float _z)
 	m_camPos = { _x, _y, _z, 0.0f };
 }
 
+void Camera::Update(double time)
+{
+
+}
+
 XMFLOAT4 Camera::GetPosition()
 {
 	return m_camPos;
@@ -35,7 +40,7 @@ XMFLOAT4X4 Camera::GetViewMatrix()
 	return m_viewMatrix;
 }
 
-XMFLOAT4 Camera::getCamLook()
+XMFLOAT4 Camera::GetCamLook()
 {
 	return m_camLook;
 }

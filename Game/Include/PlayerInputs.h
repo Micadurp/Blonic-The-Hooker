@@ -16,6 +16,7 @@ class PlayerInputs
 		XMFLOAT2 m_movement;
 
 		bool m_isEscapePressed;
+		bool m_isMousePressed;
 
 		bool m_escapeStillPressed;
 		bool m_returnStillPressed;
@@ -39,6 +40,7 @@ class PlayerInputs
 		XMFLOAT2 GetYawPitch() const;
 		XMFLOAT2* GetMovement();
 		bool IsEscapePressed() const;
+		bool LeftMouseClick() const;
 
 		void ReleaseCOM();
 };

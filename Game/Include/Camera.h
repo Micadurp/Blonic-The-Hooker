@@ -28,7 +28,7 @@ public:
 	virtual void Update(double time);
 
 	XMFLOAT4X4 GetViewMatrix();
-	XMFLOAT4 getCamLook();
+	XMFLOAT4 GetCamLook();
 };
 
 #endif

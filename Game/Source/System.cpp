@@ -52,6 +52,7 @@ bool System::Initialize()
 	}
 	renderer->Initilize(direct3D->GetDevice());
 
+
 	menu = new Menu();
 	if (!menu)
 	{
@@ -63,25 +64,12 @@ bool System::Initialize()
 	{
 		return false;
 	}
-	result = gamePlay->Initialize(direct3D->GetDevice());
+	result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
 		return false;
 	}
-
-	input = new PlayerInputs();
-	if (!input)
-	{
-		return false;
-	}
-	result = input->Initialize(hwnd, hinstance);
-	if (!result)
-	{
-		return false;
-	}
-
-
 	return true;
 }
 
@@ -101,11 +89,6 @@ void System::Shutdown()
 		delete renderer;
 		renderer = 0;
 	}
-
-
-	input->ReleaseCOM();
-	delete input;
-	input = 0;
 
 	// Shutdown the window.
 	ShutdownWindows();
@@ -156,10 +139,10 @@ void System::Run()
 		}
 
 		// Check if the user pressed escape and wants to quit.
-		if (input->IsEscapePressed() == true)
+		/*if (player->IsEscapePressed() == true)
 		{
 			done = true;
-		}
+		}*/
 	}
 
 	return;
@@ -168,16 +151,13 @@ void System::Run()
 
 bool System::Frame(double time)
 {
-	input->Update(time);
-
 #pragma region Update
-	input->Update(0);
 
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
 
-		gamePlay->Update(input->GetMovement(), input->GetYawPitch());
+		gamePlay->Update(time);
 		break;
 
 	case GameState::gMenu:
@@ -193,11 +173,13 @@ bool System::Frame(double time)
 #pragma region Draw
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+
+	renderer->SetShader(direct3D->GetDeviceContext());
 	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Render(direct3D->GetDeviceContext(), direct3D->GetProjectionMatrix());
+		gamePlay->Render(direct3D->GetDeviceContext(), renderer, direct3D->GetProjectionMatrix());
 
 
 		break;

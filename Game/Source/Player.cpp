@@ -12,6 +12,11 @@ Player::Player()
 	m_gravity = { 0.0f, 9.806f, 0.0f };
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
+	
+	hookshot = new HookShot();
+	hookshot->active = false;
+	hookshot->object = XMMatrixIdentity();
+	hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Player::~Player()
@@ -33,17 +38,17 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 }
 
 
-void Player::Update(double time)
+void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
 	// Check inputs
 	m_input->Update(time);
 
 	// Update camera position and rotation according to inputs
-	Move(m_input->GetMovement(), m_input->GetYawPitch());
+	Move(m_input->GetMovement(), m_input->GetYawPitch(), collidableGeometryPositions, collidableGeometryIndices);
 }
 
 
-void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation)
+void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
 	// Rotation matrix from mouse input
 	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(_rotation.y, _rotation.x, 0.0f);
@@ -57,14 +62,33 @@ void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation)
 	temp_camLook = XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), cameraRotationMatrix);
 	temp_camLook = XMVector3Normalize(temp_camLook);
 
-	XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), cameraRotationMatrix));
-	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), cameraRotationMatrix));
+	/*XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), cameraRotationMatrix));
+	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), cameraRotationMatrix));*/
+
+	//First person camera, doesnt move on y axis
+	XMMATRIX RotateYTempMatrix;
+	RotateYTempMatrix = XMMatrixRotationY(_rotation.x);
+
+	XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), RotateYTempMatrix));
+	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), RotateYTempMatrix));
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
 	// New position from keyboard inputs
 	temp_camPos += _movement->x * XMLoadFloat4(&m_currentRight);
 	temp_camPos += _movement->y * XMLoadFloat4(&m_currentForward);
+
+	if (hookshot->active)
+	{
+		MoveTowards(hookshot->object);
+		XMStoreFloat3(&m_velocity, hookshot->velocity);
+	}
+	else
+	{
+		XMStoreFloat3(&m_velocity, _movement->x * XMLoadFloat4(&m_currentRight) + _movement->y * XMLoadFloat4(&m_currentForward));
+	}
+
+	XMStoreFloat4(&m_camPos, Collision(collidableGeometryPositions, collidableGeometryIndices));
 
 	// Reset input movement variable
 	_movement->x = 0.0f;
@@ -486,4 +510,108 @@ bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _ro
 
 	// No (valid) solutions
 	return false;
+}
+
+void Player::ChangeHookState(vector<Model*> models)
+{
+	bool pick = m_input->LeftMouseClick();
+	if (!lastpick&&pick)
+	{
+		if (pick && CheckHookState())
+		{
+			TurnOffHookShot();
+		}
+		else if (pick)
+		{
+			for (int n = 1; n < 6; n++)
+			{
+				if (TestIntersection(models.at(n)))
+				{
+					MoveTowards(models[n]->GetObjMatrix());
+				}
+			}
+		}
+	}
+	lastpick = pick;
+
+}
+
+void Player::MoveTowards(const XMMATRIX &object)
+{
+	XMVECTOR vec = object.r[3] - XMLoadFloat4(&m_camPos);
+	vec = XMVector3Normalize(vec);
+	hookshot->velocity = vec;
+	hookshot->object = object;
+	hookshot->active = true;
+}
+
+void Player::TurnOffHookShot()
+{
+	hookshot->active = false;
+}
+
+bool Player::CheckHookState()
+{
+	return hookshot->active;
+}
+
+bool Player::TestIntersection(Model* obj)
+{
+	XMMATRIX inverseWorldMatrix;
+	XMVECTOR inverseView;
+	XMFLOAT4 direction, origin;
+	XMVECTOR rayOrigin, rayDirection;
+	bool intersect, result;
+	intersect = false;
+
+	// Get the inverse of the view matrix.
+	inverseView = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_viewMatrix)).r[2];
+
+	// Calculate the direction of the picking ray in view space.
+	direction.x = XMVectorGetX(inverseView);
+	direction.y = XMVectorGetY(inverseView);
+	direction.z = XMVectorGetZ(inverseView);
+
+	// Get the origin of the picking ray which is the position of the camera.
+	origin = m_camPos;
+
+	// Now get the inverse of the translated world matrix.
+	inverseWorldMatrix = XMMatrixInverse(NULL, obj->GetObjMatrix());
+
+	// Now transform the ray origin and the ray direction from view space to world space.
+	rayOrigin = XMVector3TransformCoord(XMLoadFloat4(&origin), inverseWorldMatrix);
+	rayDirection = XMVector3TransformNormal(XMLoadFloat4(&direction), inverseWorldMatrix);
+
+	// Normalize the ray direction.
+	rayDirection = XMVector3Normalize(rayDirection);
+
+	// Now perform the ray-sphere intersection test.
+	intersect = RaySphereIntersect(rayOrigin, rayDirection, 1.0f);
+
+	return intersect;
+}
+
+bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float radius)
+{
+	float a, b, c, discriminant;
+	XMFLOAT3 rayOrigin, rayDirection;
+
+	DirectX::XMStoreFloat3(&rayOrigin, _rayOrigin);
+	DirectX::XMStoreFloat3(&rayDirection, _rayDirection);
+
+	// Calculate the a, b, and c coefficients.
+	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
+	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
+	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+
+	// Find the discriminant.
+	discriminant = (b * b) - (4 * a * c);
+
+	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+	if (discriminant < 0.0f)
+	{
+		return false;
+	}
+
+	return true;
 }

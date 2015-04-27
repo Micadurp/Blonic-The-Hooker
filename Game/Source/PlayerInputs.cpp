@@ -9,6 +9,7 @@ PlayerInputs::PlayerInputs()
 	m_mouse = nullptr;
 
 	m_isEscapePressed = false;
+	m_isMousePressed = false;
 
 	m_escapeStillPressed = false;
 }
@@ -135,10 +136,7 @@ void PlayerInputs::Update(double time)
 	}
 
 	// Mouse left click event
-	if (mouseCurrentState.rgbButtons[0])
-	{
-		// Do stuff
-	}
+	m_isMousePressed = mouseCurrentState.rgbButtons[0];
 
 	// Mouse right click event
 	if (mouseCurrentState.rgbButtons[1])
@@ -171,6 +169,10 @@ XMFLOAT2* PlayerInputs::GetMovement()
 bool PlayerInputs::IsEscapePressed() const
 {
 	return m_isEscapePressed;
+}
+bool PlayerInputs::LeftMouseClick() const
+{
+	return m_isMousePressed;
 }
 
 void PlayerInputs::ReleaseCOM()

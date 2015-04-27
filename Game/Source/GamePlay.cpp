@@ -10,7 +10,7 @@ GamePlay::~GamePlay()
 
 }
 void GamePlay::Shutdown()
-{
+{ 
 	/*if (cube)
 	{
 	cube->Shutdown();
@@ -19,12 +19,17 @@ void GamePlay::Shutdown()
 	}*/
 }
 
-bool GamePlay::Initialize(ID3D11Device* _device)
+bool GamePlay::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance)
 {
 	bool result;
 
-	camera = new Camera();
-	if (!camera)
+	player = new Player();
+	if (!player)
+	{
+		return false;
+	}
+	result = player->Initialize(wndHandle, hInstance);
+	if (!result)
 	{
 		return false;
 	}
@@ -32,30 +37,42 @@ bool GamePlay::Initialize(ID3D11Device* _device)
 	models = new Model*[]
 	{
 		new Model(),
-			new Model(),
-			new Model(),
+		new Model(),
+		new Model(),
+		new Model(),
+		new Model(),
+		new Model(),
 	};
 
-	for (int n = 0; n < sizeof(models)-1; n++)
-		models[n]->Initialize(L"Cube", _device);
+	for (int n = 0; n < 1; n++)
+	{
+		models[n]->SetObjMatrix(DirectX::XMMatrixScaling(100, 0, 100) * DirectX::XMMatrixTranslation(0, -4, 0));
+		models[n]->Initialize(L"ground", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+	} 	
+	for (int n = 1; n < 6; n++)
+	{
+		models[n]->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 20 - 10, rand() % 20, rand() % 20 - 10));
+		models[n]->Initialize(L"Cube", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+	}
 
 
 
 	return true;
 }
 
-void GamePlay::Update(XMFLOAT2 *_movement, XMFLOAT2 _rotation)
+void GamePlay::Update(double time)
 {
-	camera->Move(_movement, _rotation);
+	player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
 
-	camera->Update();
+	//camera->Update();
 }
 
-void GamePlay::Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix)
+void GamePlay::Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix)
 {
-	for (int n = 0; n < sizeof(models)-1; n++)
+	for (int n = 0; n < 6; n++)
 	{
+		_renderer->SetVertexCBuffer(_deviceContext, models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()), _projectionMatrix);
 		models[n]->Render(_deviceContext);
 	}
-
 }
+
