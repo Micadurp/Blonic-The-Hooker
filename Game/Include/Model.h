@@ -76,6 +76,7 @@ protected:
 
 	int nrOfVertices;
 
+	DirectX::XMFLOAT4X4 objMatrix;
 
 	//change
 	UINT32 vertexSize = sizeof(Vertex);
@@ -97,5 +98,8 @@ public:
 	bool CreateShaders(ID3D11Device* _device);
 
 	int GetIndexCount();
+
+	DirectX::XMMATRIX GetObjMatrix();
+	void SetObjMatrix(const DirectX::XMMATRIX& _newMatrix);
 };
 #endif

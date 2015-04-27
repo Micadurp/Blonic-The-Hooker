@@ -2,6 +2,7 @@
 
 Model::Model()
 {
+	DirectX::XMStoreFloat4x4(&objMatrix, DirectX::XMMatrixIdentity());
 	textureShaderResource = nullptr;
 	normalShaderResource = nullptr;
 	meshVertexBuff = nullptr;
@@ -638,4 +639,14 @@ bool Model::CreateShaders(ID3D11Device* _device)
 int Model::GetIndexCount()
 {
 	return indexCount;
+}
+
+DirectX::XMMATRIX Model::GetObjMatrix()
+{
+	return DirectX::XMLoadFloat4x4(&objMatrix);
+}
+
+void Model::SetObjMatrix(const DirectX::XMMATRIX& _newMatrix)
+{
+	DirectX::XMStoreFloat4x4(&objMatrix, _newMatrix);
 }
