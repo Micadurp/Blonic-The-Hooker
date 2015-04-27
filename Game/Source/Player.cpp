@@ -4,6 +4,8 @@ Player::Player()
 {
 	m_input = new PlayerInputs();
 
+	m_position = { 0.0f, 0.0f };
+
 	m_defaultForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_defaultRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
@@ -36,17 +38,42 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 void Player::Update(double time)
 {
 	// Check inputs
-	m_input->Update(time);
+	m_input->Update();
 
-	// Update camera position and rotation according to inputs
-	Move(m_input->GetMovement(), m_input->GetYawPitch());
+	// Get input values
+	m_keyboard = m_input->GetKeyboardState();
+	m_mouse = m_input->GetMouseState();
+
+	// Update camera position and rotation accordingly
+	Move(time);
 }
 
 
-void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation)
+void Player::Move(double time)
 {
+	float speed = 10.0f * time;
+
+	// Change camera position according to keyboard inputs
+	if (m_keyboard.key_a_pressed)
+	{
+		m_position.x -= speed;
+	}
+	if (m_keyboard.key_d_pressed)
+	{
+		m_position.x += speed;
+	}
+	if (m_keyboard.key_w_pressed)
+	{
+		m_position.y += speed;
+	}
+	if (m_keyboard.key_s_pressed)
+	{
+		m_position.y -= speed;
+	}
+
+
 	// Rotation matrix from mouse input
-	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(_rotation.y, _rotation.x, 0.0f);
+	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(m_mouse.y_pos, m_mouse.x_pos, 0.0f);
 
 	// Temporary convert to XMVECTOR
 	XMVECTOR temp_camPos = XMVectorSet(m_camPos.x, m_camPos.y, m_camPos.z, m_camPos.w);
@@ -63,12 +90,12 @@ void Player::Move(XMFLOAT2* _movement, XMFLOAT2 _rotation)
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
 	// New position from keyboard inputs
-	temp_camPos += _movement->x * XMLoadFloat4(&m_currentRight);
-	temp_camPos += _movement->y * XMLoadFloat4(&m_currentForward);
+	temp_camPos += m_position.x * XMLoadFloat4(&m_currentRight);
+	temp_camPos += m_position.y * XMLoadFloat4(&m_currentForward);
 
 	// Reset input movement variable
-	_movement->x = 0.0f;
-	_movement->y = 0.0f;
+	m_position.x = 0.0f;
+	m_position.y = 0.0f;
 
 	// Position look at accordingly to keyboard input
 	temp_camLook += temp_camPos;
