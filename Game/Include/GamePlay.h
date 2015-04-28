@@ -1,16 +1,26 @@
 #ifndef GAMEPLAY_H
 #define GAMEPLAY_H
 
+#include <vector>
+
 #include "Direct3D.h"
 #include "Model.h"
-#include "RenderManager.h"
+
+#include "Camera.h"
+
 #include "Player.h"
+
+
+
 
 class GamePlay
 {
 private:
 	RenderManager* renderer;
-	vector<Model*> models;
+
+	std::vector< Model*> models;
+	
+
 	Player* player;
 
 	vector<XMFLOAT3> collidableGeometryPositions;
@@ -24,6 +34,9 @@ public:
 
 	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance);
 	void Shutdown();
+
+
+	void Render(Direct3D * _direct3D);
 
 	void Update(double _time);
 };

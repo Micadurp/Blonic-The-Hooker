@@ -3,6 +3,8 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
+
 
 class DeferredRendering
 {
@@ -19,32 +21,41 @@ private:
 
 	struct Vertex
 	{
-
-		float x, y, z;
-		float U, V;
-
+		DirectX::XMFLOAT4 position;
+		DirectX::XMFLOAT2 texture;
 
 		Vertex()
 		{
+			position.x = 0;
+			position.y = 0;
+			position.z = 0;
+			position.w = 0;
+
+			texture.x = 0;
+			texture.y = 0;
 
 		}
-
-		Vertex(float x, float y, float z, float U, float V)
+		Vertex(float _x, float _y, float _z, float _U, float _V)
 		{
-			this->x = x;
-			this->y = y;
-			this->z = z;
+			position.x = _x;
+			position.y = _y;
+			position.z = _z;
+			position.w = 0;
 
-			this->U = U;
-			this->V = V;
+			texture.x = _U;
+			texture.y = _V;
+
+
 		}
 	};
 
+	ID3D11VertexShader * deferredVertexShader;
 	ID3D11PixelShader * deferredPixelShader;
 public:
-	DeferredRendering(ID3D11Device* device, int _screenWidth, int _screenHeight);
+	DeferredRendering();
 	~DeferredRendering();
 
+	void Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
 
 	void FirstPass(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView);
 	void Render(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView, ID3D11RenderTargetView* gBackbufferRTV);

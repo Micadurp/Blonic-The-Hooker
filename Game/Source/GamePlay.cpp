@@ -42,11 +42,12 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(100, 0, 100) * DirectX::XMMatrixTranslation(0, -4, 0));
 		models.at(n)->Initialize(L"ground", _device, &collidableGeometryPositions, &collidableGeometryIndices);
-	}
-	for (int n = 1; n < 6; n++)
+	} 	
+
+	for (int n = models.size(); n < 10; n++)
 	{
 		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 20 - 10, rand() % 20, rand() % 20 - 10));
+		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 30 - 15, rand() % 30, rand() % 30 - 15));
 		models.at(n)->Initialize(L"Cube", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	}
 
@@ -55,18 +56,20 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	return true;
 }
 
+
 void GamePlay::Update(double time)
 {
 	player->ChangeHookState(models);
 	player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
+
 }
 
-void GamePlay::Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix)
+void GamePlay::Render(Direct3D *_direct3D)
 {
+
 	for (int n = 0; n < models.size(); n++)
 	{
-		_renderer->SetVertexCBuffer(_deviceContext, models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()), _projectionMatrix);
-		models.at(n)->Render(_deviceContext);
+		_direct3D->SetVertexCBuffer( models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()));
+		models.at(n)->Render(_direct3D->GetDeviceContext());
 	}
 }
-

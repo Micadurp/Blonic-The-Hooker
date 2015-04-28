@@ -9,15 +9,14 @@ RenderManager::RenderManager()
 	basicModelVSCB = nullptr;
 	basicModelGSCB = nullptr;
 	basicModelPSCB = nullptr;
-	depthStencilView = nullptr;
 }
 
 RenderManager::~RenderManager()
 {
-	
+
 }
 
-bool RenderManager::Initilize(ID3D11Device* _device)
+bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _screenHeight)
 {
 	HRESULT result;
 
@@ -74,6 +73,14 @@ bool RenderManager::Initilize(ID3D11Device* _device)
 	}
 #pragma endregion
 
+	defferedRenderer = new DeferredRendering();
+	if (!defferedRenderer)
+	{
+		return false;
+	}
+	defferedRenderer->Initilize(_device, _screenWidth, _screenHeight);
+	
+	return true;
 }
 
 void RenderManager::Shutdown()
@@ -127,12 +134,7 @@ void RenderManager::Shutdown()
 		basicModelVertexShader = 0;
 	}
 
-	// Release the vertex shader.
-	if (depthStencilView)
-	{
-		depthStencilView->Release();
-		depthStencilView = 0;
-	}
+
 }
 
 bool RenderManager::SameShader()
@@ -178,5 +180,23 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
+
+	// Set the vertex input layout.
+	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+}
+
+void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
+{
+	defferedRenderer->FirstPass(_deviceContext, _depthStencilView);
+}
+
+void RenderManager::DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer)
+{
+	defferedRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
 
 }

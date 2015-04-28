@@ -146,6 +146,7 @@ void PlayerInputs::Update()
 	{
 		m_mouseStateObject.x_pos += m_mouseLastState.lX * 0.001f;
 		m_mouseStateObject.y_pos += m_mouseLastState.lY * 0.001f;
+
 	}
 
 	// Mouse left click event

@@ -5,6 +5,8 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include"DeferredRendering.h"
+
 class RenderManager
 {
 private:
@@ -26,20 +28,22 @@ private:
 	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
 
-	ID3D11DepthStencilView* depthStencilView;
-
-
+	DeferredRendering * defferedRenderer;
 
 public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* _device);
+	bool Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
 
 	void Shutdown();
 	bool SameShader();
 
+	void DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView);
+	void DeferredRenderer( ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
+
 	bool SetShader(ID3D11DeviceContext* _deviceContext);
 	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
+
 };
 #endif

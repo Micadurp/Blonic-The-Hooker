@@ -17,6 +17,8 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include "RenderManager.h"
+
 using namespace DirectX;
 
 class Direct3D
@@ -28,18 +30,20 @@ private:
 	IDXGISwapChain* swapChain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
-	ID3D11RenderTargetView* renderTargetView;
+	ID3D11RenderTargetView* backBuffer;
 	ID3D11Texture2D* depthStencilBuffer;
 	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RasterizerState* rasterState;
-	XMMATRIX projectionMatrix;
-	XMMATRIX worldMatrix;
-	XMMATRIX orthoMatrix;
+
+	XMFLOAT4X4 projectionMatrix;
+	XMFLOAT4X4 orthoMatrix;
+
 	D3D11_VIEWPORT viewport;
 	ID3D11BlendState* alphaEnableBlendingState;
 	ID3D11BlendState* alphaDisableBlendingState;
 
+	RenderManager* renderer;
 public:
 	Direct3D();
 	~Direct3D();
@@ -53,8 +57,14 @@ public:
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 
+	bool SetShader();
+	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
+
 	void SetBackBufferRenderTarget();
 	void ResetViewport();
+
+	ID3D11DepthStencilView * GetDepthStencilView();
+	ID3D11RenderTargetView * GetBackBufferRenderTarget();
 
 	XMMATRIX GetProjectionMatrix();
 	XMMATRIX GetWorldMatrix();

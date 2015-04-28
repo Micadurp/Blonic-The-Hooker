@@ -45,14 +45,6 @@ bool System::Initialize()
 		return false;
 	}
 
-	renderer = new RenderManager();
-	if (!renderer)
-	{
-		return false;
-	}
-	renderer->Initilize(direct3D->GetDevice());
-
-
 	menu = new Menu();
 	if (!menu)
 	{
@@ -70,6 +62,8 @@ bool System::Initialize()
 		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
 		return false;
 	}
+
+
 	return true;
 }
 
@@ -83,12 +77,6 @@ void System::Shutdown()
 	}
 
 
-	if (renderer)
-	{
-		renderer->Shutdown();
-		delete renderer;
-		renderer = 0;
-	}
 
 	// Shutdown the window.
 	ShutdownWindows();
@@ -174,13 +162,11 @@ bool System::Frame(double _time)
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
 
-	renderer->SetShader(direct3D->GetDeviceContext());
 	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Render(direct3D->GetDeviceContext(), renderer, direct3D->GetProjectionMatrix());
-
+		gamePlay->Render(direct3D);
 
 		break;
 
@@ -192,7 +178,7 @@ bool System::Frame(double _time)
 
 		break;
 	}
-
+	
 	direct3D->EndScene();
 #pragma endregion
 

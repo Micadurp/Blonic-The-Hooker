@@ -11,7 +11,9 @@ Player::Player()
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_currentRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 
+
 	m_gravity = { 0.0f, 0.2f, 0.0f };
+
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
 	
@@ -100,7 +102,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), RotateYTempMatrix));
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
-	
+
 	if (m_hookshot->active)
 	{
 		MoveTowards(m_hookshot->object);
@@ -111,7 +113,9 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward));
 	}
 
+
 	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
+
 
 	// Reset input movement variable
 	m_position.x = 0.0f;
@@ -147,6 +151,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	// Now we check for a collision with our world
 	collisionPack.collisionRecursionDepth = 0;
 	XMVECTOR finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
+
 
 	if (!m_hookshot->active)
 	{	//// Add gravity pull
@@ -548,7 +553,8 @@ void Player::ChangeHookState(vector<Model*> models)
 		}
 		else
 		{
-			for (int n = 1; n < 6; n++)
+			for (int n = 1; n < models.size(); n++)
+
 			{
 				if (TestIntersection(models.at(n)))
 				{
