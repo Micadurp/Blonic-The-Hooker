@@ -1,18 +1,30 @@
 #ifndef MENU_H
 #define MENU_H
 
-
+#include "Button.h"
+#include "Camera.h"
+#include "PlayerInputs.h"
 
 class Menu
 {
-private:
+	private:
+		Button** menuButtons;
+		Camera* camera;
+		PlayerInputs* input;
 
-public:
-	Menu();
-	~Menu();
+		XMFLOAT4X4 projectionMatrix;
 
-	int Update();
+		vector<XMFLOAT3> collidableGeometryPositions;
+		vector<DWORD> collidableGeometryIndices;
 
-	void Render();
+	public:
+		Menu();
+		~Menu();
+
+		bool Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance, float _width, float _height, float _nearZ, float _farZ);
+
+		int Update();
+
+		void Render(ID3D11DeviceContext* _deviceContext);
 };
 #endif

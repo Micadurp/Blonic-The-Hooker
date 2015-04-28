@@ -42,7 +42,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(100, 0, 100) * DirectX::XMMatrixTranslation(0, -4, 0));
 		models.at(n)->Initialize(L"ground", _device, &collidableGeometryPositions, &collidableGeometryIndices);
-	} 	
+	}
 	for (int n = 1; n < 6; n++)
 	{
 		models.push_back(new Model());

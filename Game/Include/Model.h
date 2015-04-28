@@ -85,7 +85,7 @@ protected:
 	ID3D11Buffer*   pixelShaderMaterialCB;
 public:
 	Model();
-	~Model();
+	virtual ~Model();
 
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
