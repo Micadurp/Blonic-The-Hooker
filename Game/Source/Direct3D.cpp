@@ -508,9 +508,19 @@ bool Direct3D::SetShader()
 {
 	return renderer->SetShader(deviceContext);
 }
+void Direct3D::SetCrosshairShaders()
+{
+	renderer->SetCrosshairShaders(deviceContext);
+}
+
 bool Direct3D::SetVertexCBuffer( const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix)
 {
 	return renderer->SetVertexCBuffer(deviceContext, _worldMatrix, _viewMatrix, XMLoadFloat4x4(&projectionMatrix));
+}
+
+bool Direct3D::SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix)
+{
+	return renderer->SetVertexCBuffer(deviceContext, _worldMatrix, XMMatrixIdentity(), XMMatrixIdentity());
 }
 
 void Direct3D::SetBackBufferRenderTarget()

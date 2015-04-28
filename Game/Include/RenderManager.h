@@ -23,6 +23,8 @@ private:
 	ID3D11GeometryShader* basicModelGeometryShader = nullptr;
 	ID3D11PixelShader* basicModelPixelShader = nullptr;
 
+	ID3D11PixelShader* crosshairPixelShader = nullptr;
+
 	ID3D11Buffer*   basicModelVSCB; // Basic model vertex shader constant buffer
 	ID3D11Buffer*   basicModelGSCB; // Basic model pixel shader constant buffer
 	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
@@ -42,6 +44,7 @@ public:
 	void DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView);
 	void DeferredRenderer( ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
 
+	void SetCrosshairShaders(ID3D11DeviceContext* _deviceContext);
 	bool SetShader(ID3D11DeviceContext* _deviceContext);
 	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 

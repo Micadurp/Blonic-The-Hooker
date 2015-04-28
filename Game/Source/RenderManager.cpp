@@ -51,6 +51,14 @@ bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _scree
 	_device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &basicModelPixelShader);
 	pPS->Release();
 
+
+	//create crosshair pixel shader
+	ID3DBlob* chPS = nullptr;
+	D3DCompileFromFile(L"crosshairPixelShader.hlsl", NULL, nullptr, "PS_main", "ps_5_0", 0, NULL, &chPS, nullptr);
+
+	_device->CreatePixelShader(chPS->GetBufferPointer(), chPS->GetBufferSize(), nullptr, &crosshairPixelShader);
+	chPS->Release();
+
 #pragma endregion
 
 #pragma region Create ConstantBuffers
@@ -156,6 +164,18 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
 	return true;
 }
 
+void RenderManager::SetCrosshairShaders(ID3D11DeviceContext* _deviceContext)
+{
+
+	// Set the vertex input layout.
+	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	_deviceContext->PSSetShader(crosshairPixelShader, NULL, 0);
+}
+
 bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
 {
 	HRESULT result;
@@ -182,12 +202,12 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
 
 	// Set the vertex input layout.
-	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+	//_deviceContext->IASetInputLayout(basicModelVertexLayout);
 
 	// Set the vertex and pixel shaders that will be used to render this triangle.
-	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
-	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
-	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+	//_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	//_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	//_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 }
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)

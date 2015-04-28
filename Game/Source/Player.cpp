@@ -4,13 +4,14 @@ Player::Player()
 {
 	m_input = new PlayerInputs();
 
+	m_crosshair = new Model();
+
 	m_position = { 0.0f, 0.0f };
 
 	m_defaultForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_defaultRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_currentRight = { 1.0f, 0.0f, 0.0f, 0.0f };
-
 
 	m_gravity = { 0.0f, 0.2f, 0.0f };
 
@@ -28,7 +29,7 @@ Player::~Player()
 }
 
 
-bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
+bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _device)
 {
 	bool result;
 
@@ -37,6 +38,14 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 	{
 		return false;
 	}
+
+	result = m_crosshair->Initialize(L"crosshair_plane", _device);
+	if (!result)
+	{
+		return false;
+	}
+
+	m_crosshair->SetObjMatrix(XMMatrixScaling(0.05f, 0.065f, 0.05f) * XMMatrixTranslation(0, 0, 0));
 
 	return true;
 }
@@ -53,6 +62,19 @@ void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositio
 
 	// Update camera position and rotation according to inputs
 	Move(time, collidableGeometryPositions, collidableGeometryIndices);
+}
+
+void Player::Render(ID3D11DeviceContext* _deviceContext)
+{
+	m_crosshair->Render(_deviceContext);
+}
+
+XMFLOAT4X4 Player::GetCrosshairMatrix()
+{
+	XMFLOAT4X4 mat;
+	XMStoreFloat4x4(&mat, m_crosshair->GetObjMatrix());
+
+	return mat;
 }
 
 

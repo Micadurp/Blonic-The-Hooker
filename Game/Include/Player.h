@@ -35,6 +35,8 @@ class Player : public Camera
 			bool active;
 		};
 
+		Model* m_crosshair;
+
 		PlayerInputs* m_input;
 
 		KeyboardStateStruct m_keyboard;
@@ -57,10 +59,14 @@ class Player : public Camera
 		Player();
 		virtual ~Player();
 
-		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance);
+		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance, ID3D11Device* _device);
 
 		void Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
+
+		void Render(ID3D11DeviceContext* _deviceContext);
+
+		XMFLOAT4X4 GetCrosshairMatrix();
 
 		void ChangeHookState(vector<Model*> models);
 
