@@ -25,6 +25,6 @@ class Menu
 
 		int Update();
 
-		void Render(ID3D11DeviceContext* _deviceContext);
+		void Render();
 };
 #endif
