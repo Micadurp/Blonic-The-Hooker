@@ -2,13 +2,11 @@
 
 PlayerInputs::PlayerInputs()
 {
-	m_yawPitch = { 0.0f, 0.0f };		// x = yaw rotation, y = pitch
-	m_movement = { 0.0f, 0.0f };		// x = left/right, y = forward/backward
-
 	m_keyboard = nullptr;
 	m_mouse = nullptr;
 
 	m_isEscapePressed = false;
+	m_isMousePressed = false;
 
 	m_escapeStillPressed = false;
 }
@@ -73,7 +71,7 @@ bool PlayerInputs::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 	return true;
 }
 
-void PlayerInputs::Update(double time)
+void PlayerInputs::Update()
 {
 	DIMOUSESTATE mouseCurrentState;
 	BYTE keyboardState[256];
@@ -87,7 +85,6 @@ void PlayerInputs::Update(double time)
 	// Store keyboard current state
 	m_keyboard->GetDeviceState(sizeof(keyboardState), (LPVOID)&keyboardState);
 
-	float speed = 10.0f * time;
 
 	// ------------------------------
 	//
@@ -98,20 +95,37 @@ void PlayerInputs::Update(double time)
 	// Keyboard inputs --------------
 	if (keyboardState[DIK_A] & 0x80)
 	{
-		m_movement.x -= speed;
+		m_keyboardStateObject.key_a_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_a_pressed = false;
 	}
 	if (keyboardState[DIK_D] & 0x80)
 	{
-		m_movement.x += speed;
+		m_keyboardStateObject.key_d_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_d_pressed = false;
 	}
 	if (keyboardState[DIK_W] & 0x80)
 	{
-		m_movement.y += speed;
+		m_keyboardStateObject.key_w_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_w_pressed = false;
 	}
 	if (keyboardState[DIK_S] & 0x80)
 	{
-		m_movement.y -= speed;
+		m_keyboardStateObject.key_s_pressed = true;
 	}
+	else
+	{
+		m_keyboardStateObject.key_s_pressed = false;
+	}
+
 	if (keyboardState[DIK_SPACE] & 0x80)
 	{
 		// Do stuff
@@ -130,47 +144,46 @@ void PlayerInputs::Update(double time)
 	// Mouse movement controls rotation
 	if (mouseCurrentState.lX != m_mouseLastState.lX || mouseCurrentState.lY != m_mouseLastState.lY)
 	{
-		m_yawPitch.x += m_mouseLastState.lX * 0.01f;		// Yaw axis rotation
-		m_yawPitch.y += m_mouseLastState.lY * 0.01f;		// Pitch axis rotation
+		m_mouseStateObject.x_pos += m_mouseLastState.lX * 0.001f;
+		m_mouseStateObject.y_pos += m_mouseLastState.lY * 0.001f;
+
 	}
 
 	// Mouse left click event
-	if (mouseCurrentState.rgbButtons[0])
-	{
-		// Do stuff
-	}
+	m_mouseStateObject.btn_left_pressed = mouseCurrentState.rgbButtons[0];
 
 	// Mouse right click event
-	if (mouseCurrentState.rgbButtons[1])
-	{
-		// Do stuff
-	}
+	m_mouseStateObject.btn_right_pressed = mouseCurrentState.rgbButtons[1];
 	// ------------------------------
 
 	m_mouseLastState = mouseCurrentState;
-	UpdateKeyboardStates(keyboardState);
+	UpdateInputStates(keyboardState, m_mouseLastState);
 }
 
-void PlayerInputs::UpdateKeyboardStates(BYTE* keyboardState)
+void PlayerInputs::UpdateInputStates(BYTE* keyboardState, DIMOUSESTATE mouseState)
 {
 	m_escapeStillPressed = keyboardState[DIK_ESCAPE] & 0x80;
 	m_returnStillPressed = keyboardState[DIK_RETURN] & 0x80;
 	m_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
 }
 
-XMFLOAT2 PlayerInputs::GetYawPitch() const
+KeyboardStateStruct PlayerInputs::GetKeyboardState() const
 {
-	return m_yawPitch;
+	return m_keyboardStateObject;
 }
 
-XMFLOAT2* PlayerInputs::GetMovement()
+MouseStateStruct PlayerInputs::GetMouseState() const
 {
-	return &m_movement;
+	return m_mouseStateObject;
 }
 
 bool PlayerInputs::IsEscapePressed() const
 {
 	return m_isEscapePressed;
+}
+bool PlayerInputs::LeftMouseClick() const
+{
+	return m_isMousePressed;
 }
 
 void PlayerInputs::ReleaseCOM()

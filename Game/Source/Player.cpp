@@ -11,7 +11,9 @@ Player::Player()
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_currentRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-	m_gravity = { 0.0f, 9.806f, 0.0f };
+
+	m_gravity = { 0.0f, 0.2f, 0.0f };
+
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
 	
@@ -101,10 +103,6 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
-	// New position from keyboard inputs
-	temp_camPos += m_position.x * XMLoadFloat4(&m_currentRight);
-	temp_camPos += m_position.y * XMLoadFloat4(&m_currentForward);
-
 	if (m_hookshot->active)
 	{
 		MoveTowards(m_hookshot->object);
@@ -115,7 +113,9 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward));
 	}
 
-	XMStoreFloat4(&m_camPos, Collision(collidableGeometryPositions, collidableGeometryIndices));
+
+	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
+
 
 	// Reset input movement variable
 	m_position.x = 0.0f;
@@ -152,11 +152,14 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	collisionPack.collisionRecursionDepth = 0;
 	XMVECTOR finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
 
-	//// Add gravity pull
-	collisionPack.e_Velocity = XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
-	collisionPack.e_Position = finalPosition;
-	collisionPack.collisionRecursionDepth = 0;
-	finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
+
+	if (!m_hookshot->active)
+	{	//// Add gravity pull
+		collisionPack.e_Velocity = -XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
+		collisionPack.e_Position = finalPosition;
+		collisionPack.collisionRecursionDepth = 0;
+		finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
+	}
 
 	// Convert our final position from ellipsoid space to world space
 	finalPosition = finalPosition * collisionPack.ellipsoidSpace;
@@ -550,7 +553,8 @@ void Player::ChangeHookState(vector<Model*> models)
 		}
 		else
 		{
-			for (int n = 1; n < 6; n++)
+			for (int n = 1; n < models.size(); n++)
+
 			{
 				if (TestIntersection(models.at(n)))
 				{

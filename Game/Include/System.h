@@ -10,7 +10,6 @@
 #include "GamePlay.h"
 #include "Direct3D.h"
 #include "Menu.h"
-#include "PlayerInputs.h"
 
 //move this
 /////////////
@@ -53,7 +52,6 @@ private:
 	Menu* menu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
-	PlayerInputs* input;
 
 public:
 	System();
@@ -66,7 +64,7 @@ public:
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	bool Frame(double time);
+	bool Frame(double _time);
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 

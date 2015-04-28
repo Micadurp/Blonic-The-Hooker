@@ -142,7 +142,21 @@ bool RenderManager::SameShader()
 	return false;
 }
 
-bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
+bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
+{
+
+	// Set the vertex input layout.
+	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
+	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+
+	return true;
+}
+
+bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -184,4 +198,5 @@ void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D1
 void RenderManager::DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer)
 {
 	defferedRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
+
 }

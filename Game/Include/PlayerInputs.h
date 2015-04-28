@@ -6,16 +6,18 @@
 
 #include <dinput.h>
 #include <DirectXMath.h>
+#include "InputStructure.h"
 
 using namespace DirectX;
 
 class PlayerInputs
 {
 	private:
-		XMFLOAT2 m_yawPitch;
-		XMFLOAT2 m_movement;
+		KeyboardStateStruct m_keyboardStateObject;
+		MouseStateStruct m_mouseStateObject;
 
 		bool m_isEscapePressed;
+		bool m_isMousePressed;
 
 		bool m_escapeStillPressed;
 		bool m_returnStillPressed;
@@ -27,18 +29,20 @@ class PlayerInputs
 		DIMOUSESTATE m_mouseLastState;
 		LPDIRECTINPUT8 m_directInput;
 
-		void UpdateKeyboardStates(BYTE* keyboard);
+		void UpdateInputStates(BYTE* keyboard, DIMOUSESTATE mouseState);
 
 	public:
 		PlayerInputs();
 		~PlayerInputs();
 
 		bool Initialize(HWND &wndHandle, HINSTANCE &hInstance);
-		void Update(double time);
+		void Update();
 
-		XMFLOAT2 GetYawPitch() const;
-		XMFLOAT2* GetMovement();
+		KeyboardStateStruct GetKeyboardState() const;
+		MouseStateStruct GetMouseState() const;
+
 		bool IsEscapePressed() const;
+		bool LeftMouseClick() const;
 
 		void ReleaseCOM();
 };
