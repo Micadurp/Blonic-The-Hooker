@@ -43,10 +43,10 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(100, 0, 100) * DirectX::XMMatrixTranslation(0, -4, 0));
 		models.at(n)->Initialize(L"ground", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
-	for (int n = 1; n < 6; n++)
+	for (int n = models.size(); n < 10; n++)
 	{
 		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 20 - 10, rand() % 20, rand() % 20 - 10));
+		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 30 - 15, rand() % 30, rand() % 30 - 15));
 		models.at(n)->Initialize(L"Cube", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	}
 

@@ -548,7 +548,7 @@ void Player::ChangeHookState(vector<Model*> models)
 		}
 		else
 		{
-			for (int n = 1; n < 6; n++)
+			for (int n = 1; n < models.size(); n++)
 			{
 				if (TestIntersection(models.at(n)))
 				{
