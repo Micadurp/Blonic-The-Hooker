@@ -11,12 +11,12 @@ GamePlay::~GamePlay()
 }
 void GamePlay::Shutdown()
 { 
-	/*if (cube)
+	while (models.size() != 0)
 	{
-	cube->Shutdown();
-	delete cube;
-	cube = 0;
-	}*/
+		models.back()->Shutdown();
+		delete models.back();
+		models.pop_back();
+	}
 }
 
 
