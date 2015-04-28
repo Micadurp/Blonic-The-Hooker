@@ -334,13 +334,10 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	screenAspect = (float)_screenWidth / (float)_screenHeight;
 
 	// Create the projection matrix for 3D rendering.
-	projectionMatrix = XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, _screenNear, _screenDepth);
-
-	// Initialize the world matrix to the identity matrix.
-	worldMatrix = XMMatrixIdentity();
+	DirectX::XMStoreFloat4x4(&projectionMatrix, XMMatrixPerspectiveFovLH(fieldOfView, screenAspect, _screenNear, _screenDepth));
 
 	// Create an orthographic projection matrix for 2D rendering.
-	orthoMatrix = XMMatrixOrthographicLH((float)_screenWidth, (float)_screenHeight, _screenNear, _screenDepth);
+	DirectX::XMStoreFloat4x4(&orthoMatrix, XMMatrixOrthographicLH((float)_screenWidth, (float)_screenHeight, _screenNear, _screenDepth));
 
 	// Clear the blend state description.
 	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
@@ -372,6 +369,13 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 		return false;
 	}
 
+	renderer = new RenderManager();
+	if (!renderer)
+	{
+		return false;
+	}
+	result = renderer->Initilize(device, _screenWidth, _screenHeight);
+
 	return true;
 }
 
@@ -394,6 +398,15 @@ void Direct3D::Shutdown()
 		depthStencilView->Release();
 		depthStencilView = 0;
 	}
+
+	if (renderer)
+	{
+		renderer->Shutdown();
+		delete renderer;
+		renderer = 0;
+	}
+
+
 
 	if (depthStencilState)
 	{
@@ -434,7 +447,7 @@ void Direct3D::Shutdown()
 	return;
 }
 
-void Direct3D::BeginScene(float _red, float _green, float _blue, float _alpha)
+void Direct3D::BeginScene( float _red, float _green, float _blue, float _alpha)
 {
 	float color[4];
 
@@ -451,13 +464,21 @@ void Direct3D::BeginScene(float _red, float _green, float _blue, float _alpha)
 	// Clear the depth buffer.
 	deviceContext->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
+	//deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
+
+	
+	renderer->SetShader(deviceContext);
+
+	renderer->DeferredFirstPass(deviceContext, depthStencilView);
 
 	return;
 }
 
 void Direct3D::EndScene()
 {
+
+	renderer->DeferredRenderer(deviceContext, depthStencilView, backBuffer);
+
 	// Present the back buffer to the screen since rendering is complete.
 	if (vsync_enabled)
 	{
@@ -483,6 +504,15 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext()
 	return deviceContext;
 }
 
+bool Direct3D::SetShader()
+{
+	return renderer->SetShader(deviceContext);
+}
+bool Direct3D::SetVertexCBuffer( const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix)
+{
+	return renderer->SetVertexCBuffer(deviceContext, _worldMatrix, _viewMatrix, XMLoadFloat4x4(&projectionMatrix));
+}
+
 void Direct3D::SetBackBufferRenderTarget()
 {
 	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
@@ -505,17 +535,13 @@ ID3D11DepthStencilView * Direct3D::GetDepthStencilView()
 
 XMMATRIX Direct3D::GetProjectionMatrix()
 {
-	return projectionMatrix;
+	return DirectX::XMLoadFloat4x4(&projectionMatrix);
 }
 
-XMMATRIX Direct3D::GetWorldMatrix()
-{
-	return worldMatrix;
-}
 
 XMMATRIX Direct3D::GetOrthoMatrix()
 {
-	return orthoMatrix;
+	return DirectX::XMLoadFloat4x4(&orthoMatrix);
 }
 
 void Direct3D::GetVideoCardInfo(char* _cardName, int& _memory)

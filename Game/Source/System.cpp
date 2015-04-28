@@ -45,14 +45,6 @@ bool System::Initialize()
 		return false;
 	}
 
-	renderer = new RenderManager();
-	if (!renderer)
-	{
-		return false;
-	}
-
-	result = renderer->Initilize(direct3D->GetDevice(), screenWidth, screenHeight);
-
 	menu = new Menu();
 	if (!menu)
 	{
@@ -85,12 +77,6 @@ void System::Shutdown()
 	}
 
 
-	if (renderer)
-	{
-		renderer->Shutdown();
-		delete renderer;
-		renderer = 0;
-	}
 
 	// Shutdown the window.
 	ShutdownWindows();
@@ -176,15 +162,11 @@ bool System::Frame(double _time)
 
 	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
 
-	renderer->DeferredFirstPass(direct3D->GetDeviceContext(), direct3D->GetDepthStencilView());
-
-	renderer->SetShader(direct3D->GetDeviceContext());
-
 	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
-		gamePlay->Render(direct3D->GetDeviceContext(), renderer, direct3D->GetProjectionMatrix());
+		gamePlay->Render(direct3D);
 
 		break;
 
@@ -196,7 +178,7 @@ bool System::Frame(double _time)
 
 		break;
 	}
-	renderer->DeferredRenderer(direct3D->GetDeviceContext(), direct3D->GetDepthStencilView(),direct3D->GetBackBufferRenderTarget());
+	
 	direct3D->EndScene();
 #pragma endregion
 

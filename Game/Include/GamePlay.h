@@ -8,7 +8,6 @@
 
 #include "Camera.h"
 
-#include "RenderManager.h"
 #include "Player.h"
 
 
@@ -37,7 +36,7 @@ public:
 	void Shutdown();
 
 
-	void Render(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_projectionMatrix);
+	void Render(Direct3D * _direct3D);
 
 	void Update(double _time);
 };

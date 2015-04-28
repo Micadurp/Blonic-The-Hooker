@@ -63,12 +63,12 @@ void GamePlay::Update(double time)
 
 }
 
-void GamePlay::Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix)
+void GamePlay::Render(Direct3D *_direct3D)
 {
 
 	for (int n = 0; n < models.size(); n++)
 	{
-		_renderer->SetVertexCBuffer(_deviceContext, models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()), _projectionMatrix);
-		models.at(n)->Render(_deviceContext);
+		_direct3D->SetVertexCBuffer( models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()));
+		models.at(n)->Render(_direct3D->GetDeviceContext());
 	}
 }

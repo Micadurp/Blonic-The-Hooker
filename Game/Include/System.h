@@ -47,7 +47,6 @@ private:
 	}
 	gameState;
 
-	RenderManager* renderer;
 	Camera* camera;
 	Menu* menu;
 	GamePlay* gamePlay;

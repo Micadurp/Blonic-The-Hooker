@@ -12,7 +12,7 @@ DeferredRendering::~DeferredRendering()
 
 void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight)
 {
-	nrOfRenderTargets = 2;
+	nrOfRenderTargets = 1;
 	vertexSize = sizeof(Vertex);
 
 #pragma region Create Vertex buffer
@@ -81,25 +81,30 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 	for (int n = 0; n < nrOfRenderTargets; n++)
 		_device->CreateRenderTargetView(renderTargetTextureMap[n], &renderTargetViewDesc, &renderTargetView[n]);
 
-	/////////////////////// Map's Shader Resource View
-	// Setup the description of the shader resource view.
+
 	shaderResourceViewDesc.Format = textureDesc.Format;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	// Create the shacder resource view.
-	for (int n = 0; n < nrOfRenderTargets; n++)
+	for (int n = 0; n < nrOfRenderTargets; n++ )
 		_device->CreateShaderResourceView(renderTargetTextureMap[n], &shaderResourceViewDesc, &shaderResourceView[n]);
 
 
+	//create vertex shader
+	ID3DBlob* pVS = nullptr;
+	D3DCompileFromFile(L"DeferredVertexShader.hlsl", NULL, nullptr, "VS_main", "vs_5_0", 0, NULL, &pVS, nullptr);
 
-	////create pixel shader
-	//ID3DBlob* pPS = nullptr;
-	//D3DCompileFromFile(L"DefferedPixelShader.hlsl", NULL, nullptr, "main", "ps_4_0", 0, NULL, &pPS, nullptr);
+	_device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &deferredVertexShader);
+	pVS->Release();
 
-	//_device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &deferredPixelShader);
-	//pPS->Release();
+	//create pixel shader
+	ID3DBlob* pPS = nullptr;
+	D3DCompileFromFile(L"DeferredPixelShader.hlsl", NULL, nullptr, "PS_main", "ps_5_0", 0, NULL, &pPS, nullptr);
+
+	_device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &deferredPixelShader);
+	pPS->Release();
 
 	// Fill in a buffer description.
 
@@ -123,20 +128,19 @@ void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11Dep
 
 void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11DepthStencilView* _depthStencilView, ID3D11RenderTargetView* _backbufferRTV)
 {
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
+	_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
 	_deviceContext->GSSetShader(NULL, NULL, 0);
+	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
 
 	UINT32 offset = 0;
 	_deviceContext->IASetVertexBuffers(0, 1, &meshVertBuff, &vertexSize, &offset);
 
-
-	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
-
 	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets, shaderResourceView);
 
-
 	_deviceContext->Draw(4, 0);
-
+	
 }
