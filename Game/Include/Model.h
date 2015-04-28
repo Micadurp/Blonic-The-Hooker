@@ -89,12 +89,14 @@ public:
 
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	void Shutdown();
 
 	virtual void Update();
 	void Render(ID3D11DeviceContext* _deviceContext);
 
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
+	bool LoadObj(std::wstring _filename, ID3D11Device* _device);
 
 	bool CreateShaders(ID3D11Device* _device);
 

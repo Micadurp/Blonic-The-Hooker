@@ -2,7 +2,7 @@
 
 Camera::Camera()
 {
-	m_camPos = { 0.0f, 0.0f, -5.0f, 0.0f };
+	m_camPos = { 0.0f, 0.0f, 0.1f, 0.0f };
 	m_camLook = { 0.0f, 0.0f, 0.0f, 0.0f };
 	m_camUp = { 0.0f, 1.0f, 0.0f, 0.0f };
 
