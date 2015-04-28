@@ -551,15 +551,11 @@ void Player::ChangeHookState(vector<Model*> models)
 		{
 			TurnOffHookShot();
 		}
-		else
+		for (int n = 1; n < models.size(); n++)
 		{
-			for (int n = 1; n < models.size(); n++)
-
+			if (TestIntersection(models.at(n)))
 			{
-				if (TestIntersection(models.at(n)))
-				{
-					MoveTowards(models[n]->GetObjMatrix());
-				}
+				MoveTowards(models[n]->GetObjMatrix());
 			}
 		}
 	}
