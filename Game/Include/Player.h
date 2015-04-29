@@ -36,6 +36,15 @@ class Player : public Camera
 			int active;
 		};
 
+		struct Triangle
+		{
+			XMVECTOR vertex0, vertex1, vertex2;
+		};
+		struct Ray
+		{
+			XMVECTOR point0, point1;
+		};
+
 		Model* m_crosshair;
 
 		PlayerInputs* m_input;
@@ -99,8 +108,9 @@ class Player : public Camera
 		void TurnOffHookShot();
 		bool CheckHookState();
 
-		bool TestIntersection(Model* obj);
-		bool RaySphereIntersect(XMVECTOR rayOrigin, XMVECTOR rayDirection, float radius);
+		bool TestIntersection(Model* _obj);
+		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
+		bool RayTriangleIntersect(Ray ray, Triangle tri, XMVECTOR point)
 };
 
 #endif

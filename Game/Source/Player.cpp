@@ -656,7 +656,7 @@ bool Player::CheckHookState()
 	return m_hookshot->active;
 }
 
-bool Player::TestIntersection(Model* obj)
+bool Player::TestIntersection(Model* _obj)
 {
 	XMMATRIX inverseWorldMatrix;
 	XMVECTOR inverseView;
@@ -677,7 +677,7 @@ bool Player::TestIntersection(Model* obj)
 	origin = m_camPos;
 
 	// Now get the inverse of the translated world matrix.
-	inverseWorldMatrix = XMMatrixInverse(NULL, obj->GetObjMatrix());
+	inverseWorldMatrix = XMMatrixInverse(NULL, _obj->GetObjMatrix());
 
 	// Now transform the ray origin and the ray direction from view space to world space.
 	rayOrigin = XMVector3TransformCoord(XMLoadFloat4(&origin), inverseWorldMatrix);
@@ -692,7 +692,7 @@ bool Player::TestIntersection(Model* obj)
 	return intersect;
 }
 
-bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float radius)
+bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius)
 {
 	float a, b, c, discriminant;
 	XMFLOAT3 rayOrigin, rayDirection;
@@ -703,7 +703,7 @@ bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, flo
 	// Calculate the a, b, and c coefficients.
 	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
 	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
-	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (radius * radius);
+	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (_radius * _radius);
 
 	// Find the discriminant.
 	discriminant = (b * b) - (4 * a * c);
@@ -715,4 +715,55 @@ bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, flo
 	}
 
 	return true;
+}
+
+bool Player::RayTriangleIntersect(Ray ray, Triangle tri, XMVECTOR point)
+{
+	XMVECTOR  u, v, n;              // triangle vectors
+	XMVECTOR  dir, w0, w;           // ray vectors
+	float     r, a, b;              // params to calc ray-plane intersect
+
+	// get triangle edge vectors and plane normal
+	u = tri.vertex1 - tri.vertex0;
+	v = tri.vertex2 - tri.vertex0;
+	n = u * v;              // cross product
+
+	dir = ray.point1 - ray.point0;              // ray direction vector
+	w0 = ray.point0 - tri.vertex0;
+	XMStoreFloat(&a, -XMVector3Dot(n, w0));
+	XMStoreFloat(&b, XMVector3Dot(n, dir));
+	if (fabs(b) < 0.0001) {     // ray is  parallel to triangle plane
+		if (a == 0)                 // ray lies in triangle plane
+			return true;
+		else return false;              // ray disjoint from plane
+	}
+
+	// get intersect point of ray with triangle plane
+	r = a / b;
+	if (r < 0.0)                    // ray goes away from triangle
+		return false;                   // => no intersect
+	// for a segment, also test if (r > 1.0) => no intersect
+
+	point = ray.point0 + r * dir;            // intersect point of ray and plane
+
+	// is I inside T?
+	float    uu, uv, vv, wu, wv, D;
+	XMStoreFloat(&uu, XMVector3Dot(u, u));
+	XMStoreFloat(&uv, XMVector3Dot(u, v));
+	XMStoreFloat(&vv, XMVector3Dot(v, v));
+	w = point - tri.vertex0;
+	XMStoreFloat(&wu, XMVector3Dot(w, u));
+	XMStoreFloat(&wv, XMVector3Dot(w, v));
+	D = uv * uv - uu * vv;
+
+	// get and test parametric coords
+	float s, t;
+	s = (uv * wv - vv * wu) / D;
+	if (s < 0.0 || s > 1.0)         // I is outside T
+		return false;
+	t = (uv * wu - uu * wv) / D;
+	if (t < 0.0 || (s + t) > 1.0)  // I is outside T
+		return false;
+
+	return true;                       // I is in T
 }
