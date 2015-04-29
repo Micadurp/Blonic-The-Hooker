@@ -7,6 +7,8 @@ struct KeyboardStateStruct
 	bool key_a_pressed = false;
 	bool key_s_pressed = false;
 	bool key_d_pressed = false;
+	bool key_space_pressed = false;
+	bool key_escape_pressed = false;
 };
 
 struct MouseStateStruct

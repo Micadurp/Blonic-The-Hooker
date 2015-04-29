@@ -45,6 +45,11 @@ class Player : public Camera
 			XMVECTOR point0, point1;
 		};
 
+		float m_jumpVelocity;
+		bool m_isjumping;
+
+		XMFLOAT4 m_jumpPosition;
+
 		Model* m_crosshair;
 
 		PlayerInputs* m_input;
@@ -110,7 +115,7 @@ class Player : public Camera
 
 		bool TestIntersection(Model* _obj);
 		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
-		bool RayTriangleIntersect(Ray ray, Triangle tri, XMVECTOR point)
+		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR & point);
 };
 
 #endif
