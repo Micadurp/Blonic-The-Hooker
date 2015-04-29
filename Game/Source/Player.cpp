@@ -22,6 +22,11 @@ Player::Player()
 	m_hookshot->active = false;
 	m_hookshot->object = XMMatrixIdentity();
 	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+	m_jumpVelocity = 0.0f;
+	m_isjumping = false;
+
+	m_jumpPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
 }
 
 Player::~Player()
@@ -100,6 +105,10 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		m_position.y -= speed;
 	}
 
+	if (m_keyboard.key_space_pressed && m_hookshot->active == 0)
+	{
+		m_jumpVelocity = 1.0f;
+	}
 
 	// Rotation matrix from mouse input
 	XMMATRIX cameraRotationMatrix = XMMatrixRotationRollPitchYaw(m_mouse.y_pos, m_mouse.x_pos, 0.0f);
@@ -132,9 +141,16 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	}
 	else
 	{
-		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward));
-	}
+		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 
+		m_jumpVelocity -= m_gravity.y * 0.25f;
+
+		// Set maximum falling velocity
+		if (m_jumpVelocity <= -2.001f)
+		{
+			m_jumpVelocity = -2.0f;
+		}
+	}
 
 	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
 
@@ -150,7 +166,6 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	XMStoreFloat4(&m_camPos, temp_camPos);
 	XMStoreFloat4(&m_camLook, temp_camLook);
 	XMStoreFloat4(&m_camUp, temp_camUp);
-
 
 	// Update camera view
 	UpdateViewMatrix(m_camPos, m_camLook, m_camUp);

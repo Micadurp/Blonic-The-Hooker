@@ -35,6 +35,11 @@ class Player : public Camera
 			bool active;
 		};
 
+		float m_jumpVelocity;
+		bool m_isjumping;
+
+		XMFLOAT4 m_jumpPosition;
+
 		Model* m_crosshair;
 
 		PlayerInputs* m_input;

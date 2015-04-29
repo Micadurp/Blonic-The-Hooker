@@ -126,9 +126,13 @@ void PlayerInputs::Update()
 		m_keyboardStateObject.key_s_pressed = false;
 	}
 
-	if (keyboardState[DIK_SPACE] & 0x80)
+	if (keyboardState[DIK_SPACE] & 0x80 && !m_spaceStillPressed)
 	{
-		// Do stuff
+		m_keyboardStateObject.key_space_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_space_pressed = false;
 	}
 	if (keyboardState[DIK_RETURN] & 0x80)
 	{
@@ -136,7 +140,7 @@ void PlayerInputs::Update()
 	}
 	if (keyboardState[DIK_ESCAPE] & 0x80 && !m_escapeStillPressed)
 	{
-		m_isEscapePressed = !m_isEscapePressed;
+		m_keyboardStateObject.key_escape_pressed = !m_keyboardStateObject.key_escape_pressed;
 	}
 	// ------------------------------
 
