@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "PlayerInputs.h";
 #include "Model.h";
+#include <cmath>;
 
 using namespace std;
 
@@ -32,7 +33,7 @@ class Player : public Camera
 		{
 			XMVECTOR velocity;
 			XMMATRIX object;
-			bool active;
+			int active;
 		};
 
 		float m_jumpVelocity;
@@ -98,7 +99,8 @@ class Player : public Camera
 		// Solves the quadratic eqation, and returns the lowest root if equation is solvable, returns false if not solvable
 		bool GetLowestRoot(float a, float b, float c, float maxR, float* root); 
 
-		void MoveTowards(const XMMATRIX &object);
+		void HookToObj(const XMMATRIX &object);
+		void GrappleToObj(const XMMATRIX &object);
 		void TurnOffHookShot();
 		bool CheckHookState();
 
