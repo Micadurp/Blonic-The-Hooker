@@ -125,9 +125,14 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
-	if (m_hookshot->active)
+	if (m_hookshot->active == 1)
 	{
-		MoveTowards(m_hookshot->object);
+		HookToObj(m_hookshot->object);
+		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+	}
+	else if (m_hookshot->active == 2)
+	{
+		GrappleToObj(m_hookshot->object);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 	}
 	else
@@ -577,7 +582,22 @@ void Player::ChangeHookState(vector<Model*> models)
 		{
 			if (TestIntersection(models.at(n)))
 			{
-				MoveTowards(models[n]->GetObjMatrix());
+				HookToObj(models[n]->GetObjMatrix());
+			}
+		}
+	}
+
+	if (!m_lastpick && mousestate.btn_right_pressed)
+	{
+		if (CheckHookState())
+		{
+			TurnOffHookShot();
+		}
+		for (int n = 1; n < models.size(); n++)
+		{
+			if (TestIntersection(models.at(n)))
+			{
+				GrappleToObj(models[n]->GetObjMatrix());
 			}
 		}
 	}
@@ -585,13 +605,45 @@ void Player::ChangeHookState(vector<Model*> models)
 
 }
 
-void Player::MoveTowards(const XMMATRIX &object)
+void Player::HookToObj(const XMMATRIX &object)
 {
 	XMVECTOR vec = object.r[3] - XMLoadFloat4(&m_camPos);
-	vec = XMVector3Normalize(vec);
+	vec = XMVector3Normalize(vec)/5;
 	m_hookshot->velocity = vec;
 	m_hookshot->object = object;
-	m_hookshot->active = true;
+	m_hookshot->active = 1;
+}
+
+void Player::GrappleToObj(const XMMATRIX &object)
+{
+	XMVECTOR t = XMLoadFloat4(&m_camPos) - object.r[3];
+
+	float r = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+
+	t = XMVector3Normalize(t);
+
+	float mag;
+	mag = sqrt((m_velocity.x * m_velocity.x) + (m_velocity.y * m_velocity.y) + (m_velocity.z * m_velocity.z));
+
+	if (mag != 0)
+	{
+		//if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), 1.57))
+		{
+			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_velocity) - (XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / XMVector3Dot(t, t)) * t);
+			XMStoreFloat3(&m_velocity, (XMVector3Normalize(XMLoadFloat3(&m_velocity)) * mag));
+		}
+	}
+
+	//XMVECTOR pow2 = XMVectorSet(2, 2, 2, 2);	
+	//XMVECTOR speed = XMVectorSet(2, 2, 2, 0);
+	//XMVECTOR a = (XMVectorPow(speed, pow2)) / r;
+
+	//XMVECTOR vec = XMVector3Cross(r, XMLoadFloat3(&m_velocity));
+	//vec = XMVector3Cross(r, vec);
+
+	m_hookshot->velocity = XMLoadFloat3(&m_velocity);
+	m_hookshot->object = object;
+	m_hookshot->active = 2;
 }
 
 void Player::TurnOffHookShot()
