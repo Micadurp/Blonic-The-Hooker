@@ -528,6 +528,17 @@ void Direct3D::SetBackBufferRenderTarget()
 	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
 }
 
+bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix)
+{
+	for (int n = 0; n < _models.size(); n++)
+	{
+		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
+		_models.at(n)->Render(deviceContext);
+	}
+
+	return true;
+}
+
 void Direct3D::ResetViewport()
 {
 	deviceContext->RSSetViewports(1, &viewport);

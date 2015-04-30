@@ -11,8 +11,6 @@
 #include "Player.h"
 
 
-
-
 class GamePlay
 {
 private:
@@ -25,7 +23,7 @@ private:
 
 	vector<XMFLOAT3> collidableGeometryPositions;
 	vector<DWORD> collidableGeometryIndices;
-
+	
 public:
 	GamePlay();
 	virtual ~GamePlay();
