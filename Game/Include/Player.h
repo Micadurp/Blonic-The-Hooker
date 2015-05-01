@@ -114,9 +114,9 @@ class Player : public Camera
 		bool CheckHookState();
 
 		bool TestIntersection(Model* _obj);
-		bool TestIntersection(const Triangle & tri, XMVECTOR & point, const XMMATRIX & objMatrix);
+		bool TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix);
 		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
-		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR & point);
+		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point);
 };
 
 #endif

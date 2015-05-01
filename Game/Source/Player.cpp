@@ -589,7 +589,7 @@ void Player::ChangeHookState(vector<Model*> models)
 {
 	MouseStateStruct mousestate = m_input->GetMouseState();
 	Triangle tri;
-	XMVECTOR point = XMVectorSet(0,0,0,0);
+	XMVECTOR point;
 
 	if (!m_lastpick && mousestate.btn_left_pressed)
 	{
@@ -604,7 +604,7 @@ void Player::ChangeHookState(vector<Model*> models)
 				tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
 				tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
 				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
-				if (TestIntersection(tri, point, models.at(n)->GetObjMatrix()))
+				if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 				{
 					HookToObj(point);
 				}
@@ -625,7 +625,7 @@ void Player::ChangeHookState(vector<Model*> models)
 				tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
 				tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
 				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
-				if (TestIntersection(tri, point, models.at(n)->GetObjMatrix()))
+				if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 				{
 					GrappleToObj(point);
 				}
@@ -717,7 +717,7 @@ bool Player::TestIntersection(Model* _obj)
 	return intersect;
 }
 
-bool Player::TestIntersection(const Triangle & tri, XMVECTOR & point, const XMMATRIX & objMatrix)
+bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix)
 {
 	XMMATRIX inverseWorldMatrix;
 	XMVECTOR inverseView;
@@ -727,7 +727,7 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR & point, const XMMA
 	intersect = false;
 
 	// Get the inverse of the view matrix.
-	inverseView = XMLoadFloat4x4(&m_viewMatrix).r[2];
+	inverseView = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_viewMatrix)).r[2];
 
 	// Calculate the direction of the picking ray in view space.
 	direction.x = XMVectorGetX(inverseView);
@@ -753,6 +753,11 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR & point, const XMMA
 
 	// Now perform the ray-sphere intersection test.
 	intersect = RayTriangleIntersect(ray, tri, point);
+
+	if (intersect)
+	{
+		intersect = true;
+	}
 
 	return intersect;
 }
@@ -782,12 +787,12 @@ bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, flo
 	return true;
 }
 
-bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR & point)
+bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point)
 {
 	XMVECTOR  u, v, n;              // triangle vectors
 	XMVECTOR  dir, w0, w;           // ray vectors
 	float     r, a, b;              // params to calc ray-plane intersect
-
+	*point = XMVectorSet(0, 0, 0, 0);
 	// get triangle edge vectors and plane normal
 	u = tri.vertex1 - tri.vertex0;
 	v = tri.vertex2 - tri.vertex0;
@@ -797,39 +802,35 @@ bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTO
 	w0 = ray.point0 - tri.vertex0;
 	XMStoreFloat(&a, -XMVector3Dot(n, w0));
 	XMStoreFloat(&b, XMVector3Dot(n, dir));
-	if (fabs(b) <= 0) {     // ray is  parallel to triangle plane
-		if (a == 0)                 // ray lies in triangle plane
-			return true;
-		else return false;              // ray disjoint from plane
+	if (fabs(b) <= 0) {     // ray is  parallel to triangle plane       does not check if line is inside the plane
+		return false;              // ray disjoint from plane
 	}
 
 	// get intersect point of ray with triangle plane
 	r = a / b;
 	if (r < 0.0)                    // ray goes away from triangle
-		if (a == 0)                 // ray lies in triangle plane
-			return true;
-		else return false;                   // => no intersect
+		return false;                   // => no intersect
 	// for a segment, also test if (r > 1.0) => no intersect
 
-	point = ray.point0 + r * dir;            // intersect point of ray and plane
+	*point = ray.point0 + r * dir;            // intersect point of ray and plane
 
 	// is I inside T?
 	float    uu, uv, vv, wu, wv, D;
 	XMStoreFloat(&uu, XMVector3Dot(u, u));
 	XMStoreFloat(&uv, XMVector3Dot(u, v));
 	XMStoreFloat(&vv, XMVector3Dot(v, v));
-	w = point - tri.vertex0;
+	w = *point - tri.vertex0;
 	XMStoreFloat(&wu, XMVector3Dot(w, u));
 	XMStoreFloat(&wv, XMVector3Dot(w, v));
 	D = uv * uv - uu * vv;
-
+	
 	// get and test parametric coords
 	float s, t;
 	s = (uv * wv - vv * wu) / D;
-	if (s < 0.0 || s > 1.0)         // I is outside T
+	if (s <= 0.0 )         // I is outside T
 		return false;
 	t = (uv * wu - uu * wv) / D;
-	if (t < 0.0 || (s + t) > 1.0)  // I is outside T
+	if (t <= 0.0 || (s + t) >= 1.0)  // I is outside T
 		return false;
 
 	return true;                       // I is in T
