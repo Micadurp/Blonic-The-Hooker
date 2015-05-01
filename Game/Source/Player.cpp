@@ -13,14 +13,14 @@ Player::Player()
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_currentRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-	m_gravity = { 0.0f, 0.2f, 0.0f };
+	m_gravity = { 0.0f, 0.01f, 0.0f };
 
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
 	
 	m_hookshot = new HookShot();
 	m_hookshot->active = false;
-	m_hookshot->object = XMMatrixIdentity();
+	m_hookshot->point = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
 	m_jumpVelocity = 0.0f;
@@ -136,19 +136,20 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	if (m_hookshot->active == 1)
 	{
-		HookToObj(m_hookshot->object);
+		m_jumpVelocity = 0.0f;
+		HookToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 	}
 	else if (m_hookshot->active == 2)
 	{
-		GrappleToObj(m_hookshot->object);
+		GrappleToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 	}
 	else
 	{
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 
-		m_jumpVelocity -= m_gravity.y * 0.25f;
+		m_jumpVelocity -= m_gravity.y;
 
 		// Set maximum falling velocity
 		if (m_jumpVelocity <= -2.001f)
@@ -195,13 +196,13 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	XMVECTOR finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
 
 
-	if (!m_hookshot->active)
-	{	//// Add gravity pull
-		collisionPack.e_Velocity = -XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
-		collisionPack.e_Position = finalPosition;
-		collisionPack.collisionRecursionDepth = 0;
-		finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
-	}
+	//if (!m_hookshot->active)
+	//{	//// Add gravity pull
+	//	collisionPack.e_Velocity = -XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
+	//	collisionPack.e_Position = finalPosition;
+	//	collisionPack.collisionRecursionDepth = 0;
+	//	finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
+	//}
 
 	// Convert our final position from ellipsoid space to world space
 	finalPosition = finalPosition * collisionPack.ellipsoidSpace;
@@ -587,6 +588,9 @@ bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _ro
 void Player::ChangeHookState(vector<Model*> models)
 {
 	MouseStateStruct mousestate = m_input->GetMouseState();
+	Triangle tri;
+	XMVECTOR point = XMVectorSet(0,0,0,0);
+
 	if (!m_lastpick && mousestate.btn_left_pressed)
 	{
 		if (CheckHookState())
@@ -595,9 +599,15 @@ void Player::ChangeHookState(vector<Model*> models)
 		}
 		for (int n = 1; n < models.size(); n++)
 		{
-			if (TestIntersection(models.at(n)))
+			for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 			{
-				HookToObj(models[n]->GetObjMatrix());
+				tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
+				tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
+				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+				if (TestIntersection(tri, point, models.at(n)->GetObjMatrix()))
+				{
+					HookToObj(point);
+				}
 			}
 		}
 	}
@@ -610,9 +620,15 @@ void Player::ChangeHookState(vector<Model*> models)
 		}
 		for (int n = 1; n < models.size(); n++)
 		{
-			if (TestIntersection(models.at(n)))
+			for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 			{
-				GrappleToObj(models[n]->GetObjMatrix());
+				tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
+				tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
+				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+				if (TestIntersection(tri, point, models.at(n)->GetObjMatrix()))
+				{
+					GrappleToObj(point);
+				}
 			}
 		}
 	}
@@ -620,18 +636,19 @@ void Player::ChangeHookState(vector<Model*> models)
 
 }
 
-void Player::HookToObj(const XMMATRIX &object)
+
+void Player::HookToObj(const XMVECTOR &point)
 {
-	XMVECTOR vec = object.r[3] - XMLoadFloat4(&m_camPos);
+	XMVECTOR vec = point - XMLoadFloat4(&m_camPos);
 	vec = XMVector3Normalize(vec)/5;
 	m_hookshot->velocity = vec;
-	m_hookshot->object = object;
+	m_hookshot->point = point;
 	m_hookshot->active = 1;
 }
 
-void Player::GrappleToObj(const XMMATRIX &object)
+void Player::GrappleToObj(const XMVECTOR &point)
 {
-	XMVECTOR t = XMLoadFloat4(&m_camPos) - object.r[3];
+	XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 
 	float r = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 
@@ -649,15 +666,8 @@ void Player::GrappleToObj(const XMMATRIX &object)
 		}
 	}
 
-	//XMVECTOR pow2 = XMVectorSet(2, 2, 2, 2);	
-	//XMVECTOR speed = XMVectorSet(2, 2, 2, 0);
-	//XMVECTOR a = (XMVectorPow(speed, pow2)) / r;
-
-	//XMVECTOR vec = XMVector3Cross(r, XMLoadFloat3(&m_velocity));
-	//vec = XMVector3Cross(r, vec);
-
 	m_hookshot->velocity = XMLoadFloat3(&m_velocity);
-	m_hookshot->object = object;
+	m_hookshot->point = point;
 	m_hookshot->active = 2;
 }
 
@@ -707,6 +717,46 @@ bool Player::TestIntersection(Model* _obj)
 	return intersect;
 }
 
+bool Player::TestIntersection(const Triangle & tri, XMVECTOR & point, const XMMATRIX & objMatrix)
+{
+	XMMATRIX inverseWorldMatrix;
+	XMVECTOR inverseView;
+	XMFLOAT4 direction, origin;
+	XMVECTOR rayOrigin, rayDirection;
+	bool intersect, result;
+	intersect = false;
+
+	// Get the inverse of the view matrix.
+	inverseView = XMLoadFloat4x4(&m_viewMatrix).r[2];
+
+	// Calculate the direction of the picking ray in view space.
+	direction.x = XMVectorGetX(inverseView);
+	direction.y = XMVectorGetY(inverseView);
+	direction.z = XMVectorGetZ(inverseView);
+
+	// Get the origin of the picking ray which is the position of the camera.
+	origin = m_camPos;
+
+	// Now get the inverse of the translated world matrix.
+	inverseWorldMatrix = XMMatrixInverse(NULL, objMatrix);
+
+	// Now transform the ray origin and the ray direction from view space to world space.
+	rayOrigin = XMVector3TransformCoord(XMLoadFloat4(&origin), inverseWorldMatrix);
+	rayDirection = XMVector3TransformNormal(XMLoadFloat4(&direction), inverseWorldMatrix);
+
+	// Normalize the ray direction.
+	rayDirection = XMVector3Normalize(rayDirection);
+
+	Ray ray;
+	ray.point0 = rayOrigin;
+	ray.point1 = rayDirection;
+
+	// Now perform the ray-sphere intersection test.
+	intersect = RayTriangleIntersect(ray, tri, point);
+
+	return intersect;
+}
+
 bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius)
 {
 	float a, b, c, discriminant;
@@ -747,7 +797,7 @@ bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTO
 	w0 = ray.point0 - tri.vertex0;
 	XMStoreFloat(&a, -XMVector3Dot(n, w0));
 	XMStoreFloat(&b, XMVector3Dot(n, dir));
-	if (fabs(b) < 0.0001) {     // ray is  parallel to triangle plane
+	if (fabs(b) <= 0) {     // ray is  parallel to triangle plane
 		if (a == 0)                 // ray lies in triangle plane
 			return true;
 		else return false;              // ray disjoint from plane
@@ -756,7 +806,9 @@ bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTO
 	// get intersect point of ray with triangle plane
 	r = a / b;
 	if (r < 0.0)                    // ray goes away from triangle
-		return false;                   // => no intersect
+		if (a == 0)                 // ray lies in triangle plane
+			return true;
+		else return false;                   // => no intersect
 	// for a segment, also test if (r > 1.0) => no intersect
 
 	point = ray.point0 + r * dir;            // intersect point of ray and plane
