@@ -40,18 +40,16 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	for (int n = 0; n < 1; n++)
 	{
 		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(50, 1, 50) * DirectX::XMMatrixTranslation(0, -5, 0));
-		models.at(n)->Initialize(L"ground", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
 
-	for (int n = models.size(); n < 100; n++)
+	for (int n = models.size(); n < 2; n++)
 	{
 		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(rand() % 100 - 50, rand() % 100, rand() % 100 - 50));
-		models.at(n)->Initialize(L"Cube", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
+		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}
-
-
 
 	return true;
 }
