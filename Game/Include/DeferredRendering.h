@@ -50,13 +50,24 @@ private:
 		}
 	};
 
+	struct VertexCB
+	{
+		DirectX::XMMATRIX projectionMatrix;
+	}
+	vertexCB;
+
 	ID3D11VertexShader * deferredVertexShader;
 	ID3D11PixelShader * deferredPixelShader;
+
+	ID3D11Buffer*   deferredCB; //Deferred vertex shader constant buffer
+
+	ID3D11InputLayout* deferredVertexLayout = nullptr;
+
 public:
 	DeferredRendering();
 	~DeferredRendering();
 
-	void Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
+	void Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight);
 
 	void FirstPass(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView);
 	void Render(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView, ID3D11RenderTargetView* gBackbufferRTV);

@@ -10,10 +10,10 @@ DeferredRendering::~DeferredRendering()
 
 }
 
-void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight)
+void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight)
 {
 	nrOfRenderTargets = 1;
-	vertexSize = sizeof(Vertex);
+	vertexSize = sizeof(float)* 5;
 
 #pragma region Create Vertex buffer
 	int nrOfVertices = 0;
@@ -28,8 +28,6 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 
 	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0, 1.0f, 1.0f); //4
 
-
-	
 
 	D3D11_BUFFER_DESC bufferDesc;
 	memset(&bufferDesc, 0, sizeof(bufferDesc));
@@ -121,8 +119,14 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 	D3DCompileFromFile(L"DeferredVertexShader.hlsl", NULL, nullptr, "VS_main", "vs_5_0", 0, NULL, &pVS, nullptr);
 
 	_device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &deferredVertexShader);
-	pVS->Release();
 
+	//create input layout (verified using vertex shader)
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 16, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+	_device->CreateInputLayout(inputDesc, ARRAYSIZE(inputDesc), pVS->GetBufferPointer(), pVS->GetBufferSize(), &deferredVertexLayout);
+	pVS->Release();
 
 	//create pixel shader
 	ID3DBlob* pPS = nullptr;
@@ -136,6 +140,31 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 	for (int n = 0; n < nrOfRenderTargets; n++)
 		renderTargetTextureMap[n]->Release();
 
+
+#pragma region Create ConstantBuffers
+
+	vertexCB.projectionMatrix = _projectionMatrix;
+
+
+	D3D11_BUFFER_DESC matrixBufferDesc;
+	memset(&matrixBufferDesc, 0, sizeof(matrixBufferDesc));
+
+	matrixBufferDesc.ByteWidth = sizeof(VertexCB);
+	matrixBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	
+	matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	matrixBufferDesc.MiscFlags = 0;
+	matrixBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA vsInitData;
+	vsInitData.pSysMem = &vertexCB;
+	vsInitData.SysMemPitch = 0;
+	vsInitData.SysMemSlicePitch = 0;
+
+	// Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+	_device->CreateBuffer(&matrixBufferDesc, &vsInitData, &deferredCB);
+
+#pragma endregion
 }
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
@@ -155,13 +184,17 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 {
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	//_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
+	_deviceContext->IASetInputLayout(deferredVertexLayout);
+
+	_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
 	_deviceContext->GSSetShader(NULL, NULL, 0);
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
 
 	UINT32 offset = 0;
+
+	_deviceContext->VSSetConstantBuffers(0, 1, &deferredCB);
 
 	_deviceContext->IASetVertexBuffers(0, 1, &meshVertBuff, &vertexSize, &offset);
 	_deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);

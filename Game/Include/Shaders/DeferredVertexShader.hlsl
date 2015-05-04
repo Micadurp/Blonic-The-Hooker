@@ -1,3 +1,8 @@
+cbuffer VertexBuffer: register(b0)
+{
+	matrix projectionMatrix;
+};
+
 struct VS_IN
 {
 	float4 pos : POSITION;
@@ -17,7 +22,7 @@ VS_OUT VS_main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	output.pos = input.pos;
+	output.pos = mul(input.pos, projectionMatrix);
 	output.tex = input.tex;
 
 	return output;
