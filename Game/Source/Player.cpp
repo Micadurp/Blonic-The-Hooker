@@ -632,7 +632,11 @@ void Player::ChangeHookState(vector<Model*> models)
 			}
 		}
 	}
-	m_lastpick = mousestate.btn_left_pressed;
+
+	if (mousestate.btn_right_pressed)
+		m_lastpick = mousestate.btn_right_pressed;
+	else
+		m_lastpick = mousestate.btn_left_pressed;
 
 }
 
@@ -681,7 +685,7 @@ bool Player::CheckHookState()
 	return m_hookshot->active;
 }
 
-bool Player::TestIntersection(Model* _obj)
+bool Player::TestIntersection(XMVECTOR * point, Model* _obj)
 {
 	XMMATRIX inverseWorldMatrix;
 	XMVECTOR inverseView;
@@ -713,6 +717,8 @@ bool Player::TestIntersection(Model* _obj)
 
 	// Now perform the ray-sphere intersection test.
 	intersect = RaySphereIntersect(rayOrigin, rayDirection, 1.0f);
+
+	*point = _obj->GetObjMatrix().r[3];
 
 	return intersect;
 }
@@ -747,17 +753,9 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMA
 	// Normalize the ray direction.
 	rayDirection = XMVector3Normalize(rayDirection);
 
-	Ray ray;
-	ray.point0 = rayOrigin;
-	ray.point1 = rayDirection;
-
-	// Now perform the ray-sphere intersection test.
-	intersect = RayTriangleIntersect(ray, tri, point);
-
-	if (intersect)
-	{
-		intersect = true;
-	}
+	float r;
+	intersect = DirectX::TriangleTests::Intersects(rayOrigin, rayDirection, tri.vertex0, tri.vertex1, tri.vertex2, r);
+	*point = rayOrigin + r * rayDirection;
 
 	return intersect;
 }

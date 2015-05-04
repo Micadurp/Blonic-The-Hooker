@@ -5,6 +5,7 @@
 #include "PlayerInputs.h";
 #include "Model.h";
 #include <cmath>;
+#include "DirectXCollision.h";
 
 using namespace std;
 
@@ -113,7 +114,7 @@ class Player : public Camera
 		void TurnOffHookShot();
 		bool CheckHookState();
 
-		bool TestIntersection(Model* _obj);
+		bool TestIntersection(XMVECTOR * point, Model* _obj);
 		bool TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix);
 		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
 		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point);
