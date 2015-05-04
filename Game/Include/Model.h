@@ -83,12 +83,17 @@ protected:
 	UINT32 vertexSize = sizeof(Vertex);
 
 	ID3D11Buffer*   pixelShaderMaterialCB;
+
+
+	std::vector<XMFLOAT3> pickingPoints;
+	std::vector<DWORD> pickingIndices;
 public:
 	Model();
 	virtual ~Model();
 
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	void Shutdown();
 
@@ -96,6 +101,7 @@ public:
 	void Render(ID3D11DeviceContext* _deviceContext);
 
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
+	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device);
 
 	bool CreateShaders(ID3D11Device* _device);
@@ -104,5 +110,9 @@ public:
 
 	DirectX::XMMATRIX GetObjMatrix();
 	void SetObjMatrix(const DirectX::XMMATRIX& _newMatrix);
+
+
+	std::vector<XMFLOAT3>* GetPickingPoints();
+	std::vector<DWORD>* GetPickingIndicies();
 };
 #endif

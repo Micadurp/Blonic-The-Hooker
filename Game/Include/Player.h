@@ -5,6 +5,7 @@
 #include "PlayerInputs.h";
 #include "Model.h";
 #include <cmath>;
+#include "DirectXCollision.h";
 
 using namespace std;
 
@@ -32,7 +33,7 @@ class Player : public Camera
 		struct HookShot
 		{
 			XMVECTOR velocity;
-			XMMATRIX object;
+			XMVECTOR point;
 			int active;
 		};
 
@@ -108,14 +109,15 @@ class Player : public Camera
 		// Solves the quadratic eqation, and returns the lowest root if equation is solvable, returns false if not solvable
 		bool GetLowestRoot(float a, float b, float c, float maxR, float* root); 
 
-		void HookToObj(const XMMATRIX &object);
-		void GrappleToObj(const XMMATRIX &object);
+		void HookToObj(const XMVECTOR &point);
+		void GrappleToObj(const XMVECTOR &point);
 		void TurnOffHookShot();
 		bool CheckHookState();
 
-		bool TestIntersection(Model* _obj);
+		bool TestIntersection(XMVECTOR * point, Model* _obj);
+		bool TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix);
 		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
-		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR & point);
+		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point);
 };
 
 #endif
