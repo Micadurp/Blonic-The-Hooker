@@ -76,6 +76,7 @@ void PlayerInputs::Update()
 	DIMOUSESTATE mouseCurrentState;
 	BYTE keyboardState[256];
 
+	// Get access to input devices
 	m_keyboard->Acquire();
 	m_mouse->Acquire();
 
@@ -136,7 +137,11 @@ void PlayerInputs::Update()
 	}
 	if (keyboardState[DIK_RETURN] & 0x80)
 	{
-		// Do stuff
+		m_keyboardStateObject.key_enter_pressed = true;
+	}
+	else
+	{
+		m_keyboardStateObject.key_enter_pressed = false;
 	}
 	if (keyboardState[DIK_ESCAPE] & 0x80 && !m_escapeStillPressed)
 	{
@@ -162,6 +167,10 @@ void PlayerInputs::Update()
 
 	m_mouseLastState = mouseCurrentState;
 	UpdateInputStates(keyboardState, m_mouseLastState);
+
+	// Release access to input devices
+	//m_keyboard->Unacquire();
+	//m_mouse->Unacquire();
 }
 
 void PlayerInputs::UpdateInputStates(BYTE* keyboardState, DIMOUSESTATE mouseState)
