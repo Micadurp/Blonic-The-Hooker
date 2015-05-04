@@ -10,6 +10,7 @@ class DeferredRendering
 {
 private:
 	ID3D11Buffer* meshVertBuff;
+	ID3D11Buffer* indexBuffer;
 
 	int nrOfRenderTargets;
 	UINT32 vertexSize;

@@ -19,13 +19,17 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 	int nrOfVertices = 0;
 
 	Vertex vertices[4];
-	vertices[nrOfVertices++] = Vertex(-1.0f, 1.0f, 0, 0.0f, 0.0f);
+	
+	vertices[nrOfVertices++] = Vertex(-1.0f, -1.0f, 0, 0.0f, 1.0f); //3
 
-	vertices[nrOfVertices++] = Vertex(1.0f, 1.0f, 0, 1.0f, 0.0f);
+	vertices[nrOfVertices++] = Vertex(-1.0f, 1.0f, 0, 0.0f, 0.0f); //1
 
-	vertices[nrOfVertices++] = Vertex(-1.0f, -1.0f, 0, 0.0f, 1.0f);
+	vertices[nrOfVertices++] = Vertex(1.0f, 1.0f, 0, 1.0f, 0.0f); //2
 
-	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0, 1.0f, 1.0f);
+	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0, 1.0f, 1.0f); //4
+
+
+	
 
 	D3D11_BUFFER_DESC bufferDesc;
 	memset(&bufferDesc, 0, sizeof(bufferDesc));
@@ -36,6 +40,26 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 	D3D11_SUBRESOURCE_DATA data;
 	data.pSysMem = vertices;
 	_device->CreateBuffer(&bufferDesc, &data, &meshVertBuff);
+
+
+	DWORD indices[] = {
+		0, 1, 2,
+		0, 2, 3,
+	};
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD)* 2 * 3;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA iinitData;
+
+	iinitData.pSysMem = indices;
+	_device->CreateBuffer(&indexBufferDesc, &iinitData, &indexBuffer);
 
 #pragma endregion
 
@@ -116,7 +140,7 @@ void DeferredRendering::Initilize(ID3D11Device* _device, int _screenWidth, int _
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
 {
-	float clearColor[] = { 1, 0, 1, 0 };
+	float clearColor[] = { 1, 1, 1, 0 };
 
 	// Set our maps Render Target
 	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets, clearRV);
@@ -129,10 +153,10 @@ void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11Dep
 
 void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11DepthStencilView* _depthStencilView, ID3D11RenderTargetView* _backbufferRTV)
 {
-	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
-	//_deviceContext->GSSetShader(NULL, NULL, 0);
+	//_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
+	_deviceContext->GSSetShader(NULL, NULL, 0);
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
@@ -140,9 +164,10 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 	UINT32 offset = 0;
 
 	_deviceContext->IASetVertexBuffers(0, 1, &meshVertBuff, &vertexSize, &offset);
+	_deviceContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets, shaderResourceView);
 
-	_deviceContext->Draw(4, 0);
+	_deviceContext->DrawIndexed(6, 0, 0);
 	
 }
