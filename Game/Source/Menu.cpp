@@ -3,12 +3,15 @@
 Menu::Menu()
 {
 	menu_background = new Model();
-	menuButtons = new Button*[2];
+	menuButtons = new Button*[buttonCount];
+
+	menuSelector = new Model();
+	selectorPosition = -0.2f;
 
 	camera = new Camera();
 	input = new PlayerInputs();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < buttonCount; i++)
 	{
 		menuButtons[i] = new Button();
 	}
@@ -18,7 +21,7 @@ Menu::Menu()
 
 Menu::~Menu()
 {
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < buttonCount; i++)
 	{
 		delete menuButtons[i];
 		menuButtons[i] = nullptr;
@@ -33,28 +36,76 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstan
 {
 	bool result;
 
+	XMStoreFloat4x4(&projectionMatrix, XMMatrixOrthographicLH(_width, _height, _nearZ, _farZ));
+
 	result = input->Initialize(wndHandle, hInstance);
 	if (!result)
 	{
 		return false;
 	}
 
-	// Initialize background image
-	menu_background->Initialize(L"menuBgrd_obj_LH", _device);
-	menu_background->SetObjMatrix(XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(0.0f, 0.0f, 1.4f));
+	// Initialize menu selector
+	result = menuSelector->Initialize(L"menuSelector", _device);
+	if (!result)
+	{
+		return false;
+	}
+	menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(-0.5f, selectorPosition, 1.0f));
 
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixOrthographicLH(_width, _height, _nearZ, _farZ));
+	// Initialize menu buttons
+	wstring tmp[] = { L"newGame", L"quit" };
+	for (int i = 0; i < buttonCount; i++)
+	{
+		result = menuButtons[i]->Initialize(_device, i, L"menuBtn_" + tmp[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
+		if (!result)
+		{
+			return false;
+		}
+	}
+
+	// Initialize background image
+	result = menu_background->Initialize(L"menuBgrd_obj_LH", _device);
+	if (!result)
+	{
+		return false;
+	}
+	menu_background->SetObjMatrix(XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(0.0f, 0.0f, 1.4f));
 
 	return true;
 }
 
 int Menu::Update()
 {
+	lastKeyboardState = input->GetKeyboardState();
+
 	input->Update();
 
-	if (input->GetKeyboardState().key_escape_pressed)
+	if ((input->GetKeyboardState().key_w_pressed && !lastKeyboardState.key_w_pressed) || (input->GetKeyboardState().key_s_pressed && !lastKeyboardState.key_s_pressed))
 	{
-		return 1;
+		if (selectorPosition < -0.2f)
+		{
+			selectorPosition = -0.2f;
+		}
+		else
+		{
+			selectorPosition = -0.4f;
+		}
+
+		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(-0.5f, selectorPosition, 1.0f));
+	}
+
+	if (input->GetKeyboardState().key_enter_pressed && !lastKeyboardState.key_enter_pressed)
+	{
+		// New game
+		if (selectorPosition > -0.4f)
+		{
+			return 1;
+		}
+		// Quit game
+		else
+		{
+			return 2;
+		}
 	}
 
 	return -1;
@@ -64,7 +115,20 @@ void Menu::Render(Direct3D* _direct3D)
 {
 	_direct3D->SetShader();
 
+	// Render menu background
 	_direct3D->SetVertexCBuffer(menu_background->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
-
 	menu_background->Render(_direct3D->GetDeviceContext());
+
+	// Render menu buttons
+	for (int i = 0; i < buttonCount; i++)
+	{
+		_direct3D->SetVertexCBuffer(menuButtons[i]->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
+		menuButtons[i]->Render(_direct3D->GetDeviceContext());
+	}
+
+	// Render menu selector
+	_direct3D->SetCrosshairShaders();
+
+	_direct3D->SetVertexCBuffer(menuSelector->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
+	menuSelector->Render(_direct3D->GetDeviceContext());
 }

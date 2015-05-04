@@ -152,11 +152,15 @@ bool System::Frame(double _time)
 	break;
 
 	case GameState::gMenu:
-		 state = menu->Update();
+		state = menu->Update();
 
-		if (state != -1)
+		switch (state)
 		{
+		case 1:
 			gameState = GameState::gGamePlay;
+			break;
+		case 2:
+			return false;
 		}
 
 		break;

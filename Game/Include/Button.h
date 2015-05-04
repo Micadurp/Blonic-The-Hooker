@@ -9,7 +9,7 @@
 
 using namespace std;
 
-class Button: Model
+class Button: public Model
 {
 	private:
 		int id;
@@ -19,10 +19,9 @@ class Button: Model
 		virtual ~Button();
 
 		bool Initialize(ID3D11Device* _device, int _id, wstring _modelName, vector<XMFLOAT3> *collidableGeometryPositions, vector<DWORD> *collidableGeometryIndices, const XMMATRIX& _newMatrix);
+		bool Initialize(ID3D11Device* _device, int _id, wstring _modelName, const XMMATRIX& _newMatrix);
 
 		int GetId() const;
-
-		bool IntersectBox();
 };
 
 #endif

@@ -9,8 +9,17 @@
 class Menu
 {
 	private:
+		const int buttonCount = 2;
+
+		KeyboardStateStruct lastKeyboardState;
+
 		Model* menu_background;
+
+		Model* menuSelector;
+		float selectorPosition;
+
 		Button** menuButtons;
+
 		Camera* camera;
 		PlayerInputs* input;
 
