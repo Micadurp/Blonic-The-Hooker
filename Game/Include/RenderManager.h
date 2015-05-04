@@ -30,7 +30,7 @@ private:
 	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
 
-	DeferredRendering * defferedRenderer;
+	DeferredRendering * deferredRenderer;
 
 public:
 	RenderManager();
