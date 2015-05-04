@@ -1,6 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "Direct3D.h"
 #include "Button.h"
 #include "Camera.h"
 #include "PlayerInputs.h"
@@ -8,6 +9,7 @@
 class Menu
 {
 	private:
+		Model* menu_background;
 		Button** menuButtons;
 		Camera* camera;
 		PlayerInputs* input;
@@ -25,6 +27,6 @@ class Menu
 
 		int Update();
 
-		void Render();
+		void Render(Direct3D* _direct3D);
 };
 #endif

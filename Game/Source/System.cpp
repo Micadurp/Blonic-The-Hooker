@@ -30,7 +30,7 @@ bool System::Initialize()
 
 	///////////////
 
-	gameState = GameState::gGamePlay;
+	gameState = GameState::gMenu;
 
 	direct3D = new Direct3D();
 	if (!direct3D)
@@ -50,6 +50,8 @@ bool System::Initialize()
 	{
 		return false;
 	}
+
+	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)
@@ -139,6 +141,7 @@ void System::Run()
 
 bool System::Frame(double _time)
 {
+	int state;
 #pragma region Update
 
 	switch (gameState)
@@ -149,7 +152,13 @@ bool System::Frame(double _time)
 	break;
 
 	case GameState::gMenu:
-		menu->Update();
+		 state = menu->Update();
+
+		if (state != -1)
+		{
+			gameState = GameState::gGamePlay;
+		}
+
 		break;
 
 	case GameState::gPause:
@@ -171,7 +180,7 @@ bool System::Frame(double _time)
 		break;
 
 	case GameState::gMenu:
-		menu->Render();
+		menu->Render(direct3D);
 		break;
 
 	case GameState::gPause:

@@ -63,8 +63,10 @@ public:
 
 	void SetCrosshairShaders();
 	bool SetShader();
-	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
+
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix);
+	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
+	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 
 	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
 	

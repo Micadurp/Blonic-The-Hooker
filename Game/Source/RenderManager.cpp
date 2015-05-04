@@ -81,12 +81,12 @@ bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _scree
 	}
 #pragma endregion
 
-	defferedRenderer = new DeferredRendering();
-	if (!defferedRenderer)
+	deferredRenderer = new DeferredRendering();
+	if (!deferredRenderer)
 	{
 		return false;
 	}
-	defferedRenderer->Initilize(_device, _screenWidth, _screenHeight);
+	deferredRenderer->Initilize(_device, _screenWidth, _screenHeight);
 	
 	return true;
 }
@@ -212,11 +212,11 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
 {
-	defferedRenderer->FirstPass(_deviceContext, _depthStencilView);
+	deferredRenderer->FirstPass(_deviceContext, _depthStencilView);
 }
 
 void RenderManager::DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer)
 {
-	defferedRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
+	deferredRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
 
 }
