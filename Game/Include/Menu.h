@@ -5,6 +5,7 @@
 #include "Button.h"
 #include "Camera.h"
 #include "PlayerInputs.h"
+#include "lua.hpp"
 
 class Menu
 {

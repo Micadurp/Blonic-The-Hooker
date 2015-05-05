@@ -24,11 +24,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/Modules/")
 include(create_source_group)
 
 # SFML paths and libs
-set(EXTERNAL_INCLUDE_DIR ${CMAKE_SOURCE_DIR})
+
+set(EXTERNAL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Lua)
 if(COMPILE_RELEASE_BUILD)
-	set(EXTERNAL_LIBRARIES )	
+	set(EXTERNAL_LIBRARIES LuaLib.lib)	
 else()
-	set(EXTERNAL_LIBRARIES )	
+	set(EXTERNAL_LIBRARIES LuaLib.lib)	
 endif()
 
 include_directories(${EXTERNAL_INCLUDE_DIRS})
