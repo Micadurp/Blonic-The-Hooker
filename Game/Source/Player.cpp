@@ -27,6 +27,8 @@ Player::Player()
 	m_isjumping = false;
 
 	m_jumpPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	m_onGround = false;
 }
 
 Player::~Player()
@@ -153,12 +155,21 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	{
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 
-		m_jumpVelocity -= m_gravity.y;
-
-		// Set maximum falling velocity
-		if (m_jumpVelocity <= -2.001f)
+		//onground and hookshot active check
+		if (!m_hookshot->active && !m_onGround)
 		{
-			m_jumpVelocity = -2.0f;
+				m_jumpVelocity -= m_gravity.y;
+
+			// Set maximum falling velocity
+			if (m_jumpVelocity < -1.0f)
+			{
+				m_jumpVelocity = -1.0f;
+			}
+		}
+		else
+		{
+			m_jumpVelocity = 0.0f;
+			m_onGround = false;
 		}
 	}
 
@@ -231,6 +242,7 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 	// Loop through each triangle in mesh and check for a collision
 	for (int triCounter = 0; triCounter < _indices.size() / 3; triCounter++)
 	{
+		XMVECTOR triNormal;
 		XMVECTOR p0, p1, p2, tempVec;
 		p0 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter]]);
 		p1 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter + 1]]);
@@ -246,10 +258,16 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 		triNormal = XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
 
 		SphereCollidingWithTriangle(_cP, p0, p1, p2, triNormal);
+
+		if (_cP.foundCollision == true && XMVectorGetX(XMVector3AngleBetweenVectors(triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
+		{
+			m_onGround = true;
+		}
 	}
 
 	// If there was no collision, return the position + velocity
-	if (_cP.foundCollision == false) {
+	if (_cP.foundCollision == false) 
+	{
 		return _cP.e_Position + _cP.e_Velocity;
 	}
 

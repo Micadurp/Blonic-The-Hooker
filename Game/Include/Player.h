@@ -70,6 +70,7 @@ class Player : public Camera
 		HookShot* m_hookshot;
 
 		bool m_lastpick;
+		bool m_onGround;
 
 	public:
 		Player();
