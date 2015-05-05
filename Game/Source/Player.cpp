@@ -242,7 +242,6 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 	// Loop through each triangle in mesh and check for a collision
 	for (int triCounter = 0; triCounter < _indices.size() / 3; triCounter++)
 	{
-		XMVECTOR triNormal;
 		XMVECTOR p0, p1, p2, tempVec;
 		p0 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter]]);
 		p1 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter + 1]]);
