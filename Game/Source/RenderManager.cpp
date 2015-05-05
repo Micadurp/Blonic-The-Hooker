@@ -16,7 +16,7 @@ RenderManager::~RenderManager()
 
 }
 
-bool RenderManager::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix,int _screenWidth, int _screenHeight)
+bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix,int _screenWidth, int _screenHeight)
 {
 	HRESULT result;
 
@@ -218,5 +218,4 @@ void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D1
 void RenderManager::DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer)
 {
 	deferredRenderer->Render(_deviceContext, _depthStencilView, backBuffer);
-
 }

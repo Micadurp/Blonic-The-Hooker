@@ -374,7 +374,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	{
 		return false;
 	}
-	result = renderer->Initilize(device,XMLoadFloat4x4(&projectionMatrix), _screenWidth, _screenHeight);
+	result = renderer->Initialize(device,XMLoadFloat4x4(&projectionMatrix), _screenWidth, _screenHeight);
 
 	return true;
 }

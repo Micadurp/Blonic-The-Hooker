@@ -36,7 +36,7 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight);
+	bool Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight);
 
 	void Shutdown();
 	bool SameShader();

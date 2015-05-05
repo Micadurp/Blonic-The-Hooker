@@ -5,9 +5,6 @@
 
 #include "Direct3D.h"
 #include "Model.h"
-
-#include "Camera.h"
-
 #include "Player.h"
 
 
@@ -17,7 +14,6 @@ private:
 	RenderManager* renderer;
 
 	std::vector< Model*> models;
-	
 
 	Player* player;
 
