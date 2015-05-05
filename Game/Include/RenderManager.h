@@ -36,13 +36,13 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	bool Initilize(ID3D11Device* _device, int _screenWidth, int _screenHeight);
+	bool Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight);
 
 	void Shutdown();
 	bool SameShader();
 
 	void DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView);
-	void DeferredRenderer( ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
+	void DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
 
 	void SetCrosshairShaders(ID3D11DeviceContext* _deviceContext);
 	bool SetShader(ID3D11DeviceContext* _deviceContext);

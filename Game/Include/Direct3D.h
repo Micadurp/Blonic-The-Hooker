@@ -19,6 +19,10 @@
 
 #include "RenderManager.h"
 
+#include"Model.h"
+
+#include <vector>
+
 using namespace DirectX;
 
 class Direct3D
@@ -64,6 +68,8 @@ public:
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 
+	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
+	
 	void SetBackBufferRenderTarget();
 	void ResetViewport();
 

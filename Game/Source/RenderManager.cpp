@@ -16,7 +16,7 @@ RenderManager::~RenderManager()
 
 }
 
-bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _screenHeight)
+bool RenderManager::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix,int _screenWidth, int _screenHeight)
 {
 	HRESULT result;
 
@@ -86,7 +86,7 @@ bool RenderManager::Initilize(ID3D11Device* _device,int _screenWidth, int _scree
 	{
 		return false;
 	}
-	deferredRenderer->Initilize(_device, _screenWidth, _screenHeight);
+	deferredRenderer->Initilize(_device, _projectionMatrix, _screenWidth, _screenHeight);
 	
 	return true;
 }

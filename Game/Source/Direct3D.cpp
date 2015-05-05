@@ -374,7 +374,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	{
 		return false;
 	}
-	result = renderer->Initilize(device, _screenWidth, _screenHeight);
+	result = renderer->Initilize(device,XMLoadFloat4x4(&projectionMatrix), _screenWidth, _screenHeight);
 
 	return true;
 }
@@ -531,6 +531,17 @@ bool Direct3D::SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const Dir
 void Direct3D::SetBackBufferRenderTarget()
 {
 	deviceContext->OMSetRenderTargets(1, &backBuffer, depthStencilView);
+}
+
+bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix)
+{
+	for (int n = 0; n < _models.size(); n++)
+	{
+		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
+		_models.at(n)->Render(deviceContext);
+	}
+
+	return true;
 }
 
 void Direct3D::ResetViewport()

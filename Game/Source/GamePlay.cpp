@@ -44,6 +44,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
 
+
 	for (int n = models.size(); n < 2; n++)
 	{
 		models.push_back(new Model());
@@ -64,16 +65,12 @@ void GamePlay::Update(double time)
 
 void GamePlay::Render(Direct3D *_direct3D)
 {
-	_direct3D->SetShader();
-
-	for (int n = 0; n < models.size(); n++)
-	{
-		_direct3D->SetVertexCBuffer( models[n]->GetObjMatrix(), XMLoadFloat4x4(&player->GetViewMatrix()));
-		models.at(n)->Render(_direct3D->GetDeviceContext());
-	}
+	_direct3D->Render(models, XMLoadFloat4x4(&player->GetViewMatrix()));
 
 	_direct3D->SetCrosshairShaders();
 
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
+
 	player->Render(_direct3D->GetDeviceContext());
+
 }

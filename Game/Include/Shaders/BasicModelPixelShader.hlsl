@@ -32,14 +32,13 @@ struct GS_OUT
 
 struct PS_OUT
 {
-	float4 diffuse:SV_Target0;
-	
+	float4 Diffuse:SV_Target0;
 };
 
-PS_OUT PS_main(GS_OUT input) : SV_TARGET
+PS_OUT PS_main(GS_OUT input) : SV_Target
 { 
 	PS_OUT outPut;
-	outPut.diffuse = txDiffuse.Sample(sampAni, input.tex);
+	outPut.Diffuse = txDiffuse.Sample(sampAni, input.tex);
 
 	return outPut;
 };
