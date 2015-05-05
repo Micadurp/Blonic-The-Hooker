@@ -20,13 +20,13 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 
 	Vertex vertices[4];
 	
-	vertices[nrOfVertices++] = Vertex(-1.0f, -1.0f, 0, 0.0f, 1.0f); //3
+	vertices[nrOfVertices++] = Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f);	// 0
 
-	vertices[nrOfVertices++] = Vertex(-1.0f, 1.0f, 0, 0.0f, 0.0f); //1
+	vertices[nrOfVertices++] = Vertex(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f);	// 1
 
-	vertices[nrOfVertices++] = Vertex(1.0f, 1.0f, 0, 1.0f, 0.0f); //2
+	vertices[nrOfVertices++] = Vertex(1.0f, 1.0f, 0.0f, 1.0f, 0.0f);	// 2
 
-	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0, 1.0f, 1.0f); //4
+	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0.0f, 1.0f, 1.0f);	// 3
 
 
 	D3D11_BUFFER_DESC bufferDesc;
