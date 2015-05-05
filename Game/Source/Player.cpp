@@ -156,7 +156,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 
 		//onground and hookshot active check
-		if (!m_hookshot->active && !m_onGround)
+		if (!m_hookshot->active && !m_onGround) //not on ground and not using hookshot
 		{
 				m_jumpVelocity -= m_gravity.y;
 
