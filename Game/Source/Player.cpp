@@ -148,18 +148,13 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	if (m_hookshot->active == 1)
 	{
-		m_jumpVelocity = 0.0f;
 		HookToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
-
-		m_jumpVelocity = 0.0f;
 	}
 	else if (m_hookshot->active == 2)
 	{
 		GrappleToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
-
-		m_jumpVelocity = 0.0f;
 	}
 	else
 	{
@@ -178,7 +173,10 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		}
 		else
 		{
-			m_jumpVelocity = 0.0f;
+			if (m_jumpVelocity < 0.0f)
+			{
+				m_jumpVelocity = 0.0f;
+			}
 			m_onGround = false;
 		}
 	}
