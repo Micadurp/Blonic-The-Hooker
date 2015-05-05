@@ -51,7 +51,18 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_Quit" };
+	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+
+	pauseMenu = new Menu();
+	if (!pauseMenu)
+	{
+		return false;
+	}
+
+	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
+	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)
@@ -148,7 +159,12 @@ bool System::Frame(double _time)
 	{
 	case GameState::gGamePlay:
 
-		gamePlay->Update(_time);
+		state = gamePlay->Update(_time);
+
+		if (state == 1)
+		{
+			gameState = GameState::gPause;
+		}
 	break;
 
 	case GameState::gMenu:
@@ -166,6 +182,16 @@ bool System::Frame(double _time)
 		break;
 
 	case GameState::gPause:
+		state = pauseMenu->Update();
+
+		switch (state)
+		{
+		case 1:
+			gameState = GameState::gGamePlay;
+			break;
+		case 2:
+			gameState = GameState::gMenu;
+		}
 
 		break;
 	}
@@ -180,7 +206,6 @@ bool System::Frame(double _time)
 	{
 	case GameState::gGamePlay:
 		gamePlay->Render(direct3D);
-
 		break;
 
 	case GameState::gMenu:
@@ -188,7 +213,7 @@ bool System::Frame(double _time)
 		break;
 
 	case GameState::gPause:
-
+		pauseMenu->Render(direct3D);
 		break;
 	}
 	
@@ -328,8 +353,8 @@ LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lPar
 		break;
 	case WM_CLOSE:
 	{
-					 PostQuitMessage(0);
-					 return 0;
+		PostQuitMessage(0);
+		return 0;
 	}
 	}
 

@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib menuBgrd_obj_LH.mtl
+mtllib menuBgrd_menu.mtl
 g default
 v -1.500000 1.000000 0.000000
 v 1.500000 1.000000 -0.000000

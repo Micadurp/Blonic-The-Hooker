@@ -49,6 +49,7 @@ private:
 
 	Camera* camera;
 	Menu* menu;
+	Menu* pauseMenu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
 

@@ -56,11 +56,14 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 }
 
 
-void GamePlay::Update(double time)
+int GamePlay::Update(double time)
 {
-	player->ChangeHookState(models);
-	player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
+	int state = -1;
 
+	player->ChangeHookState(models);
+	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
+
+	return state;
 }
 
 void GamePlay::Render(Direct3D *_direct3D)

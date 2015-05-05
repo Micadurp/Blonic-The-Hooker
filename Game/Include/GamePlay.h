@@ -36,7 +36,7 @@ public:
 
 	void Render(Direct3D * _direct3D);
 
-	void Update(double _time);
+	int Update(double _time);
 };
 
 #endif

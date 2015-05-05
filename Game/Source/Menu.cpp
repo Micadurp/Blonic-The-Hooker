@@ -32,13 +32,20 @@ Menu::~Menu()
 	delete input;
 }
 
-bool Menu::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance, float _width, float _height, float _nearZ, float _farZ)
+bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width, float _height, float _nearZ, float _farZ)
 {
 	bool result;
 
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixOrthographicLH(_width, _height, _nearZ, _farZ));
+	if (_width > 0.0f && _height > 0.0f && _nearZ > 0.0f && _farZ > 0.0f)
+	{
+		XMStoreFloat4x4(&projectionMatrix, XMMatrixOrthographicLH(_width, _height, _nearZ, _farZ));
+	}
+	else
+	{
+		XMStoreFloat4x4(&projectionMatrix, XMMatrixIdentity());
+	}
 
-	result = input->Initialize(wndHandle, hInstance);
+	result = input->Initialize(_wndHandle, _hInstance);
 	if (!result)
 	{
 		return false;
@@ -53,10 +60,9 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstan
 	menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(-0.5f, selectorPosition, 1.0f));
 
 	// Initialize menu buttons
-	wstring tmp[] = { L"newGame", L"quit" };
 	for (int i = 0; i < buttonCount; i++)
 	{
-		result = menuButtons[i]->Initialize(_device, i, L"menuBtn_" + tmp[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
+		result = menuButtons[i]->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
 		if (!result)
 		{
 			return false;
@@ -64,7 +70,7 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstan
 	}
 
 	// Initialize background image
-	result = menu_background->Initialize(L"menuBgrd_obj_LH", _device);
+	result = menu_background->Initialize(_background, _device);
 	if (!result)
 	{
 		return false;

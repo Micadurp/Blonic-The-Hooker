@@ -25,14 +25,11 @@ class Menu
 
 		XMFLOAT4X4 projectionMatrix;
 
-		vector<XMFLOAT3> collidableGeometryPositions;
-		vector<DWORD> collidableGeometryIndices;
-
 	public:
 		Menu();
 		~Menu();
 
-		bool Initialize(ID3D11Device* _device, HWND &wndHandle, HINSTANCE &hInstance, float _width, float _height, float _nearZ, float _farZ);
+		bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width = 0.0f, float _height= 0.0f, float _nearZ = 0.0f, float _farZ = 0.0f);
 
 		int Update();
 

@@ -13,7 +13,7 @@ Player::Player()
 	m_currentForward = { 0.0f, 0.0f, 1.0f, 0.0f };
 	m_currentRight = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-	m_gravity = { 0.0f, 0.01f, 0.0f };
+	m_gravity = { 0.0f, 0.02f, 0.0f };
 
 
 	m_velocity = { 0.0f, 0.0f, 0.0f };
@@ -24,7 +24,7 @@ Player::Player()
 	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 
 	m_jumpVelocity = 0.0f;
-	m_isjumping = false;
+	m_isJumping = false;
 
 	m_jumpPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -58,10 +58,17 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 }
 
 
-void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
+	m_lastKeyboard = m_input->GetKeyboardState();
+
 	// Check inputs
 	m_input->Update();
+
+	if (m_input->GetKeyboardState().key_escape_pressed && !m_lastKeyboard.key_escape_pressed)
+	{
+		return 1;
+	}
 
 	// Get input values
 	m_keyboard = m_input->GetKeyboardState();
@@ -69,6 +76,8 @@ void Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositio
 
 	// Update camera position and rotation according to inputs
 	Move(time, collidableGeometryPositions, collidableGeometryIndices);
+
+	return -1;
 }
 
 void Player::Render(ID3D11DeviceContext* _deviceContext)
@@ -107,9 +116,10 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		m_position.y -= speed;
 	}
 
-	if (m_keyboard.key_space_pressed && m_hookshot->active == 0)
+	if (m_keyboard.key_space_pressed && m_hookshot->active == 0 && !m_isJumping)
 	{
-		m_jumpVelocity = 1.0f;
+		m_jumpVelocity = 0.5f;
+		m_isJumping = true;
 	}
 
 	// Rotation matrix from mouse input
@@ -161,9 +171,9 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 				m_jumpVelocity -= m_gravity.y;
 
 			// Set maximum falling velocity
-			if (m_jumpVelocity < -1.0f)
+			if (m_jumpVelocity < -2.0f)
 			{
-				m_jumpVelocity = -1.0f;
+				m_jumpVelocity = -2.0f;
 			}
 		}
 		else
@@ -261,6 +271,7 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 		if (_cP.foundCollision == true && XMVectorGetX(XMVector3AngleBetweenVectors(triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
 		{
 			m_onGround = true;
+			m_isJumping = false;
 		}
 	}
 

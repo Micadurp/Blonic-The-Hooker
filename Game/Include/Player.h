@@ -47,7 +47,7 @@ class Player : public Camera
 		};
 
 		float m_jumpVelocity;
-		bool m_isjumping;
+		bool m_isJumping;
 
 		XMFLOAT4 m_jumpPosition;
 
@@ -56,6 +56,7 @@ class Player : public Camera
 		PlayerInputs* m_input;
 
 		KeyboardStateStruct m_keyboard;
+		KeyboardStateStruct m_lastKeyboard;
 		MouseStateStruct m_mouse;
 
 		XMFLOAT2 m_position;
@@ -78,7 +79,7 @@ class Player : public Camera
 
 		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance, ID3D11Device* _device);
 
-		void Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
 
 		void Render(ID3D11DeviceContext* _deviceContext);
