@@ -116,7 +116,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		m_position.y -= speed;
 	}
 
-	if (m_keyboard.key_space_pressed && m_hookshot->active == 0 && !m_isJumping)
+	if (m_keyboard.key_space_pressed && m_hookshot->active != 1 && !m_isJumping)
 	{
 		m_jumpVelocity = 0.5f;
 		m_isJumping = true;
@@ -148,27 +148,41 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	if (m_hookshot->active == 1)
 	{
-		m_jumpVelocity = 0.0f;
 		HookToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
-
-		m_jumpVelocity = 0.0f;
 	}
 	else if (m_hookshot->active == 2)
 	{
-		GrappleToObj(m_hookshot->point);
-		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
-
-		m_jumpVelocity = 0.0f;
-	}
-	else
-	{
-		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
-
-		//onground and hookshot active check
-		if (!m_hookshot->active && !m_onGround) //not on ground and not using hookshot
+		
+		if (!m_onGround) //not on ground and not using hookshot
 		{
-				m_jumpVelocity -= m_gravity.y;
+			m_jumpVelocity -= m_gravity.y;			
+			if (m_jumpVelocity < -2.0f)
+			{
+				m_jumpVelocity = -2.0f;
+			}
+
+			// Set maximum falling velocity
+			if (m_velocity.y > -2.0f)
+			{
+				m_velocity.y -= m_gravity.y;
+			}
+			GrappleToObj(m_hookshot->point);
+			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+		}
+		else
+		{
+			GrappleToObj(m_hookshot->point);
+			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
+		}
+	}
+	else // hookshot not active
+	{
+		//On ground check
+		if (!m_onGround) //not on ground and not using hookshot
+		{
+			m_jumpVelocity -= m_gravity.y;
 
 			// Set maximum falling velocity
 			if (m_jumpVelocity < -2.0f)
@@ -178,11 +192,16 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		}
 		else
 		{
-			m_jumpVelocity = 0.0f;
-			m_onGround = false;
+			if (m_jumpVelocity < 0.0f)
+			{
+				m_jumpVelocity = 0.0f;
+			}
 		}
+
+		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 	}
 
+	m_onGround = false;
 	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
 
 
@@ -207,7 +226,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 {
 	CollisionPacket collisionPack;
 	collisionPack.ellipsoidSpace = XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f);
-	collisionPack.w_Position = XMLoadFloat4(&m_camPos);
+	collisionPack.w_Position = XMLoadFloat4(&m_camPos) + XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
 	collisionPack.w_Velocity = XMLoadFloat3(&m_velocity);
 
 	// Transform velocity vector to the ellipsoid space (e_ denotes ellipsoid space)
@@ -230,7 +249,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	//}
 
 	// Convert our final position from ellipsoid space to world space
-	finalPosition = finalPosition * collisionPack.ellipsoidSpace;
+	finalPosition = finalPosition * collisionPack.ellipsoidSpace + XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	return finalPosition;
 }
@@ -267,12 +286,6 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 		triNormal = XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
 
 		SphereCollidingWithTriangle(_cP, p0, p1, p2, triNormal);
-
-		if (_cP.foundCollision == true && XMVectorGetX(XMVector3AngleBetweenVectors(triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
-		{
-			m_onGround = true;
-			m_isJumping = false;
-		}
 	}
 
 	// If there was no collision, return the position + velocity
@@ -546,6 +559,12 @@ bool Player::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XM
 			// Find the distance to the collision
 			float distToCollision = t * XMVectorGetX(XMVector3Length(velocity));
 
+			if (XMVectorGetX(XMVector3AngleBetweenVectors(_triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
+			{
+				m_onGround = true;
+				m_isJumping = false;
+			}
+
 			// check if this is the first triangle that has been collided with OR it is 
 			// the closest triangle yet that was collided with
 			if (_cP.foundCollision == false || distToCollision < _cP.nearestDistance) {
@@ -676,7 +695,7 @@ void Player::ChangeHookState(vector<Model*> models)
 void Player::HookToObj(const XMVECTOR &point)
 {
 	XMVECTOR vec = point - XMLoadFloat4(&m_camPos);
-	vec = XMVector3Normalize(vec)/5;
+	vec = XMVector3Normalize(vec);
 	m_hookshot->velocity = vec;
 	m_hookshot->point = point;
 	m_hookshot->active = 1;
@@ -695,7 +714,8 @@ void Player::GrappleToObj(const XMVECTOR &point)
 
 	if (mag != 0)
 	{
-		//if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), 1.57))
+		XMVECTOR val = XMVectorSet(1.57f, 1.57f, 1.57f, 1.57f);
+		if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), val))
 		{
 			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_velocity) - (XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / XMVector3Dot(t, t)) * t);
 			XMStoreFloat3(&m_velocity, (XMVector3Normalize(XMLoadFloat3(&m_velocity)) * mag));
