@@ -25,11 +25,11 @@ include(create_source_group)
 
 # SFML paths and libs
 
-set(EXTERNAL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Lua)
+set(EXTERNAL_INCLUDE_DIR ${CMAKE_SOURCE_DIR})
 if(COMPILE_RELEASE_BUILD)
-	set(EXTERNAL_LIBRARIES LuaLib.lib)	
+	set(EXTERNAL_LIBRARIES )	
 else()
-	set(EXTERNAL_LIBRARIES LuaLib.lib)	
+	set(EXTERNAL_LIBRARIES )	
 endif()
 
 include_directories(${EXTERNAL_INCLUDE_DIRS})
