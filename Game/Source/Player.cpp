@@ -177,6 +177,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 			}
 			m_onGround = false;
 		}
+
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 	}
 
@@ -204,7 +205,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 {
 	CollisionPacket collisionPack;
 	collisionPack.ellipsoidSpace = XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f);
-	collisionPack.w_Position = XMLoadFloat4(&m_camPos);
+	collisionPack.w_Position = XMLoadFloat4(&m_camPos) + XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
 	collisionPack.w_Velocity = XMLoadFloat3(&m_velocity);
 
 	// Transform velocity vector to the ellipsoid space (e_ denotes ellipsoid space)
@@ -227,7 +228,7 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	//}
 
 	// Convert our final position from ellipsoid space to world space
-	finalPosition = finalPosition * collisionPack.ellipsoidSpace;
+	finalPosition = finalPosition * collisionPack.ellipsoidSpace + XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	return finalPosition;
 }
@@ -264,12 +265,6 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 		triNormal = XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
 
 		SphereCollidingWithTriangle(_cP, p0, p1, p2, triNormal);
-
-		if (_cP.foundCollision == true && XMVectorGetX(XMVector3AngleBetweenVectors(triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
-		{
-			m_onGround = true;
-			m_isJumping = false;
-		}
 	}
 
 	// If there was no collision, return the position + velocity
@@ -542,6 +537,12 @@ bool Player::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XM
 		{
 			// Find the distance to the collision
 			float distToCollision = t * XMVectorGetX(XMVector3Length(velocity));
+
+			if (XMVectorGetX(XMVector3AngleBetweenVectors(_triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
+			{
+				m_onGround = true;
+				m_isJumping = false;
+			}
 
 			// check if this is the first triangle that has been collided with OR it is 
 			// the closest triangle yet that was collided with
