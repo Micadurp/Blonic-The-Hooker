@@ -6,17 +6,17 @@ SamplerState sampAni
 	MaxAnisotropy = 4;
 	AddressU = WRAP;
 	AddressV = WRAP;
-
 };
 
 struct VS_OUT
 {
 	float4 pos : SV_POSITION;
 	float2 tex : TEXCOORD;
+	float3 normal : NORMAL;
 };
 
 float4 PS_main(VS_OUT input) : SV_TARGET
 {
-	float4 diffuse = float4(0, 1, 1,1);//txDiffuse.Sample(sampAni, input.tex);
+	float4 diffuse = txDiffuse.Sample(sampAni, input.tex);
 	return diffuse;
 }
