@@ -24,6 +24,7 @@ private:
 	{
 		DirectX::XMFLOAT4 position;
 		DirectX::XMFLOAT2 texture;
+		DirectX::XMFLOAT3 normal;
 
 		Vertex()
 		{
@@ -35,33 +36,37 @@ private:
 			texture.x = 0;
 			texture.y = 0;
 
+			normal.x = 0;
+			normal.y = 0;
+			normal.z = 0;
 		}
 		Vertex(float _x, float _y, float _z, float _U, float _V)
 		{
 			position.x = _x;
 			position.y = _y;
 			position.z = _z;
-			position.w = 0;
+			position.w = 1;
 
 			texture.x = _U;
 			texture.y = _V;
 
-
+			normal.x = 0;
+			normal.y = 0;
+			normal.z = 0;
 		}
 	};
 
 	struct VertexCB
 	{
-		DirectX::XMMATRIX projectionMatrix;
+		DirectX::XMMATRIX world;
+		DirectX::XMMATRIX viewProjection;
 	}
 	vertexCB;
 
-	ID3D11VertexShader * deferredVertexShader;
 	ID3D11PixelShader * deferredPixelShader;
 
 	ID3D11Buffer*   deferredCB; //Deferred vertex shader constant buffer
 
-	ID3D11InputLayout* deferredVertexLayout = nullptr;
 
 public:
 	DeferredRendering();

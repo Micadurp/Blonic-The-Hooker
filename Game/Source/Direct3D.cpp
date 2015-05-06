@@ -123,6 +123,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	factory->Release();
 	factory = 0;
 
+
 	// Initialize the swap chain description.
 	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
@@ -151,7 +152,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	// Set the usage of the back buffer.
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
-	// Set the handle for the window to render to.
+	// Set the handle for the window to render to. 
 	swapChainDesc.OutputWindow = _hwnd;
 
 	// Turn multisampling off.
@@ -168,12 +169,12 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 		swapChainDesc.Windowed = true;
 	}
 
-	// Set the scan line ordering and scaling to unspecified.
-	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	//// Set the scan line ordering and scaling to unspecified.
+	//swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	//swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-	// Discard the back buffer contents after presenting.
-	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	//// Discard the back buffer contents after presenting.
+	//swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 	// Don't set the advanced flags.
 	swapChainDesc.Flags = 0;
@@ -185,7 +186,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	result = D3D11CreateDeviceAndSwapChain(NULL,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
-		0,
+		D3D11_CREATE_DEVICE_DEBUG,
 		&featureLevel,
 		1,
 		D3D11_SDK_VERSION,
@@ -476,7 +477,6 @@ void Direct3D::BeginScene( float _red, float _green, float _blue, float _alpha)
 
 void Direct3D::EndScene()
 {
-
 	renderer->DeferredRenderer(deviceContext, depthStencilView, backBuffer);
 
 	// Present the back buffer to the screen since rendering is complete.
@@ -490,7 +490,6 @@ void Direct3D::EndScene()
 		// Present as fast as possible.
 		swapChain->Present(0, 0);
 	}
-
 	return;
 }
 
@@ -508,6 +507,7 @@ bool Direct3D::SetShader()
 {
 	return renderer->SetShader(deviceContext);
 }
+
 void Direct3D::SetCrosshairShaders()
 {
 	renderer->SetCrosshairShaders(deviceContext);
