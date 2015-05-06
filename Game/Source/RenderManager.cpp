@@ -93,6 +93,20 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 
 void RenderManager::Shutdown()
 {
+
+	if (deferredRenderer)
+	{
+		deferredRenderer->Shutdown();
+		delete deferredRenderer;
+		deferredRenderer = 0;
+	}
+
+	if (crosshairPixelShader)
+	{
+		crosshairPixelShader->Release();
+		crosshairPixelShader = 0;
+	}
+
 	// Release the vertex constant buffer
 	if (basicModelVSCB)
 	{

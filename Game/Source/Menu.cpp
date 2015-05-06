@@ -3,7 +3,6 @@
 Menu::Menu()
 {
 	menu_background = new Model();
-	menuButtons = new Button*[buttonCount];
 
 	menuSelector = new Model();
 	selectorPosition = -0.2f;
@@ -13,7 +12,7 @@ Menu::Menu()
 
 	for (int i = 0; i < buttonCount; i++)
 	{
-		menuButtons[i] = new Button();
+		menuButtons.push_back(new Button());
 	}
 
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixIdentity());
@@ -21,15 +20,6 @@ Menu::Menu()
 
 Menu::~Menu()
 {
-	for (int i = 0; i < buttonCount; i++)
-	{
-		delete menuButtons[i];
-		menuButtons[i] = nullptr;
-	}
-
-	delete[] menuButtons;
-	delete camera;
-	delete input;
 }
 
 bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width, float _height, float _nearZ, float _farZ)
@@ -62,7 +52,7 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 	// Initialize menu buttons
 	for (int i = 0; i < buttonCount; i++)
 	{
-		result = menuButtons[i]->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
+		result = menuButtons.at(i)->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
 		if (!result)
 		{
 			return false;
@@ -78,6 +68,42 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 	menu_background->SetObjMatrix(XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(0.0f, 0.0f, 1.4f));
 
 	return true;
+}
+
+void Menu::Shutdown()
+{
+	if (menu_background)
+	{
+		menu_background->Shutdown();
+		delete menu_background;
+		menu_background = 0;
+	}	
+	
+	if (menuSelector)
+	{
+		menuSelector->Shutdown();
+		delete menuSelector;
+		menuSelector = 0;
+	}	
+	
+	while (!menuButtons.empty())
+	{
+		menuButtons.back()->Shutdown();
+		delete menuButtons.back();
+		menuButtons.pop_back();
+	}
+
+	if (camera)
+	{
+		delete camera;
+		camera = 0;
+	}
+
+	if (input)
+	{
+		delete input;
+		input = 0;
+	}
 }
 
 int Menu::Update()
@@ -126,10 +152,10 @@ void Menu::Render(Direct3D* _direct3D)
 	menu_background->Render(_direct3D->GetDeviceContext());
 
 	// Render menu buttons
-	for (int i = 0; i < buttonCount; i++)
+	for (int i = 0; i < menuButtons.size(); i++)
 	{
-		_direct3D->SetVertexCBuffer(menuButtons[i]->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
-		menuButtons[i]->Render(_direct3D->GetDeviceContext());
+		_direct3D->SetVertexCBuffer(menuButtons.at(i)->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
+		menuButtons.at(i)->Render(_direct3D->GetDeviceContext());
 	}
 
 	// Render menu selector

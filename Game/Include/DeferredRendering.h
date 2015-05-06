@@ -73,6 +73,7 @@ public:
 	~DeferredRendering();
 
 	void Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight);
+	void Shutdown();
 
 	void FirstPass(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView);
 	void Render(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView, ID3D11RenderTargetView* gBackbufferRTV);

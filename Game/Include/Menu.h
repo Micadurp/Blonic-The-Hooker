@@ -18,7 +18,7 @@ class Menu
 		Model* menuSelector;
 		float selectorPosition;
 
-		Button** menuButtons;
+		std::vector<Button*> menuButtons;
 
 		Camera* camera;
 		PlayerInputs* input;
@@ -30,6 +30,7 @@ class Menu
 		~Menu();
 
 		bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width = 0.0f, float _height= 0.0f, float _nearZ = 0.0f, float _farZ = 0.0f);
+		void Shutdown();
 
 		int Update();
 

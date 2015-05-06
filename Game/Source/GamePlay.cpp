@@ -10,8 +10,8 @@ GamePlay::~GamePlay()
 
 }
 void GamePlay::Shutdown()
-{ 
-	while (models.size() != 0)
+{
+	while (!models.empty())
 	{
 		models.back()->Shutdown();
 		delete models.back();
