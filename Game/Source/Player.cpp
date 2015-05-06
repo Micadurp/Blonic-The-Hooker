@@ -116,7 +116,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		m_position.y -= speed;
 	}
 
-	if (m_keyboard.key_space_pressed && m_hookshot->active == 0 && !m_isJumping)
+	if (m_keyboard.key_space_pressed && m_hookshot->active != 1 && !m_isJumping)
 	{
 		m_jumpVelocity = 0.5f;
 		m_isJumping = true;
@@ -155,6 +155,25 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	{
 		GrappleToObj(m_hookshot->point);
 		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+		
+		if (!m_onGround) //not on ground and not using hookshot
+		{
+			m_jumpVelocity -= m_gravity.y;			
+			if (m_jumpVelocity < -2.0f)
+			{
+				m_jumpVelocity = -2.0f;
+			}
+
+			// Set maximum falling velocity
+			if (m_velocity.y > -2.0f)
+			{
+				m_velocity.y -= m_gravity.y;
+			}
+		}
+		else
+		{
+			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
+		}
 	}
 	else // hookshot not active
 	{
@@ -175,12 +194,12 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 			{
 				m_jumpVelocity = 0.0f;
 			}
-			m_onGround = false;
 		}
 
 		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 	}
 
+	m_onGround = false;
 	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
 
 
@@ -674,7 +693,7 @@ void Player::ChangeHookState(vector<Model*> models)
 void Player::HookToObj(const XMVECTOR &point)
 {
 	XMVECTOR vec = point - XMLoadFloat4(&m_camPos);
-	vec = XMVector3Normalize(vec)/5;
+	vec = XMVector3Normalize(vec);
 	m_hookshot->velocity = vec;
 	m_hookshot->point = point;
 	m_hookshot->active = 1;
@@ -693,7 +712,8 @@ void Player::GrappleToObj(const XMVECTOR &point)
 
 	if (mag != 0)
 	{
-		//if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), 1.57))
+		XMVECTOR val = XMVectorSet(1.57f, 1.57f, 1.57f, 1.57f);
+		if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), val))
 		{
 			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_velocity) - (XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / XMVector3Dot(t, t)) * t);
 			XMStoreFloat3(&m_velocity, (XMVector3Normalize(XMLoadFloat3(&m_velocity)) * mag));
