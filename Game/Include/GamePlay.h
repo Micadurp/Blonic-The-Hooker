@@ -11,8 +11,6 @@
 class GamePlay
 {
 private:
-	RenderManager* renderer;
-
 	std::vector< Model*> models;
 
 	Player* player;

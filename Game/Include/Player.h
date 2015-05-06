@@ -78,6 +78,7 @@ class Player : public Camera
 		virtual ~Player();
 
 		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance, ID3D11Device* _device);
+		void Shutdown();
 
 		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);

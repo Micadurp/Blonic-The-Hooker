@@ -17,6 +17,13 @@ void GamePlay::Shutdown()
 		delete models.back();
 		models.pop_back();
 	}
+
+	if (player)
+	{
+		player->Shutdown();
+		delete player;
+		player = 0;
+	}
 }
 
 

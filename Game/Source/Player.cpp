@@ -57,6 +57,28 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 	return true;
 }
 
+void Player::Shutdown()
+{
+	if (m_hookshot)
+	{
+		delete m_hookshot;
+		m_hookshot = 0;
+	}
+
+	if (m_input)
+	{
+		delete m_input;
+		m_input = 0;
+	}
+
+	if (m_crosshair)
+	{
+		m_crosshair->Shutdown();
+		delete m_crosshair;
+		m_crosshair = 0;
+	}
+}
+
 
 int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
 {
