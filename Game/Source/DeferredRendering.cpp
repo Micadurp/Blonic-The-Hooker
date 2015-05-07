@@ -12,7 +12,7 @@ DeferredRendering::~DeferredRendering()
 
 void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight)
 {
-	nrOfRenderTargets = 4;
+	nrOfRenderTargets = 1;
 	vertexSize = sizeof(Vertex);
 
 #pragma region Create Vertex buffer
@@ -137,7 +137,7 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
 {
-	float clearColor[] = { 0, 1, 0, 0 };
+	float clearColor[] = { 0, 0, 0.3f, 0 };
 
 
 	// Set our maps Render Target

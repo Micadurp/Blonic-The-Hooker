@@ -156,7 +156,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		
 		if (!m_onGround) //not on ground and not using hookshot
 		{
-			m_jumpVelocity -= m_gravity.y;			
+			m_jumpVelocity -= m_gravity.y;
 			if (m_jumpVelocity < -2.0f)
 			{
 				m_jumpVelocity = -2.0f;
