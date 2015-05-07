@@ -387,17 +387,23 @@ void Direct3D::Shutdown()
 	{
 		swapChain->SetFullscreenState(false, NULL);
 	}
+		
+	if (alphaEnableBlendingState)
+	{
+		alphaEnableBlendingState->Release();
+		alphaEnableBlendingState = 0;
+	}
+
+	if (alphaDisableBlendingState)
+	{
+		alphaDisableBlendingState->Release();
+		alphaDisableBlendingState = 0;
+	}
 
 	if (rasterState)
 	{
 		rasterState->Release();
 		rasterState = 0;
-	}
-
-	if (depthStencilView)
-	{
-		depthStencilView->Release();
-		depthStencilView = 0;
 	}
 
 	if (renderer)
@@ -407,7 +413,11 @@ void Direct3D::Shutdown()
 		renderer = 0;
 	}
 
-
+	if (depthStencilView)
+	{
+		depthStencilView->Release();
+		depthStencilView = 0;
+	}
 
 	if (depthStencilState)
 	{

@@ -10,12 +10,19 @@ GamePlay::~GamePlay()
 
 }
 void GamePlay::Shutdown()
-{ 
-	while (models.size() != 0)
+{
+	while (!models.empty())
 	{
 		models.back()->Shutdown();
 		delete models.back();
 		models.pop_back();
+	}
+
+	if (player)
+	{
+		player->Shutdown();
+		delete player;
+		player = 0;
 	}
 }
 

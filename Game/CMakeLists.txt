@@ -13,7 +13,6 @@ file(GLOB_RECURSE GS Headers/ *GeometryShader.hlsl)
 file(GLOB_RECURSE PS Headers/ *PixelShader.hlsl)
 file(GLOB_RECURSE SOURCES Source/ *.cpp)
 include_directories(Include)
-include_directories(${CMAKE_SOURCE_DIR}/Lua)
 
 create_source_group("Header Files" "${CMAKE_CURRENT_SOURCE_DIR}/Include" ${HEADERS} ${VS} ${GS} ${PS})
 create_source_group("Source Files" "${CMAKE_CURRENT_SOURCE_DIR}/Source" ${SOURCES})

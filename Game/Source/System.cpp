@@ -82,11 +82,32 @@ bool System::Initialize()
 
 void System::Shutdown()
 {
+	if (menu)
+	{
+		menu->Shutdown();
+		delete menu;
+		menu = 0;
+	}
+
+	if (pauseMenu)
+	{
+		pauseMenu->Shutdown();
+		delete pauseMenu;
+		pauseMenu = 0;
+	}
+
 	if (gamePlay)
 	{
 		gamePlay->Shutdown();
 		delete gamePlay;
 		gamePlay = 0;
+	}
+
+	if (direct3D)
+	{
+		direct3D->Shutdown();
+		delete direct3D;
+		direct3D = 0;
 	}
 
 

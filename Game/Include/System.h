@@ -47,7 +47,6 @@ private:
 	}
 	gameState;
 
-	Camera* camera;
 	Menu* menu;
 	Menu* pauseMenu;
 	GamePlay* gamePlay;

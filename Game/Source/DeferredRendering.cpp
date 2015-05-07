@@ -106,7 +106,8 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 
 	for (int n = 0; n < nrOfRenderTargets; n++)
 		renderTargetTextureMap[n]->Release();
-
+	delete[] renderTargetTextureMap;
+	renderTargetTextureMap = 0;
 
 #pragma region Create ConstantBuffers
 
@@ -133,6 +134,63 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 	_device->CreateBuffer(&matrixBufferDesc, &vsInitData, &deferredCB);
 
 #pragma endregion
+}
+
+void DeferredRendering::Shutdown()
+{	
+	if (meshVertBuff)
+	{
+		meshVertBuff->Release();
+		meshVertBuff = 0;
+	}
+
+	//if (indexBuffer)
+	//{
+	//	indexBuffer->Release();
+	//	indexBuffer = 0;
+	//}
+
+	if (renderTargetView)
+	{
+		for (int i = 0; i < nrOfRenderTargets; i++)
+		{
+			renderTargetView[i]->Release();
+		}
+		delete[] renderTargetView;
+		renderTargetView = 0;
+	}
+
+	if (shaderResourceView)
+	{
+		for (int i = 0; i < nrOfRenderTargets; i++)
+		{
+			shaderResourceView[i]->Release();
+		}
+		delete[] shaderResourceView;
+		shaderResourceView = 0;
+	}
+
+	if (clearRV)
+	{
+		//for (int i = 0; i < nrOfRenderTargets; i++)
+		//{
+		//	clearRV[i]->Release();
+		//}
+		delete[] clearRV;
+		clearRV = 0;
+	}
+
+	if (deferredPixelShader)
+	{
+		deferredPixelShader->Release();
+		deferredPixelShader = 0;
+	}
+
+	if (deferredCB)
+	{
+		deferredCB->Release();
+		deferredCB = 0;
+	}
 }
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
