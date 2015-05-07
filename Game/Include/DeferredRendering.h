@@ -76,6 +76,7 @@ public:
 	void Shutdown();
 
 	void FirstPass(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView);
+	bool SetShaders(ID3D11DeviceContext* _deviceContext);
 	void Render(ID3D11DeviceContext *deviceContext, ID3D11DepthStencilView* depthStencilView, ID3D11RenderTargetView* gBackbufferRTV);
 };
 #endif

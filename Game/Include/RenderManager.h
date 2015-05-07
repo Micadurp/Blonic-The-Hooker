@@ -6,10 +6,13 @@
 #include <DirectXMath.h>
 
 #include"DeferredRendering.h"
+#include "LightStructure.h"
 
 class RenderManager
 {
 private:
+
+	const int lightCount = 1;
 
 	struct VertexShaderBuffer
 	{
@@ -47,7 +50,10 @@ public:
 
 	void SetCrosshairShaders(ID3D11DeviceContext* _deviceContext);
 	bool SetShader(ID3D11DeviceContext* _deviceContext);
+	bool SetDeferredShaders(ID3D11DeviceContext* _deviceContext);
+
 	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
+	bool SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo);
 
 };
 #endif
