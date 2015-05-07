@@ -1687,7 +1687,6 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 	return true;
 }
 
-
 bool Model::CreateShaders(ID3D11Device* _device)
 {
 	D3D11_BUFFER_DESC materialDesc;

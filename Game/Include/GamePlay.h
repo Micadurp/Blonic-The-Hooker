@@ -6,7 +6,7 @@
 #include "Direct3D.h"
 #include "Model.h"
 #include "Player.h"
-
+#include "SkyBox.h"
 
 class GamePlay
 {

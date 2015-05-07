@@ -1,13 +1,6 @@
 Texture2D txDiffuse : register(t0);
 
-SamplerState sampAni
-{
-	Filter = ANISOTROPIC;
-	MaxAnisotropy = 4;
-	AddressU = WRAP;
-	AddressV = WRAP;
-
-};
+SamplerState sampAni;
 
 cbuffer MaterialConstant: register(b0)
 {

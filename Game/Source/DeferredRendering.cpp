@@ -160,12 +160,11 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 	//_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
 	_deviceContext->GSSetShader(NULL, NULL, 0);
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
+	_deviceContext->PSSetSamplers(0, 0, NULL);
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
 
 	UINT32 offset = 0;
-
-	_deviceContext->Unmap(deferredCB, 0);
 
 	_deviceContext->VSSetConstantBuffers(0, 1, &deferredCB);
 

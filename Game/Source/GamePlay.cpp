@@ -52,9 +52,11 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}
 
+	models.push_back(new SkyBox(_device));
+	models.at(models.size()-1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 7));
+
 	return true;
 }
-
 
 int GamePlay::Update(double time)
 {
@@ -62,6 +64,11 @@ int GamePlay::Update(double time)
 
 	player->ChangeHookState(models);
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
+
+	for (int n = 0; n < models.size(); n++)
+	{
+		models[n]->Update();
+	}
 
 	return state;
 }

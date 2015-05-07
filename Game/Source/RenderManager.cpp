@@ -81,6 +81,27 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 	}
 #pragma endregion
 
+
+
+	D3D11_SAMPLER_DESC sampleDesc;
+	ZeroMemory(&sampleDesc, sizeof(sampleDesc));
+	sampleDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampleDesc.MinLOD = 0;
+	sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	sampleDesc.MaxAnisotropy = 1;
+
+
+	result = _device->CreateSamplerState(&sampleDesc, &defaultSampler);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
 	deferredRenderer = new DeferredRendering();
 	if (!deferredRenderer)
 	{
@@ -161,6 +182,8 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 
+	
+
 	return true;
 }
 
@@ -212,6 +235,7 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
 {
+	_deviceContext->PSSetSamplers(0, 1, &defaultSampler);
 	deferredRenderer->FirstPass(_deviceContext, _depthStencilView);
 }
 
