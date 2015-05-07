@@ -18,7 +18,7 @@
 #include <DirectXMath.h>
 
 #include "RenderManager.h"
-
+#include "LightStructure.h"
 #include"Model.h"
 
 #include <vector>
@@ -63,10 +63,13 @@ public:
 
 	void SetCrosshairShaders();
 	bool SetShader();
+	bool SetDeferredShaders();
 
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix);
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
+
+	bool SetPixelCBuffer(ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo);
 
 	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
 	

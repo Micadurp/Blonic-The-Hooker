@@ -190,6 +190,11 @@ void RenderManager::SetCrosshairShaders(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->PSSetShader(crosshairPixelShader, NULL, 0);
 }
 
+bool RenderManager::SetDeferredShaders(ID3D11DeviceContext* _devicecontext)
+{
+	return deferredRenderer->SetShaders(_devicecontext);
+}
+
 bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
 {
 	HRESULT result;
@@ -214,14 +219,57 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
+}
 
-	// Set the vertex input layout.
-	//_deviceContext->IASetInputLayout(basicModelVertexLayout);
+bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo)
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	LightSharedInfo lightInfoPtr;
+	LightPosColor lightPtr;
 
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	//_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
-	//_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
-	//_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+	_deviceContext->UpdateSubresource(_lightBuffers[0], 0, nullptr, &_lightInfo, 0, 0);
+	_deviceContext->UpdateSubresource(_lightBuffers[1], 0, nullptr, &_lights, 0, 0);
+
+
+	/*
+	result = _deviceContext->Map(_lightBuffers[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	lightInfoPtr = (LightSharedInfo*)mappedResource.pData;
+
+	// Copy the matrices into the constant buffer.
+	lightInfoPtr->ambient = _lightInfo.ambient;
+	lightInfoPtr->attenuation = _lightInfo.attenuation;
+	lightInfoPtr->intensity = _lightInfo.intensity;
+	lightInfoPtr->range = _lightInfo.range;
+
+	// Unlock the constant buffer.
+	_deviceContext->Unmap(_lightBuffers[0], 0);
+
+
+	result = _deviceContext->Map(_lightBuffers[1], 1, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	lightPtr = (LightPosColor*)mappedResource.pData;
+
+	lightPtr->lightPosArray = _lights.lightPosArray;
+	lightPtr->lightColorArray = _lights.lightColorArray;
+
+	_deviceContext->Unmap(_lightBuffers[1], 1);
+	*/
+
+	// Now set the constant buffer in the vertex shader with the updated values.
+	_deviceContext->PSSetConstantBuffers(0, 2, _lightBuffers);
+
+	return true;
 }
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)

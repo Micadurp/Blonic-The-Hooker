@@ -7,14 +7,14 @@ struct VS_IN
 {
 	float4 pos : POSITION;
 	float2 tex : TEXCOORD;
-
+	float3 normal : NORMAL;
 };
 
 struct VS_OUT
 {
 	float4 pos : SV_POSITION;
 	float2 tex : TEXCOORD;
-
+	float3 normal : NORMAL;
 };
 
 
