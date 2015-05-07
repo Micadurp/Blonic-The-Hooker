@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "LightStructure.h"
 
+#include "SkyBox.h"
 
 class GamePlay
 {

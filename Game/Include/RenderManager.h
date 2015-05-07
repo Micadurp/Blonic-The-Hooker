@@ -32,6 +32,7 @@ private:
 	ID3D11Buffer*   basicModelGSCB; // Basic model pixel shader constant buffer
 	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
 
+	ID3D11SamplerState * defaultSampler;
 
 	DeferredRendering * deferredRenderer;
 

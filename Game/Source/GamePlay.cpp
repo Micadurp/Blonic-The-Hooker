@@ -64,7 +64,6 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}
 
-
 #pragma region Create Scene Lights
 	lightsObj.lightPosArray[0] = { 50.0f, 20.0f, 100.0f, 1.0f };
 	lightsObj.lightColorArray[0] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -88,10 +87,11 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 #pragma endregion
 
+	models.push_back(new SkyBox(_device));
+	models.at(models.size()-1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 7));
 
 	return true;
 }
-
 
 int GamePlay::Update(double time)
 {
@@ -100,7 +100,14 @@ int GamePlay::Update(double time)
 	player->ChangeHookState(models);
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
 
+<<<<<<< HEAD
 	lightsObj.lightPosArray[0] = player->GetPosition();
+=======
+	for (int n = 0; n < models.size(); n++)
+	{
+		models[n]->Update();
+	}
+>>>>>>> e093b6495b5c1f2a82baf8f7e79a46ac9253022d
 
 	return state;
 }
