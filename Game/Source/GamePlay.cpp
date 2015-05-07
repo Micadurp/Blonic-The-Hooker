@@ -100,14 +100,14 @@ int GamePlay::Update(double time)
 	player->ChangeHookState(models);
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
 
-<<<<<<< HEAD
+
 	lightsObj.lightPosArray[0] = player->GetPosition();
-=======
+
 	for (int n = 0; n < models.size(); n++)
 	{
-		models[n]->Update();
+		models[n]->Update(player);
 	}
->>>>>>> e093b6495b5c1f2a82baf8f7e79a46ac9253022d
+
 
 	return state;
 }

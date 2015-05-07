@@ -195,11 +195,9 @@ void DeferredRendering::Shutdown()
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
 {
-<<<<<<< HEAD
-	float clearColor[] = { 0.5f, 0.5f, 0.5f, 0 };
-=======
+
 	float clearColor[] = { 0, 0, 0.3f, 0 };
->>>>>>> e093b6495b5c1f2a82baf8f7e79a46ac9253022d
+
 
 
 	// Set our maps Render Target
@@ -223,13 +221,10 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 	//_deviceContext->IASetInputLayout(deferredVertexLayout);
 
 	//_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
-<<<<<<< HEAD
 
-=======
 	_deviceContext->GSSetShader(NULL, NULL, 0);
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
 	_deviceContext->PSSetSamplers(0, 0, NULL);
->>>>>>> e093b6495b5c1f2a82baf8f7e79a46ac9253022d
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
 

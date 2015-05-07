@@ -111,7 +111,7 @@ void Model::Shutdown()
 	}
 }
 
-void Model::Update()
+void Model::Update(Camera* camera)
 {
 
 }

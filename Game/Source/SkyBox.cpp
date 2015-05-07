@@ -30,15 +30,15 @@ SkyBox::~SkyBox()
 {
 
 }
-void SkyBox::Update(Camera* camera);
+void SkyBox::Update(Camera* camera)
 {
 	XMMATRIX scale;
 	XMMATRIX translation;
 
 	XMLoadFloat4x4(&objMatrix) = XMMatrixIdentity();
 	scale = XMMatrixScaling(5, 5, 5);
-	translation = XMMatrixTranslation(XMVectorGetX(), XMVectorGetY(), XMVectorGetZ());
-
+	translation = XMMatrixTranslation(XMVectorGetX(XMLoadFloat4(&camera->GetPosition())), XMVectorGetY(XMLoadFloat4(&camera->GetPosition())), XMVectorGetZ(XMLoadFloat4(&camera->GetPosition())));
+	
 	XMLoadFloat4x4(&objMatrix) = scale * translation;
 }
 
