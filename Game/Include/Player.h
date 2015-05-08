@@ -34,6 +34,7 @@ class Player : public Camera
 		{
 			XMVECTOR velocity;
 			XMVECTOR point;
+			float length;
 			int active;
 		};
 
@@ -94,7 +95,9 @@ class Player : public Camera
 
 		// Collision Detection and Response Function Prototypes
 		XMVECTOR Collision(vector<XMFLOAT3>& vertPos,		// An array holding the polygon soup vertex positions
-			vector<DWORD>& indices);						// An array holding the polygon soup indices (triangles)
+			vector<DWORD>& indices,							// An array holding the polygon soup indices (triangles)
+			const XMVECTOR &velocity);
+			
 
 		XMVECTOR CollideWithWorld(CollisionPacket& cP,			// Same arguments as the above function
 			vector<XMFLOAT3>& vertPos,
@@ -113,7 +116,7 @@ class Player : public Camera
 		bool GetLowestRoot(float a, float b, float c, float maxR, float* root); 
 
 		void HookToObj(const XMVECTOR &point);
-		void GrappleToObj(const XMVECTOR &point);
+		void GrappleToObj(const XMVECTOR &point, XMVECTOR &velocity);
 		void TurnOffHookShot();
 		bool CheckHookState();
 

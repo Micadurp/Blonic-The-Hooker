@@ -140,7 +140,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	if (m_keyboard.key_space_pressed && m_hookshot->active != 1 && !m_isJumping)
 	{
-		m_jumpVelocity = 0.5f;
+		m_velocity.y = 0.5f;
 		m_isJumping = true;
 	}
 
@@ -178,23 +178,19 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		
 		if (!m_onGround) //not on ground and not using hookshot
 		{
-			m_jumpVelocity -= m_gravity.y;
-			if (m_jumpVelocity < -2.0f)
-			{
-				m_jumpVelocity = -2.0f;
-			}
-
 			// Set maximum falling velocity
 			if (m_velocity.y > -2.0f)
 			{
 				m_velocity.y -= m_gravity.y;
 			}
-			GrappleToObj(m_hookshot->point);
-			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+
+			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
+			XMStoreFloat3(&m_velocity, m_hookshot->velocity * 0.998);
+
 		}
 		else
 		{
-			GrappleToObj(m_hookshot->point);
+			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
 			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
 		}
@@ -204,27 +200,26 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		//On ground check
 		if (!m_onGround) //not on ground and not using hookshot
 		{
-			m_jumpVelocity -= m_gravity.y;
-
+			m_velocity.y -= m_gravity.y;
 			// Set maximum falling velocity
-			if (m_jumpVelocity < -2.0f)
+			if (m_velocity.y < -2.0f)
 			{
-				m_jumpVelocity = -2.0f;
+				m_velocity.y = -2.0f;
 			}
 		}
 		else
 		{
-			if (m_jumpVelocity < 0.0f)
+			if (m_velocity.y < 0.0f)
 			{
-				m_jumpVelocity = 0.0f;
+				m_velocity.y = 0.0f;
 			}
-		}
 
-		XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
+			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + (m_velocity.y - m_gravity.y) * temp_camUp);
+		}
 	}
 
 	m_onGround = false;
-	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices);
+	temp_camPos = Collision(collidableGeometryPositions, collidableGeometryIndices, XMLoadFloat3(&m_velocity));
 
 
 	// Reset input movement variable
@@ -244,12 +239,12 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 }
 
 
-XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
+XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices, const XMVECTOR &velocity)
 {
 	CollisionPacket collisionPack;
 	collisionPack.ellipsoidSpace = XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f);
 	collisionPack.w_Position = XMLoadFloat4(&m_camPos) + XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f);
-	collisionPack.w_Velocity = XMLoadFloat3(&m_velocity);
+	collisionPack.w_Velocity = velocity;
 
 	// Transform velocity vector to the ellipsoid space (e_ denotes ellipsoid space)
 	collisionPack.e_Velocity = collisionPack.w_Velocity / collisionPack.ellipsoidSpace;
@@ -262,17 +257,19 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
 	XMVECTOR finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
 
 
-	//if (!m_hookshot->active)
-	//{	//// Add gravity pull
-	//	collisionPack.e_Velocity = -XMLoadFloat3(&m_gravity) / collisionPack.ellipsoidSpace;
+	//if (m_hookshot->active == 2)
+	//{	
+	//	GrappleToObj(m_hookshot->point, collisionPack.e_Velocity * collisionPack.ellipsoidSpace);
+	//	collisionPack.e_Velocity = (m_hookshot->velocity * 0.999) / collisionPack.ellipsoidSpace;
 	//	collisionPack.e_Position = finalPosition;
 	//	collisionPack.collisionRecursionDepth = 0;
 	//	finalPosition = CollideWithWorld(collisionPack, _vertPos, _indices);
 	//}
 
+
 	// Convert our final position from ellipsoid space to world space
 	finalPosition = finalPosition * collisionPack.ellipsoidSpace + XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
+	XMStoreFloat3(&m_velocity, collisionPack.e_Velocity * collisionPack.ellipsoidSpace);
 	return finalPosition;
 }
 
@@ -700,7 +697,9 @@ void Player::ChangeHookState(vector<Model*> models)
 				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
 				if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 				{
-					GrappleToObj(point);
+					XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+					m_hookshot->length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+					GrappleToObj(point, XMLoadFloat3(&m_velocity));
 				}
 			}
 		}
@@ -723,28 +722,33 @@ void Player::HookToObj(const XMVECTOR &point)
 	m_hookshot->active = 1;
 }
 
-void Player::GrappleToObj(const XMVECTOR &point)
+void Player::GrappleToObj(const XMVECTOR &point, XMVECTOR &velocity)
 {
 	XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 
-	float r = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
-
-	t = XMVector3Normalize(t);
-
-	float mag;
-	mag = sqrt((m_velocity.x * m_velocity.x) + (m_velocity.y * m_velocity.y) + (m_velocity.z * m_velocity.z));
-
-	if (mag != 0)
+	float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+	if (dist > m_hookshot->length)
 	{
-		XMVECTOR val = XMVectorSet(1.57f, 1.57f, 1.57f, 1.57f);
-		if (XMVector3Less(XMVectorACos(XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / mag), val))
+		//mVelocity += (1000 * moveVec / mMass) * TickSec;
+
+
+		t = XMVector3Normalize(t);
+
+		float mag;
+		mag = sqrt((XMVectorGetX(velocity) * XMVectorGetX(velocity)) + (XMVectorGetY(velocity) * XMVectorGetY(velocity)) + (XMVectorGetZ(velocity) * XMVectorGetZ(velocity)));
+
+		if (mag != 0)
 		{
-			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_velocity) - (XMVector3Dot(t, XMLoadFloat3(&m_velocity)) / XMVector3Dot(t, t)) * t);
-			XMStoreFloat3(&m_velocity, (XMVector3Normalize(XMLoadFloat3(&m_velocity)) * mag));
+			XMVECTOR val = XMVectorSet(1.57f, 1.57f, 1.57f, 1.57f);
+			if (XMVector3Less(XMVectorACos(XMVector3Dot(t, velocity) / mag), val))
+			{
+				velocity -= (XMVector3Dot(t, velocity) / XMVector3Dot(t, t)) * t;
+				velocity = XMVector3Normalize(velocity) * mag;
+			}
 		}
 	}
 
-	m_hookshot->velocity = XMLoadFloat3(&m_velocity);
+	m_hookshot->velocity = velocity;
 	m_hookshot->point = point;
 	m_hookshot->active = 2;
 }
@@ -752,6 +756,7 @@ void Player::GrappleToObj(const XMVECTOR &point)
 void Player::TurnOffHookShot()
 {
 	m_hookshot->active = false;
+	XMStoreFloat3(&m_velocity, m_hookshot->velocity);
 }
 
 bool Player::CheckHookState()
