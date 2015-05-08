@@ -48,8 +48,11 @@ private:
 	}
 	gameState;
 
+	GameState prevState;
+
 	Menu* menu;
 	Menu* pauseMenu;
+	Menu* deathMenu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
 
