@@ -97,6 +97,11 @@ int GamePlay::Update(double time)
 {
 	int state = -1;
 
+	if (GameOver() == 2)
+	{
+		return 2;
+	}
+
 	player->ChangeHookState(models);
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
 
@@ -124,4 +129,14 @@ void GamePlay::Render(Direct3D *_direct3D)
 
 	// Deferred rendering
 	_direct3D->SetPixelCBuffer(lightBuffer, lightsObj, lightSharedObj);
+}
+
+int GamePlay::GameOver()
+{
+	if (player->IsDead())
+	{
+		return 2;
+	}
+
+	return -1;
 }

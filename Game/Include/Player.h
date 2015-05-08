@@ -90,6 +90,7 @@ class Player : public Camera
 
 		void ChangeHookState(vector<Model*> models);
 
+		bool IsDead();
 	private:
 		void Move(double time);
 
@@ -124,6 +125,8 @@ class Player : public Camera
 		bool TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix);
 		bool RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius);
 		bool RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point);
+
+
 };
 
 #endif
