@@ -35,6 +35,7 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 		XMStoreFloat4x4(&projectionMatrix, XMMatrixIdentity());
 	}
 
+	
 	result = input->Initialize(_wndHandle, _hInstance);
 	if (!result)
 	{

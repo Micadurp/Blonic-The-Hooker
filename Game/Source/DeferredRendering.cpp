@@ -2,7 +2,6 @@
 
 DeferredRendering::DeferredRendering()
 {
-
 }
 
 DeferredRendering::~DeferredRendering()
@@ -12,7 +11,7 @@ DeferredRendering::~DeferredRendering()
 
 void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight)
 {
-	nrOfRenderTargets = 4;
+	nrOfRenderTargets = 1;
 	vertexSize = sizeof(Vertex);
 
 #pragma region Create Vertex buffer
@@ -42,6 +41,7 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 	_device->CreateBuffer(&bufferDesc, &data, &meshVertBuff);
 
 #pragma endregion
+
 
 	ID3D11Texture2D** renderTargetTextureMap = new ID3D11Texture2D*[nrOfRenderTargets];
 
@@ -195,7 +195,9 @@ void DeferredRendering::Shutdown()
 
 void DeferredRendering::FirstPass(ID3D11DeviceContext *_deviceContext, ID3D11DepthStencilView* _depthStencilView)
 {
-	float clearColor[] = { 0, 1, 0, 0 };
+
+	float clearColor[] = { 0, 0, 0.3f, 0 };
+
 
 
 	// Set our maps Render Target
@@ -213,17 +215,20 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 	
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
+	_deviceContext->GSSetShader(NULL, NULL, 0);
+	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
+
 	//_deviceContext->IASetInputLayout(deferredVertexLayout);
 
 	//_deviceContext->VSSetShader(deferredVertexShader, nullptr, 0);
+
 	_deviceContext->GSSetShader(NULL, NULL, 0);
 	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
+	_deviceContext->PSSetSamplers(0, 0, NULL);
 
 	_deviceContext->OMSetRenderTargets(1, &_backbufferRTV, _depthStencilView);
 
 	UINT32 offset = 0;
-
-	_deviceContext->Unmap(deferredCB, 0);
 
 	_deviceContext->VSSetConstantBuffers(0, 1, &deferredCB);
 
@@ -232,6 +237,13 @@ void DeferredRendering::Render(ID3D11DeviceContext * _deviceContext, ID3D11Depth
 	_deviceContext->PSSetShaderResources(0, nrOfRenderTargets, shaderResourceView);
 
 	_deviceContext->Draw(4, 0);
-	//_deviceContext->DrawIndexed(6, 0, 0);
 	
+}
+
+bool DeferredRendering::SetShaders(ID3D11DeviceContext* _deviceContext)
+{
+	_deviceContext->GSSetShader(NULL, NULL, 0);
+	_deviceContext->PSSetShader(deferredPixelShader, nullptr, 0);
+
+	return true;
 }

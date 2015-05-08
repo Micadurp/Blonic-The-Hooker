@@ -111,7 +111,7 @@ void Model::Shutdown()
 	}
 }
 
-void Model::Update()
+void Model::Update(Camera* camera)
 {
 
 }
@@ -1686,7 +1686,6 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 
 	return true;
 }
-
 
 bool Model::CreateShaders(ID3D11Device* _device)
 {

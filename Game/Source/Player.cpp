@@ -184,8 +184,6 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 				m_velocity.y -= m_gravity.y;
 			}
 
-			m_jumpVelocity = 0;
-
 			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
 			XMStoreFloat3(&m_velocity, m_hookshot->velocity * 0.998);
 

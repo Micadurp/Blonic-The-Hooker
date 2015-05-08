@@ -81,6 +81,27 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 	}
 #pragma endregion
 
+
+
+	D3D11_SAMPLER_DESC sampleDesc;
+	ZeroMemory(&sampleDesc, sizeof(sampleDesc));
+	sampleDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	sampleDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampleDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampleDesc.MinLOD = 0;
+	sampleDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	sampleDesc.MaxAnisotropy = 1;
+
+
+	result = _device->CreateSamplerState(&sampleDesc, &defaultSampler);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
 	deferredRenderer = new DeferredRendering();
 	if (!deferredRenderer)
 	{
@@ -175,6 +196,8 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 
+	
+
 	return true;
 }
 
@@ -188,6 +211,11 @@ void RenderManager::SetCrosshairShaders(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(crosshairPixelShader, NULL, 0);
+}
+
+bool RenderManager::SetDeferredShaders(ID3D11DeviceContext* _devicecontext)
+{
+	return deferredRenderer->SetShaders(_devicecontext);
 }
 
 bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix)
@@ -214,18 +242,62 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
+}
 
-	// Set the vertex input layout.
-	//_deviceContext->IASetInputLayout(basicModelVertexLayout);
+bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo)
+{
+	HRESULT result;
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	LightSharedInfo lightInfoPtr;
+	LightPosColor lightPtr;
 
-	// Set the vertex and pixel shaders that will be used to render this triangle.
-	//_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
-	//_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
-	//_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
+	_deviceContext->UpdateSubresource(_lightBuffers[0], 0, nullptr, &_lightInfo, 0, 0);
+	_deviceContext->UpdateSubresource(_lightBuffers[1], 0, nullptr, &_lights, 0, 0);
+
+
+	/*
+	result = _deviceContext->Map(_lightBuffers[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Get a pointer to the data in the constant buffer.
+	lightInfoPtr = (LightSharedInfo*)mappedResource.pData;
+
+	// Copy the matrices into the constant buffer.
+	lightInfoPtr->ambient = _lightInfo.ambient;
+	lightInfoPtr->attenuation = _lightInfo.attenuation;
+	lightInfoPtr->intensity = _lightInfo.intensity;
+	lightInfoPtr->range = _lightInfo.range;
+
+	// Unlock the constant buffer.
+	_deviceContext->Unmap(_lightBuffers[0], 0);
+
+
+	result = _deviceContext->Map(_lightBuffers[1], 1, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	lightPtr = (LightPosColor*)mappedResource.pData;
+
+	lightPtr->lightPosArray = _lights.lightPosArray;
+	lightPtr->lightColorArray = _lights.lightColorArray;
+
+	_deviceContext->Unmap(_lightBuffers[1], 1);
+	*/
+
+	// Now set the constant buffer in the vertex shader with the updated values.
+	_deviceContext->PSSetConstantBuffers(0, 2, _lightBuffers);
+
+	return true;
 }
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
 {
+	_deviceContext->PSSetSamplers(0, 1, &defaultSampler);
 	deferredRenderer->FirstPass(_deviceContext, _depthStencilView);
 }
 

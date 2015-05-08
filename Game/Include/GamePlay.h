@@ -6,11 +6,22 @@
 #include "Direct3D.h"
 #include "Model.h"
 #include "Player.h"
+#include "LightStructure.h"
 
+#include "SkyBox.h"
 
 class GamePlay
 {
 private:
+	const int lightCount = 1;
+
+	LightPosColor lightsObj;
+	LightSharedInfo lightSharedObj;
+
+	ID3D11Buffer** lightBuffer;
+
+	RenderManager* renderer;
+
 	std::vector< Model*> models;
 
 	Player* player;

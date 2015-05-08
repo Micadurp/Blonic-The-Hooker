@@ -5,6 +5,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include "DDSTextureLoader.h"
+#include"Camera.h"
 
 #include <fstream>
 #include <istream>
@@ -97,8 +98,8 @@ public:
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	void Shutdown();
 
-	virtual void Update();
-	void Render(ID3D11DeviceContext* _deviceContext);
+	virtual void Update(Camera*);
+	virtual void Render(ID3D11DeviceContext* _deviceContext);
 
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
