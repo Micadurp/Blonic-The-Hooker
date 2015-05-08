@@ -22,7 +22,7 @@ VS_OUT VS_main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
 
-	output.pos = mul(float4(input.pos.xyz, 1.0f), mul(viewProjection,worldMatrix)).xyww;
+	output.pos = float4(mul(input.pos, mul(worldMatrix, viewProjection)).xyz,1);
 
 	output.tex = input.pos.xyz;
 
