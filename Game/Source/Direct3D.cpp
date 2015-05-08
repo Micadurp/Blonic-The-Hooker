@@ -4,6 +4,7 @@
 Direct3D::Direct3D()
 {
 
+	depthStencilView = 0;
 }
 
 Direct3D::~Direct3D()

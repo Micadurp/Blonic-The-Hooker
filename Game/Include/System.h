@@ -43,7 +43,8 @@ private:
 	{
 		gMenu,
 		gGamePlay,
-		gPause
+		gPause,
+		gRestart
 	}
 	gameState;
 

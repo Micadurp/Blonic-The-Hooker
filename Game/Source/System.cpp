@@ -182,9 +182,13 @@ bool System::Frame(double _time)
 
 		state = gamePlay->Update(_time);
 
-		if (state == 1)
+		switch (state)
 		{
+		case 1:
 			gameState = GameState::gPause;
+			break;
+		case 2:
+			gameState = GameState::gRestart;
 		}
 	break;
 
@@ -214,6 +218,11 @@ bool System::Frame(double _time)
 			gameState = GameState::gMenu;
 		}
 
+		break;
+	case GameState::gRestart:
+		gamePlay->Shutdown();
+		gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+		gameState = GameState::gGamePlay;
 		break;
 	}
 #pragma endregion
