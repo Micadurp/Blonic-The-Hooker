@@ -69,7 +69,7 @@ public:
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
 
-	bool SetPixelCBuffer(ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo);
+	bool SetPixelCBuffer(ID3D11Buffer* _lightBuffers, const LightInfo &_lightInfo);
 
 	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
 	

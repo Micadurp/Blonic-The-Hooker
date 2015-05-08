@@ -53,7 +53,7 @@ public:
 	bool SetDeferredShaders(ID3D11DeviceContext* _deviceContext);
 
 	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
-	bool SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer** _lightBuffers, const LightPosColor &_lights, const LightSharedInfo &_lightInfo);
+	bool SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, const LightInfo &_lightInfo);
 
 };
 #endif

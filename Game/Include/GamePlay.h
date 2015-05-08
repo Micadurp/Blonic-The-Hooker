@@ -16,9 +16,9 @@ private:
 	const int lightCount = 1;
 
 	LightPosColor lightsObj;
-	LightSharedInfo lightSharedObj;
+	LightInfo* lights;
 
-	ID3D11Buffer** lightBuffer;
+	ID3D11Buffer* lightBuffer;
 
 	RenderManager* renderer;
 

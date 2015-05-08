@@ -11,7 +11,7 @@ DeferredRendering::~DeferredRendering()
 
 void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX &_projectionMatrix, int _screenWidth, int _screenHeight)
 {
-	nrOfRenderTargets = 1;
+	nrOfRenderTargets = 3;
 	vertexSize = sizeof(Vertex);
 
 #pragma region Create Vertex buffer
