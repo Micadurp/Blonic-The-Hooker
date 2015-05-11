@@ -35,7 +35,7 @@ PS_OUT PS_main(GS_OUT input)
 { 
 	PS_OUT output;
 	output.Diffuse = txDiffuse.Sample(sampAni, input.tex);
-	output.Normal = float4(input.normal, 0.0f);
+	output.Normal = normalize(float4(input.normal, 0.0f));
 	output.WorldPos = input.worldPos;
 
 	return output;

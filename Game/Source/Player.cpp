@@ -912,3 +912,13 @@ bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTO
 
 	return true;                       // I is in T
 }
+
+
+bool Player::IsDead()
+{
+	if (m_camPos.y < -300)
+	{
+		return true;
+	}
+	return false;
+}

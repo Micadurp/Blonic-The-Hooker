@@ -15,10 +15,9 @@ class GamePlay
 private:
 	const int lightCount = 1;
 
-	LightPosColor lightsObj;
-	LightSharedInfo lightSharedObj;
+	LightInfo* sceneLightsObj;
 
-	ID3D11Buffer** lightBuffer;
+	ID3D11Buffer* lightBuffer;
 
 	RenderManager* renderer;
 
@@ -38,10 +37,12 @@ public:
 	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance);
 	void Shutdown();
 
+	int Update(double _time);
 
 	void Render(Direct3D * _direct3D);
 
-	int Update(double _time);
+	int GameOver();
+
 };
 
 #endif

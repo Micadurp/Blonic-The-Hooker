@@ -63,6 +63,15 @@ bool System::Initialize()
 	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
 	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
+	
+	deathMenu = new Menu();
+	if (!deathMenu)
+	{
+		return false;
+	}
+
+	wstring deathMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
+	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)
@@ -94,6 +103,13 @@ void System::Shutdown()
 		pauseMenu->Shutdown();
 		delete pauseMenu;
 		pauseMenu = 0;
+	}
+
+	if (deathMenu)
+	{
+		deathMenu->Shutdown();
+		delete deathMenu;
+		deathMenu = 0;
 	}
 
 	if (gamePlay)
@@ -182,10 +198,15 @@ bool System::Frame(double _time)
 
 		state = gamePlay->Update(_time);
 
-		if (state == 1)
+		switch (state)
 		{
+		case 1:
 			gameState = GameState::gPause;
+			break;
+		case 2:
+			gameState = GameState::gRestart;
 		}
+		prevState = GameState::gGamePlay;
 	break;
 
 	case GameState::gMenu:
@@ -215,6 +236,16 @@ bool System::Frame(double _time)
 		}
 
 		break;
+
+	case GameState::gRestart:
+		if (prevState == GameState::gGamePlay)
+		{
+			gamePlay->Shutdown();
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+			gameState = GameState::gGamePlay;
+		}
+		prevState = GameState::gRestart;
+		break;
 	}
 #pragma endregion
 
@@ -235,9 +266,16 @@ bool System::Frame(double _time)
 
 	case GameState::gPause:
 		pauseMenu->Render(direct3D);
+		break;	
+	
+	case GameState::gRestart:
+		deathMenu->Render(direct3D);
 		break;
+
+
 	}
 	
+
 	direct3D->EndScene();
 #pragma endregion
 
@@ -263,7 +301,7 @@ void System::InitializeWindows(int& _screenWidth, int& _screenHeight)
 
 	// Give the application a name.
 
-	applicationName = L"Blonic Adventure 2: Get Hooked";
+	applicationName = L"The Legend Of Blonic: Hookarina of Time";
 
 
 	// Setup the windows class with default settings.
