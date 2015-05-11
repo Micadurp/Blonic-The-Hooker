@@ -3,10 +3,7 @@
 
 GamePlay::GamePlay()
 {
-	lights = new LightInfo[lightCount];
-
-	// Slot 0 being shared light properties
-	// Slot 1 being light position and color array
+	sceneLightsObj= new LightInfo[lightCount];
 }
 GamePlay::~GamePlay()
 {
@@ -63,8 +60,8 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	}
 
 #pragma region Create Scene Lights
-	lights[0].Position = { 50.0f, 20.0f, 100.0f, 1.0f };
-	lights[0].Color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	sceneLightsObj[0].Position = { 25.0f, 25.0f, 5.0f, 1.0f };
+	sceneLightsObj[0].Color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
 #pragma endregion
 
@@ -76,8 +73,9 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 	memset(&lightBufferDesc, 0, sizeof(lightBufferDesc));
 	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.ByteWidth = sizeof(LightInfo);
+	lightBufferDesc.ByteWidth = sizeof(LightInfo) * lightCount;
 	lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+
 	hr = _device->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffer);
 
 #pragma endregion
@@ -101,7 +99,7 @@ int GamePlay::Update(double time)
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
 
 
-	lights[0].Position = player->GetPosition();
+	//lights[0].Position = player->GetPosition();
 
 	for (int n = 0; n < models.size(); n++)
 	{
@@ -123,7 +121,7 @@ void GamePlay::Render(Direct3D *_direct3D)
 	player->Render(_direct3D->GetDeviceContext());
 
 	// Deferred rendering
-	_direct3D->SetPixelCBuffer(lightBuffer, lights[0]);
+	_direct3D->SetPixelCBuffer(lightBuffer, sceneLightsObj, lightCount);
 }
 
 int GamePlay::GameOver()

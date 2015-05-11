@@ -1,3 +1,5 @@
+#define LIGHTS_COUNT 1
+
 Texture2D txDiffuse : register(t0);
 Texture2D txNormal : register(t1);
 Texture2D txWorldP : register(t2);
@@ -10,7 +12,7 @@ SamplerState sampAni
 	AddressV = WRAP;
 };
 
-cbuffer LightInfo : register(b0)
+cbuffer LightInfo: register(b0)
 {
 	float3 attenuation;
 	float intensity;
@@ -20,6 +22,13 @@ cbuffer LightInfo : register(b0)
 	float4 lightPos;
 	float4 lightColor;
 };
+
+/*
+cbuffer LightBuffer : register(b0)
+{
+	LightInfo lights;
+}
+*/
 
 struct VS_OUT
 {
@@ -38,32 +47,35 @@ float4 PS_main(VS_OUT input) : SV_TARGET
 	float3 finalColor = { 0.0f, 0.0f, 0.0f };
 	float3 finalAmbient = (diffuse * ambient).xyz;
 
-	// light to pixel vector
-	float3 lightToPixel = (lightPos).xyz - (worldPos).xyz;
+	//for (int i = 0; i < LIGHTS_COUNT; i++)
+	//{
+		// light to pixel vector
+		float3 lightToPixel = (lightPos).xyz - (worldPos).xyz;
 
-	// distance of the vector
-	float d = length(lightToPixel);
+		// distance of the vector
+		float d = length(lightToPixel);
 
-	// pixel is too far from light source
-	if (d > range) 
-	{
-		return float4(finalAmbient, diffuse.a);
-	}
+		// pixel is too far from light source
+		if (d > range)
+		{
+			return float4(finalAmbient, diffuse.a);
+		}
 
-	// turn the vector into unit length
-	lightToPixel = lightToPixel / d;
+		// turn the vector into unit length
+		lightToPixel = lightToPixel / d;
 
-	// angle of the light on the pixel surface gives amount of light
-	float howMuchLight = dot(lightToPixel, normal);
+		// angle of the light on the pixel surface gives amount of light
+		float howMuchLight = dot(lightToPixel, normal);
 
-	if (howMuchLight > 0.0f)
-	{
-		finalColor += howMuchLight * diffuse * lightColor;
+		if (howMuchLight > 0.0f)
+		{
+			finalColor += howMuchLight * diffuse * lightColor * intensity;
 
-		finalColor /= attenuation[0] + (attenuation[1] * d) + (attenuation[2] * (d*d));
-	}
+			finalColor /= attenuation[0] + (attenuation[1] * d) + (attenuation[2] * (d*d));
+		}
 
-	finalColor = saturate(finalColor + finalAmbient);
+		finalColor = saturate(finalColor + finalAmbient);
+	//}
 
 	return float4(finalColor, diffuse.a);
 }

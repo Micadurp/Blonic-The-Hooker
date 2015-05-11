@@ -71,7 +71,7 @@ bool System::Initialize()
 	}
 
 	wstring deathMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", deathMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)

@@ -15,8 +15,7 @@ class GamePlay
 private:
 	const int lightCount = 1;
 
-	LightPosColor lightsObj;
-	LightInfo* lights;
+	LightInfo* sceneLightsObj;
 
 	ID3D11Buffer* lightBuffer;
 

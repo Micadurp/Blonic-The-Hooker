@@ -244,14 +244,12 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
 }
 
-bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, const LightInfo &_lightInfo)
+bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	LightInfo lightInfoPtr;
-	LightPosColor lightPtr;
 
-	_deviceContext->UpdateSubresource(_lightBuffers, 0, nullptr, &_lightInfo, 0, 0);
+	_deviceContext->UpdateSubresource(_lightBuffers, 0, nullptr, &_lightInfo[0], 0, 0);
 
 
 	/*
