@@ -35,6 +35,7 @@ class Player : public Camera
 			XMVECTOR velocity;
 			XMVECTOR point;
 			float length;
+			float maxLength;
 			int active;
 		};
 
@@ -53,6 +54,7 @@ class Player : public Camera
 		XMFLOAT4 m_jumpPosition;
 
 		Model* m_crosshair;
+		Model* m_crosshair2;
 
 		PlayerInputs* m_input;
 
@@ -73,6 +75,7 @@ class Player : public Camera
 
 		bool m_lastpick;
 		bool m_onGround;
+		bool m_lookAtCrystal;
 
 	public:
 		Player();
@@ -81,7 +84,7 @@ class Player : public Camera
 		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance, ID3D11Device* _device);
 		void Shutdown();
 
-		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices, vector<Model*> models);
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
 
 		void Render(ID3D11DeviceContext* _deviceContext);

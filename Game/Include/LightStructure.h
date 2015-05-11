@@ -13,7 +13,7 @@ struct LightInfo
 	XMFLOAT3 pad;
 	float range = 1000.0f;
 
-	XMFLOAT4 ambient = { 0.1f, 0.1f, 0.1f, 0.1f };
+	XMFLOAT4 ambient = { 0.3f, 0.3f, 0.3f, 0.3f };
 	XMFLOAT4 Position;
 	XMFLOAT4 Color;
 };
