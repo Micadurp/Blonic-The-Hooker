@@ -44,7 +44,8 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		return false;
 	}
 
-	for (int n = 0; n < 1; n++)
+
+	for (int n = models.size(); n < 1; n++)
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
@@ -58,6 +59,10 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
 		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}
+
+
+	models.push_back(new SkyBox(_device));
+	models.at(models.size() - 1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
 
 #pragma region Create Scene Lights
 	sceneLightsObj[0].Position = { 25.0f, 25.0f, 5.0f, 1.0f };
@@ -80,8 +85,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 #pragma endregion
 
-	models.push_back(new SkyBox(_device));
-	models.at(models.size()-1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 7));
+
 
 	return true;
 }

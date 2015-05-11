@@ -72,6 +72,7 @@ public:
 	bool SetPixelCBuffer(ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount);
 
 	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
+	bool Render(Model*, const DirectX::XMMATRIX &_viewMatrix);
 	
 	void SetBackBufferRenderTarget();
 	void ResetViewport();

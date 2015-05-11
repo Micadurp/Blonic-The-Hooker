@@ -559,8 +559,16 @@ bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_vi
 	for (int n = 0; n < _models.size(); n++)
 	{
 		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
-		_models.at(n)->Render(deviceContext);
+		_models.at(n)->Render(deviceContext,depthStencilState);
 	}
+
+	return true;
+}
+
+bool Direct3D::Render(Model* _model, const DirectX::XMMATRIX &_viewMatrix)
+{
+	SetVertexCBuffer(_model->GetObjMatrix(), _viewMatrix);
+	_model->Render(deviceContext, depthStencilState);
 
 	return true;
 }

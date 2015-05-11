@@ -21,11 +21,11 @@ struct VS_OUT
 VS_OUT VS_main(VS_IN input)
 {
 	VS_OUT output = (VS_OUT)0;
+	input.pos.w = 0.1f;
 
-	output.pos = mul(float4(input.pos.xyz, 1.0f), mul(viewProjection,worldMatrix)).xyww;
+	output.pos = mul(input.pos, mul(worldMatrix, viewProjection));
 
 	output.tex = input.pos.xyz;
-
 
 	return output;
 }
