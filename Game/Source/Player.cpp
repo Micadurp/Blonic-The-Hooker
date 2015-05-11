@@ -5,6 +5,7 @@ Player::Player()
 	m_input = new PlayerInputs();
 
 	m_crosshair = new Model();
+	m_crosshair2 = new Model();
 
 	m_position = { 0.0f, 0.0f };
 
@@ -22,6 +23,8 @@ Player::Player()
 	m_hookshot->active = false;
 	m_hookshot->point = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	m_hookshot->length =  0;
+	m_hookshot->maxLength = 50;
 
 	m_jumpVelocity = 0.0f;
 	m_isJumping = false;
@@ -29,6 +32,7 @@ Player::Player()
 	m_jumpPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	m_onGround = false;
+	m_lookAtCrystal = false;
 }
 
 Player::~Player()
@@ -52,7 +56,14 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 		return false;
 	}
 
+	result = m_crosshair2->Initialize(L"crosshair2_plane", _device);
+	if (!result)
+	{
+		return false;
+	}
+
 	m_crosshair->SetObjMatrix(XMMatrixScaling(0.05f, 0.065f, 0.05f) * XMMatrixTranslation(0, 0, 0));
+	m_crosshair2->SetObjMatrix(XMMatrixScaling(0.05f, 0.065f, 0.05f) * XMMatrixTranslation(0, 0, 0));
 
 	return true;
 }
@@ -80,8 +91,9 @@ void Player::Shutdown()
 }
 
 
-int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices, vector<Model*> models)
 {
+
 	m_lastKeyboard = m_input->GetKeyboardState();
 
 	// Check inputs
@@ -96,6 +108,27 @@ int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPosition
 	m_keyboard = m_input->GetKeyboardState();
 	m_mouse = m_input->GetMouseState();
 
+	Triangle tri;
+	XMVECTOR point;
+	for (int n = 1; n < models.size(); n++)
+	{
+		for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+		{
+			tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
+			tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
+			tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+			if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
+			{
+				XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+				if (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2)) <= m_hookshot->maxLength)
+				{
+					m_lookAtCrystal = true;
+				}
+			}
+		}
+	}
+	ChangeHookState(models);
+
 	// Update camera position and rotation according to inputs
 	Move(time, collidableGeometryPositions, collidableGeometryIndices);
 
@@ -104,7 +137,15 @@ int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 void Player::Render(ID3D11DeviceContext* _deviceContext)
 {
-	m_crosshair->Render(_deviceContext);
+	if (m_lookAtCrystal)
+	{
+		m_crosshair2->Render(_deviceContext);
+	}
+	else
+	{
+		m_crosshair->Render(_deviceContext);
+	}
+	m_lookAtCrystal = false;
 }
 
 XMFLOAT4X4 Player::GetCrosshairMatrix()
@@ -676,7 +717,12 @@ void Player::ChangeHookState(vector<Model*> models)
 				tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
 				if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 				{
-					HookToObj(point);
+					XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+					m_hookshot->length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+					if (m_hookshot->length <= m_hookshot->maxLength)
+					{
+						HookToObj(point);
+					}
 				}
 			}
 		}
@@ -699,7 +745,10 @@ void Player::ChangeHookState(vector<Model*> models)
 				{
 					XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 					m_hookshot->length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
-					GrappleToObj(point, XMLoadFloat3(&m_velocity));
+					if (m_hookshot->length <= m_hookshot->maxLength)
+					{
+						GrappleToObj(point, XMLoadFloat3(&m_velocity));
+					}
 				}
 			}
 		}

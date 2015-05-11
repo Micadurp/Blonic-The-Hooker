@@ -99,8 +99,7 @@ int GamePlay::Update(double time)
 		return 2;
 	}
 
-	player->ChangeHookState(models);
-	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices);
+	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices, models);
 
 
 	//lights[0].Position = player->GetPosition();
