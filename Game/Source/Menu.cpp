@@ -149,12 +149,13 @@ void Menu::Render(Direct3D* _direct3D)
 	_direct3D->SetShader();
 
 	// Render menu background
-	_direct3D->SetVertexCBuffer(menu_background->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
-	menu_background->Render(_direct3D->GetDeviceContext());
+	_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
 
 	// Render menu buttons
 	for (int i = 0; i < menuButtons.size(); i++)
 	{
+		_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
+
 		_direct3D->SetVertexCBuffer(menuButtons.at(i)->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
 		menuButtons.at(i)->Render(_direct3D->GetDeviceContext());
 	}
@@ -162,6 +163,5 @@ void Menu::Render(Direct3D* _direct3D)
 	// Render menu selector
 	_direct3D->SetCrosshairShaders();
 
-	_direct3D->SetVertexCBuffer(menuSelector->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
-	menuSelector->Render(_direct3D->GetDeviceContext());
+	_direct3D->Render(menuSelector, XMLoadFloat4x4(&camera->GetViewMatrix()));
 }

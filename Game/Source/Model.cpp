@@ -116,6 +116,36 @@ void Model::Update(Camera* camera)
 
 }
 
+void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState)
+{
+	unsigned int stride;
+	unsigned int offset;
+
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(Vertex);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	_deviceContext->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	if (textureShaderResource)
+		_deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
+
+	if (pixelShaderMaterialCB)
+		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+
+	_deviceContext->DrawIndexed(indexCount, 0, 0);
+
+	return;
+}
+
 void Model::Render(ID3D11DeviceContext* _deviceContext)
 {
 	unsigned int stride;
@@ -1595,8 +1625,8 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 											texFilePathEnd = true;
 										}
 									}
-
-									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &textureShaderResource);
+									
+									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL,&textureShaderResource);
 								}
 							}
 

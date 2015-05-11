@@ -99,7 +99,8 @@ public:
 	void Shutdown();
 
 	virtual void Update(Camera*);
-	virtual void Render(ID3D11DeviceContext* _deviceContext);
+	virtual void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);
+	virtual void Model::Render(ID3D11DeviceContext* _deviceContext);
 
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
 	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
