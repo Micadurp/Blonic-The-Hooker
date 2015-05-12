@@ -24,6 +24,12 @@ void GamePlay::Shutdown()
 		delete player;
 		player = 0;
 	}
+
+	if (lightManager)
+	{
+		lightManager->ShutDown();
+		delete lightManager;
+	}
 }
 
 
@@ -58,13 +64,27 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
 		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
-	}
+	}	
+
 
 
 	models.push_back(new SkyBox(_device));
 	models.at(models.size() - 1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
 
 #pragma region Create Scene Lights
+
+	lightManager = new LightManager();
+	if (!lightManager)
+	{
+		return false;
+	}
+
+	result = lightManager->Initialize(_device);
+	if (!result)
+	{
+		return false;
+	}
+
 	sceneLightsObj[0].Position = { 25.0f, 25.0f, 5.0f, 1.0f };
 	sceneLightsObj[0].Color = { 1.0f, 1.0f, 0.0f, 1.0f };
 
@@ -124,7 +144,8 @@ void GamePlay::Render(Direct3D *_direct3D)
 	player->Render(_direct3D->GetDeviceContext());
 
 	// Deferred rendering
-	_direct3D->SetPixelCBuffer(lightBuffer, sceneLightsObj, lightCount);
+	lightManager->Render(_direct3D->GetDeviceContext());
+	//_direct3D->SetPixelCBuffer(lightBuffer, sceneLightsObj, lightCount);
 }
 
 int GamePlay::GameOver()
