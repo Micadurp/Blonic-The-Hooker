@@ -24,7 +24,7 @@ Player::Player()
 	m_hookshot->point = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	m_hookshot->length =  0;
-	m_hookshot->maxLength = 50;
+	m_hookshot->maxLength = 100;
 
 	//m_jumpVelocity = 0.0f;
 	//m_isJumping = false;
@@ -769,7 +769,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 					if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 					{
 						XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
-						m_hookshot->length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.8;
 						if (m_hookshot->length <= m_hookshot->maxLength)
 						{
 							GrappleToObj(point, XMLoadFloat3(&m_velocity));
