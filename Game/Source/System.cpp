@@ -18,12 +18,12 @@ bool System::Initialize()
 	screenWidth = 0;
 	screenHeight = 0;
 
-	countsPerSecond = 0.0f;
-	counterStart = 0.0f;
-	frameCount = 0.0f;
-	fps = 0.0f;
-	frameTimeOld = 0.0f;
-	frameTime = 0.0f;
+	countsPerSecond = 0.0;
+	counterStart = 0;
+	frameCount = 0;
+	fps = 0;
+	frameTimeOld = 0;
+	frameTime = 0.0;
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);

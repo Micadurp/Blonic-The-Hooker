@@ -211,7 +211,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 			}
 
 			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
-			XMStoreFloat3(&m_velocity, m_hookshot->velocity * 0.998);
+			XMStoreFloat3(&m_velocity, m_hookshot->velocity * 0.998f);
 
 		}
 		else
@@ -316,7 +316,7 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 	// Loop through each triangle in mesh and check for a collision
 	for (int triCounter = 0; triCounter < _indices.size() / 3; triCounter++)
 	{
-		XMVECTOR p0, p1, p2, tempVec;
+		XMVECTOR p0, p1, p2;
 		p0 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter]]);
 		p1 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter + 1]]);
 		p2 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter + 2]]);
@@ -506,9 +506,9 @@ bool Player::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XM
 			}
 
 			// P1 - Collision test with sphere and p1
-			b = 2.0*(XMVectorGetX(XMVector3Dot(velocity, position - _p1)));
+			b = 2.0f*(XMVectorGetX(XMVector3Dot(velocity, position - _p1)));
 			c = XMVectorGetX(XMVector3Length((_p1 - position)));
-			c = (c*c) - 1.0;
+			c = (c*c) - 1.0f;
 			if (GetLowestRoot(a, b, c, t, &newT)) {
 				t = newT;
 				collidingWithTri = true;
@@ -516,9 +516,9 @@ bool Player::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XM
 			}
 
 			// P2 - Collision test with sphere and p2
-			b = 2.0*(XMVectorGetX(XMVector3Dot(velocity, position - _p2)));
+			b = 2.0f*(XMVectorGetX(XMVector3Dot(velocity, position - _p2)));
 			c = XMVectorGetX(XMVector3Length((_p2 - position)));
-			c = (c*c) - 1.0;
+			c = (c*c) - 1.0f;
 			if (GetLowestRoot(a, b, c, t, &newT)) {
 				t = newT;
 				collidingWithTri = true;
@@ -777,7 +777,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 					if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 					{
 						XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
-						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.8;
+						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.8f;
 						if (m_hookshot->length <= m_hookshot->maxLength)
 						{
 							GrappleToObj(point, XMLoadFloat3(&m_velocity));
@@ -844,7 +844,11 @@ void Player::TurnOffHookShot()
 
 bool Player::CheckHookState()
 {
-	return m_hookshot->active;
+	if (m_hookshot->active != 0)
+	{
+		return true;
+	}
+	return false;
 }
 
 bool Player::TestIntersection(XMVECTOR * point, Model* _obj)
@@ -853,7 +857,7 @@ bool Player::TestIntersection(XMVECTOR * point, Model* _obj)
 	XMVECTOR inverseView;
 	XMFLOAT4 direction, origin;
 	XMVECTOR rayOrigin, rayDirection;
-	bool intersect, result;
+	bool intersect;
 	intersect = false;
 
 	// Get the inverse of the view matrix.
@@ -891,7 +895,7 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMA
 	XMVECTOR inverseView;
 	XMFLOAT4 direction, origin;
 	XMVECTOR rayOrigin, rayDirection;
-	bool intersect, result;
+	bool intersect;
 	intersect = false;
 
 	// Get the inverse of the view matrix.
