@@ -146,7 +146,7 @@ int Menu::Update()
 
 void Menu::Render(Direct3D* _direct3D)
 {
-	_direct3D->SetShader();
+	//_direct3D->SetShader();
 
 	// Render menu background
 	_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));

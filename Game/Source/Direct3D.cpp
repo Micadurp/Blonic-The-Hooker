@@ -481,14 +481,21 @@ void Direct3D::BeginScene( float _red, float _green, float _blue, float _alpha)
 	
 	renderer->SetShader(deviceContext);
 
-	renderer->DeferredFirstPass(deviceContext, depthStencilView);
 
 	return;
 }
 
-void Direct3D::EndScene()
+void Direct3D::DeferredFirstPass()
+{
+	renderer->DeferredFirstPass(deviceContext, depthStencilView);
+}
+void Direct3D::DeferredRender()
 {
 	renderer->DeferredRenderer(deviceContext, depthStencilView, backBuffer);
+}
+
+void Direct3D::EndScene()
+{
 
 	// Present the back buffer to the screen since rendering is complete.
 	if (vsync_enabled)

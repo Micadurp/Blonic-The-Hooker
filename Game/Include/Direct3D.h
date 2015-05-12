@@ -73,7 +73,10 @@ public:
 
 	bool Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix);
 	bool Render(Model*, const DirectX::XMMATRIX &_viewMatrix);
-	
+
+	void DeferredFirstPass();
+	void DeferredRender();
+
 	void SetBackBufferRenderTarget();
 	void ResetViewport();
 
