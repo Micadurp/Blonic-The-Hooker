@@ -685,6 +685,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 	MouseStateStruct mousestate = m_input->GetMouseState();
 	Triangle tri;
 	XMVECTOR point;
+	float shortestLength = 1000;
 
 	//look at crystal check + blocked by stuff check
 	for (int n = 1; n < models.size(); n++)
@@ -698,25 +699,32 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 			{
 				XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 				float length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
-				if (length <= m_hookshot->maxLength)
+				if (shortestLength > length)
 				{
-					m_lookAtCrystal = true;
+					shortestLength = length;
+				}
 
-					for (int i = 0; i < collidableGeometryIndices.size(); i += 3)
-					{
-						tri.vertex0 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i)));
-						tri.vertex1 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 1)));
-						tri.vertex2 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 2)));
-						if (TestIntersection(tri, &point, XMMatrixIdentity()))
-						{
-							XMVECTOR b = XMLoadFloat4(&m_camPos) - point;
-							float block = sqrt(pow(XMVectorGetX(b), 2) + pow(XMVectorGetY(b), 2) + pow(XMVectorGetZ(b), 2));				
-							if (length > block)
-							{ 
-								m_lookAtCrystal = false;
-							}
-						}
-					}
+				
+			}
+		}
+	}
+	
+	if (shortestLength <= m_hookshot->maxLength)
+	{
+		m_lookAtCrystal = true;
+
+		for (int i = 0; i < collidableGeometryIndices.size(); i += 3)
+		{
+			tri.vertex0 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i)));
+			tri.vertex1 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 1)));
+			tri.vertex2 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 2)));
+			if (TestIntersection(tri, &point, XMMatrixIdentity()))
+			{
+				XMVECTOR b = XMLoadFloat4(&m_camPos) - point;
+				float block = sqrt(pow(XMVectorGetX(b), 2) + pow(XMVectorGetY(b), 2) + pow(XMVectorGetZ(b), 2));
+				if (shortestLength > block)
+				{
+					m_lookAtCrystal = false;
 				}
 			}
 		}
