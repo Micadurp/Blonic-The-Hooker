@@ -91,7 +91,7 @@ class Player : public Camera
 
 		XMFLOAT4X4 GetCrosshairMatrix();
 
-		void ChangeHookState(vector<Model*> models);
+		void ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 
 		bool IsDead();
 	private:
