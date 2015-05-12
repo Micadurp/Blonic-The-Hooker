@@ -257,7 +257,9 @@ bool System::Frame(double _time)
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
+		direct3D->DeferredFirstPass();
 		gamePlay->Render(direct3D);
+		direct3D->DeferredRender();
 		break;
 
 	case GameState::gMenu:
