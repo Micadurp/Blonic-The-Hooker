@@ -9,6 +9,34 @@ class LightManager
 private:
 	const int lightCount = 2;
 
+	struct LightSharedStruct
+	{
+		XMFLOAT4 ambient;
+
+		XMFLOAT3 attenuation;
+		float range;
+
+		float intensity;
+		XMFLOAT3 pad;
+	} lightSharedObj;
+
+	struct LightStruct
+	{
+		XMFLOAT4 position;
+		XMFLOAT4 diffuse;
+	};
+
+	struct LightBufferStruct
+	{
+		LightStruct* lights;
+	} lightBufferObj;
+
+	ID3D11Buffer** lightBuffers;
+
+
+# pragma region Temporary light structs
+
+	/*
 	struct Directional
 	{
 		Directional()
@@ -21,17 +49,14 @@ private:
 		XMFLOAT4 ambient;
 		XMFLOAT4 diffuse;
 	} dirLight;
-
 	struct lightBufferStruct
 	{
 		Directional light;
 	} dirBufferObj;
-
 	struct LightColorStruct
 	{
 		XMFLOAT4* diff;
 	} lightColor;
-
 	struct LightPositionStruct
 	{
 		XMFLOAT4* pos;
@@ -43,6 +68,8 @@ private:
 
 	ID3D11Buffer* lightColorBuffer;
 	ID3D11Buffer* lightPosBuffer;
+	*/
+# pragma endregion
 
 public:
 	LightManager();
