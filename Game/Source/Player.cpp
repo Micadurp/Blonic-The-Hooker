@@ -26,8 +26,8 @@ Player::Player()
 	m_hookshot->length =  0;
 	m_hookshot->maxLength = 50;
 
-	m_jumpVelocity = 0.0f;
-	m_isJumping = false;
+	//m_jumpVelocity = 0.0f;
+	//m_isJumping = false;
 
 	m_jumpPosition = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -161,10 +161,13 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		m_position.y -= speed;
 	}
 
-	if (m_keyboard.key_space_pressed && m_hookshot->active != 1 && !m_isJumping)
+	if (m_keyboard.key_space_pressed && m_hookshot->active != 1 && m_onGround)
 	{
 		m_velocity.y = 0.5f;
-		m_isJumping = true;
+	}
+	else if (m_keyboard.key_space_pressed)
+	{
+		m_hookshot->active = 0;
 	}
 
 	// Rotation matrix from mouse input
@@ -215,7 +218,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 		{
 			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
 			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
-			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + m_jumpVelocity * temp_camUp);
+			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + (m_velocity.y - m_gravity.y) * temp_camUp);
 		}
 	}
 	else // hookshot not active
@@ -604,7 +607,6 @@ bool Player::SphereCollidingWithTriangle(CollisionPacket& _cP, XMVECTOR &_p0, XM
 			if (XMVectorGetX(XMVector3AngleBetweenVectors(_triNormal, XMLoadFloat4(&m_camUp)))<XM_PIDIV4)
 			{
 				m_onGround = true;
-				m_isJumping = false;
 			}
 
 			// check if this is the first triangle that has been collided with OR it is 

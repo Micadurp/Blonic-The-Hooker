@@ -48,8 +48,8 @@ class Player : public Camera
 			XMVECTOR point0, point1;
 		};
 
-		float m_jumpVelocity;
-		bool m_isJumping;
+		//float m_jumpVelocity;
+		//bool m_isJumping;
 
 		XMFLOAT4 m_jumpPosition;
 
