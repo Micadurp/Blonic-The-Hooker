@@ -20,9 +20,11 @@ PS_OUT PS_main(VS_OUT input) : SV_TARGET
 	PS_OUT outPut;
 
 	float4 darkFalloff = float4(0.4f, 0.1f, 0.4f, 1);
-		float4 lightFalloff = float4(0.2f, 0.1f, 0.4f, 1);
+	float4 lightFalloff = float4(0.2f, 0.1f, 0.4f, 1);
 
-		//outPut.Diffuse = (((input.tex.y * darkFalloff) / lightFalloff) * float4(0.21f, 1, 1, 1));
+	//outPut.Diffuse = (((input.tex.y * darkFalloff) / lightFalloff) * float4(0.21f, 1, 1, 1));
 	outPut.Diffuse = txDiffuse.Sample(sampAni, input.tex) / float4(0.3f, 0.3f, 0.3f, 0.3f);
+	outPut.Normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	outPut.WorldPos = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	return outPut;
 };

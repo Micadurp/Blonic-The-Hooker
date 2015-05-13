@@ -83,7 +83,7 @@ protected:
 	//change
 	UINT32 vertexSize = sizeof(Vertex);
 
-	ID3D11Buffer*   pixelShaderMaterialCB;
+	ID3D11Buffer* pixelShaderMaterialCB;
 
 
 	std::vector<XMFLOAT3> pickingPoints;

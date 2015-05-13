@@ -21,8 +21,8 @@ Player::Player()
 	
 	m_hookshot = new HookShot();
 	m_hookshot->active = false;
-	m_hookshot->point = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	m_hookshot->velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	m_hookshot->point = { 0.0f, 0.0f, 0.0f };
+	m_hookshot->velocity = { 0.0f, 0.0f, 0.0f};
 	m_hookshot->length =  0;
 	m_hookshot->maxLength = 100;
 
@@ -87,6 +87,13 @@ void Player::Shutdown()
 		m_crosshair->Shutdown();
 		delete m_crosshair;
 		m_crosshair = 0;
+	}
+
+	if (m_crosshair2)
+	{
+		m_crosshair2->Shutdown();
+		delete m_crosshair2;
+		m_crosshair2 = 0;
 	}
 }
 
@@ -196,8 +203,8 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	if (m_hookshot->active == 1)
 	{
-		HookToObj(m_hookshot->point);
-		XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+		HookToObj(XMLoadFloat3(&m_hookshot->point));
+		XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity));
 	}
 	else if (m_hookshot->active == 2)
 	{
@@ -210,14 +217,14 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 				m_velocity.y -= m_gravity.y;
 			}
 
-			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
-			XMStoreFloat3(&m_velocity, m_hookshot->velocity * 0.998f);
+			GrappleToObj(XMLoadFloat3(&m_hookshot->point), XMLoadFloat3(&m_velocity));
+			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity) * 0.998f);
 
 		}
 		else
 		{
-			GrappleToObj(m_hookshot->point, XMLoadFloat3(&m_velocity));
-			XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+			GrappleToObj(XMLoadFloat3(&m_hookshot->point), XMLoadFloat3(&m_velocity));
+			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity));
 			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + (m_velocity.y - m_gravity.y) * temp_camUp);
 		}
 	}
@@ -314,7 +321,7 @@ XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertP
 	_cP.nearestDistance = 0.0f;
 
 	// Loop through each triangle in mesh and check for a collision
-	for (int triCounter = 0; triCounter < _indices.size() / 3; triCounter++)
+	for (size_t triCounter = 0; triCounter < _indices.size() / 3; triCounter++)
 	{
 		XMVECTOR p0, p1, p2;
 		p0 = XMLoadFloat3(&_vertPos[_indices[3 * triCounter]]);
@@ -688,9 +695,9 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 	float shortestLength = 1000;
 
 	//look at crystal check + blocked by stuff check
-	for (int n = 1; n < models.size(); n++)
+	for (size_t n = 1; n < models.size(); n++)
 	{
-		for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+		for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 		{
 			tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
 			tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
@@ -713,7 +720,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 	{
 		m_lookAtCrystal = true;
 
-		for (int i = 0; i < collidableGeometryIndices.size(); i += 3)
+		for (size_t i = 0; i < collidableGeometryIndices.size(); i += 3)
 		{
 			tri.vertex0 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i)));
 			tri.vertex1 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 1)));
@@ -738,9 +745,9 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (int n = 1; n < models.size(); n++)
+			for (size_t n = 1; n < models.size(); n++)
 			{
-				for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 				{
 					tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
 					tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
@@ -767,9 +774,9 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (int n = 1; n < models.size(); n++)
+			for (size_t n = 1; n < models.size(); n++)
 			{
-				for (int i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 				{
 					tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
 					tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
@@ -800,8 +807,8 @@ void Player::HookToObj(const XMVECTOR &point)
 {
 	XMVECTOR vec = point - XMLoadFloat4(&m_camPos);
 	vec = XMVector3Normalize(vec);
-	m_hookshot->velocity = vec;
-	m_hookshot->point = point;
+	XMStoreFloat3(&m_hookshot->velocity, vec);
+	XMStoreFloat3(&m_hookshot->point, point);
 	m_hookshot->active = 1;
 }
 
@@ -831,15 +838,15 @@ void Player::GrappleToObj(const XMVECTOR &point, XMVECTOR &velocity)
 		}
 	}
 
-	m_hookshot->velocity = velocity;
-	m_hookshot->point = point;
+	XMStoreFloat3(&m_hookshot->velocity, velocity);
+	XMStoreFloat3(&m_hookshot->point, point);
 	m_hookshot->active = 2;
 }
 
 void Player::TurnOffHookShot()
 {
 	m_hookshot->active = false;
-	XMStoreFloat3(&m_velocity, m_hookshot->velocity);
+	m_velocity = m_hookshot->velocity;
 }
 
 bool Player::CheckHookState()

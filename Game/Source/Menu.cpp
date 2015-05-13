@@ -152,7 +152,7 @@ void Menu::Render(Direct3D* _direct3D)
 	_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
 
 	// Render menu buttons
-	for (int i = 0; i < menuButtons.size(); i++)
+	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
 		_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
 

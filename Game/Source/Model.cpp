@@ -7,6 +7,7 @@ Model::Model()
 	normalShaderResource = nullptr;
 	meshVertexBuff = nullptr;
 	meshIndexBuff = nullptr;
+	pixelShaderMaterialCB = nullptr;
 	indexCount = 0;
 }
 
@@ -306,7 +307,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 							int whichPart = 0;		//(vPos, vTexCoord, or vNorm)
 
 							//Parse this string
-							for (int j = 0; j < VertDef.length(); ++j)
+							for (size_t j = 0; j < VertDef.length(); ++j)
 							{
 								if (VertDef[j] != '/')	//If there is no divider "/", add a char to our vertPart
 									vertPart += VertDef[j];
@@ -680,7 +681,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	XMVECTOR tempVertexPosVec;
 	XMFLOAT3 tempVertF3;
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		tempVertexPosVec = XMLoadFloat4(&vertices[i].position);
 		tempVertexPosVec = XMVector3TransformCoord(tempVertexPosVec, XMLoadFloat4x4(&objMatrix));
@@ -688,7 +689,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 		collidableGeometryPositions->push_back(tempVertF3);
 	}
 
-	for (int i = 0; i < indices.size(); i++)
+	for (size_t i = 0; i < indices.size(); i++)
 	{
 		collidableGeometryIndices->push_back(indices[i] + vertexOffset);
 	}
@@ -826,7 +827,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 							int whichPart = 0;		//(vPos, vTexCoord, or vNorm)
 
 							//Parse this string
-							for (int j = 0; j < VertDef.length(); ++j)
+							for (size_t j = 0; j < VertDef.length(); ++j)
 							{
 								if (VertDef[j] != '/')	//If there is no divider "/", add a char to our vertPart
 									vertPart += VertDef[j];
@@ -1200,7 +1201,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	XMVECTOR tempVertexPosVec;
 	XMFLOAT3 tempVertF3;
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		tempVertexPosVec = XMLoadFloat4(&vertices[i].position);
 		tempVertexPosVec = XMVector3TransformCoord(tempVertexPosVec, XMLoadFloat4x4(&objMatrix));
@@ -1209,7 +1210,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 		pickingPoints.push_back(tempVertF3);
 	}
 
-	for (int i = 0; i < indices.size(); i++)
+	for (size_t i = 0; i < indices.size(); i++)
 	{
 		collidableGeometryIndices->push_back(indices[i] + vertexOffset);
 		pickingIndices.push_back(indices[i]);
@@ -1348,7 +1349,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device)
 							int whichPart = 0;		//(vPos, vTexCoord, or vNorm)
 
 							//Parse this string
-							for (int j = 0; j < VertDef.length(); ++j)
+							for (size_t j = 0; j < VertDef.length(); ++j)
 							{
 								if (VertDef[j] != '/')	//If there is no divider "/", add a char to our vertPart
 									vertPart += VertDef[j];

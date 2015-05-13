@@ -3,7 +3,10 @@
 
 GamePlay::GamePlay()
 {
+	player = nullptr;
+	lightManager = nullptr;
 	sceneLightsObj= new LightInfo[lightCount];
+
 }
 GamePlay::~GamePlay()
 {
@@ -44,7 +47,6 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	}
 
 	result = player->Initialize(_wndHandle, _hInstance, _device);
-
 	if (!result)
 	{
 		return false;
@@ -55,7 +57,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->Initialize(L"hus_Export", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
 
 
@@ -63,7 +65,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+		models.at(n)->Initialize(L"kristall_export", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}	
 
 
@@ -124,7 +126,7 @@ int GamePlay::Update(double time)
 
 	//lights[0].Position = player->GetPosition();
 
-	for (int n = 0; n < models.size(); n++)
+	for (size_t n = 0; n < models.size(); n++)
 	{
 		models[n]->Update(player);
 	}

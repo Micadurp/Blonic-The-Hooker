@@ -300,7 +300,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 
 	// Setup the raster description which will determine how and what polygons will be drawn.
 	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
@@ -563,7 +563,7 @@ void Direct3D::SetBackBufferRenderTarget()
 
 bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix)
 {
-	for (int n = 0; n < _models.size(); n++)
+	for (size_t n = 0; n < _models.size(); n++)
 	{
 		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
 		_models.at(n)->Render(deviceContext,depthStencilState);

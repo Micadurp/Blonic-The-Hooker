@@ -252,7 +252,7 @@ bool System::Frame(double _time)
 
 #pragma region Draw
 
-	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+	direct3D->BeginScene(1.0f, 0.0f, 0.0f, 1.0f);
 
 	
 	switch (gameState)
