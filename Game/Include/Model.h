@@ -96,7 +96,7 @@ public:
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
-	void Shutdown();
+	virtual void Shutdown();
 
 	virtual void Update(Camera*);
 	virtual void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);

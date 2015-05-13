@@ -9,6 +9,7 @@ RenderManager::RenderManager()
 	basicModelVSCB = nullptr;
 	basicModelGSCB = nullptr;
 	basicModelPSCB = nullptr;
+	defaultSampler = nullptr;
 }
 
 RenderManager::~RenderManager()
@@ -114,6 +115,11 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 
 void RenderManager::Shutdown()
 {
+	if (defaultSampler)
+	{
+		defaultSampler->Release();
+		defaultSampler = 0;
+	}
 
 	if (deferredRenderer)
 	{
@@ -242,7 +248,7 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
-	
+
 	return true;
 }
 

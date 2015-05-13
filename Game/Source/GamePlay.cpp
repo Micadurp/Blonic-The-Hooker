@@ -6,6 +6,7 @@ GamePlay::GamePlay()
 	player = nullptr;
 	lightManager = nullptr;
 	sceneLightsObj= new LightInfo[lightCount];
+	lightBuffer = nullptr;
 
 }
 GamePlay::~GamePlay()
@@ -32,6 +33,16 @@ void GamePlay::Shutdown()
 	{
 		lightManager->ShutDown();
 		delete lightManager;
+	}
+
+	if (sceneLightsObj)
+	{
+		delete [] sceneLightsObj;
+	}
+
+	if (lightBuffer)
+	{
+		lightBuffer->Release();
 	}
 }
 

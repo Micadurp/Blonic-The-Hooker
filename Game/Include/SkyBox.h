@@ -16,6 +16,7 @@ public:
 	SkyBox(ID3D11Device *);
 	~SkyBox();
 	void Update(Camera*);
+	void Shutdown();
 
 	void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);
 };
