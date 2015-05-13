@@ -52,7 +52,7 @@ bool System::Initialize()
 	}
 
 	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_Quit" };
-	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	pauseMenu = new Menu();
 	if (!pauseMenu)
@@ -61,7 +61,7 @@ bool System::Initialize()
 	}
 
 	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	
 	deathMenu = new Menu();
@@ -71,19 +71,19 @@ bool System::Initialize()
 	}
 
 	wstring deathMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)
 	{
 		return false;
 	}
-	result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
-		return false;
-	}
+	//result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+	//if (!result)
+	//{
+	//	MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
+	//	return false;
+	//}
 
 
 	return true;
@@ -216,6 +216,7 @@ bool System::Frame(double _time)
 		{
 		case 1:
 			gameState = GameState::gGamePlay;
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
 			break;
 		case 2:
 			return false;

@@ -242,6 +242,8 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
+	
+	return true;
 }
 
 bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount)
