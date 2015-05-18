@@ -111,9 +111,8 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 
 #pragma region Create ConstantBuffers
 
-	vertexCB.viewProjection = DirectX::XMMatrixIdentity();
-	vertexCB.world = DirectX::XMMatrixIdentity();
-
+	DirectX::XMStoreFloat4x4(&vertexCB.viewProjection, DirectX::XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&vertexCB.world, DirectX::XMMatrixIdentity());
 
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	memset(&matrixBufferDesc, 0, sizeof(matrixBufferDesc));

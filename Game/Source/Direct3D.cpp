@@ -481,14 +481,21 @@ void Direct3D::BeginScene( float _red, float _green, float _blue, float _alpha)
 	
 	renderer->SetShader(deviceContext);
 
-	renderer->DeferredFirstPass(deviceContext, depthStencilView);
 
 	return;
 }
 
-void Direct3D::EndScene()
+void Direct3D::DeferredFirstPass()
+{
+	renderer->DeferredFirstPass(deviceContext, depthStencilView);
+}
+void Direct3D::DeferredRender()
 {
 	renderer->DeferredRenderer(deviceContext, depthStencilView, backBuffer);
+}
+
+void Direct3D::EndScene()
+{
 
 	// Present the back buffer to the screen since rendering is complete.
 	if (vsync_enabled)
@@ -529,11 +536,6 @@ void Direct3D::SetCrosshairShaders()
 	renderer->SetCrosshairShaders(deviceContext);
 }
 
-bool Direct3D::SetPixelCBuffer(ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount)
-{
-	return renderer->SetPixelCBuffer(deviceContext, _lightBuffers, _lightInfo, _lightCount);
-}
-
 bool Direct3D::SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix)
 {
 	return renderer->SetVertexCBuffer(deviceContext, _worldMatrix, XMMatrixIdentity(), XMMatrixIdentity());
@@ -556,7 +558,7 @@ void Direct3D::SetBackBufferRenderTarget()
 
 bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_viewMatrix)
 {
-	for (int n = 0; n < _models.size(); n++)
+	for (size_t n = 0; n < _models.size(); n++)
 	{
 		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
 		_models.at(n)->Render(deviceContext,depthStencilState);

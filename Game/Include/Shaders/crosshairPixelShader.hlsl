@@ -23,7 +23,7 @@ struct PS_OUT
 
 };
 
-PS_OUT PS_main(GS_OUT input) : SV_TARGET
+PS_OUT PS_main(GS_OUT input)
 {
 	PS_OUT output;
 

@@ -2,11 +2,18 @@
 #define PLAYER_H
 
 #include "Camera.h"
+<<<<<<< HEAD
 #include "PlayerInputs.h";
 #include "Model.h";
 #include <cmath>;
 #include "DirectXCollision.h";
 #include "HookString.h"
+=======
+#include "PlayerInputs.h"
+#include "Model.h"
+#include <cmath>
+#include "DirectXCollision.h"
+>>>>>>> cfa0d90e935e5a46995c22280adb6e9c9664960c
 
 using namespace std;
 
@@ -33,8 +40,8 @@ class Player : public Camera
 
 		struct HookShot
 		{
-			XMVECTOR velocity;
-			XMVECTOR point;
+			XMFLOAT3 velocity;
+			XMFLOAT3 point;
 			float length;
 			float maxLength;
 			int active;

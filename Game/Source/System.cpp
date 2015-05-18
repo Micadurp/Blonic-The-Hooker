@@ -18,12 +18,12 @@ bool System::Initialize()
 	screenWidth = 0;
 	screenHeight = 0;
 
-	countsPerSecond = 0.0f;
-	counterStart = 0.0f;
-	frameCount = 0.0f;
-	fps = 0.0f;
-	frameTimeOld = 0.0f;
-	frameTime = 0.0f;
+	countsPerSecond = 0.0;
+	counterStart = 0;
+	frameCount = 0;
+	fps = 0;
+	frameTimeOld = 0;
+	frameTime = 0.0;
 
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
@@ -52,7 +52,7 @@ bool System::Initialize()
 	}
 
 	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_Quit" };
-	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	pauseMenu = new Menu();
 	if (!pauseMenu)
@@ -61,7 +61,7 @@ bool System::Initialize()
 	}
 
 	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	
 	deathMenu = new Menu();
@@ -71,19 +71,19 @@ bool System::Initialize()
 	}
 
 	wstring deathMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, screenWidth, screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	gamePlay = new GamePlay();
 	if (!gamePlay)
 	{
 		return false;
 	}
-	result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
-		return false;
-	}
+	//result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+	//if (!result)
+	//{
+	//	MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
+	//	return false;
+	//}
 
 
 	return true;
@@ -216,6 +216,7 @@ bool System::Frame(double _time)
 		{
 		case 1:
 			gameState = GameState::gGamePlay;
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
 			break;
 		case 2:
 			return false;
@@ -251,13 +252,15 @@ bool System::Frame(double _time)
 
 #pragma region Draw
 
-	direct3D->BeginScene(0.0f, 0.0f, 0.5f, 1.0f);
+	direct3D->BeginScene(1.0f, 0.0f, 0.0f, 1.0f);
 
 	
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
+		direct3D->DeferredFirstPass();
 		gamePlay->Render(direct3D);
+		direct3D->DeferredRender();
 		break;
 
 	case GameState::gMenu:

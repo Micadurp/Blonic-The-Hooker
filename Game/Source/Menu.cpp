@@ -48,12 +48,12 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 	{
 		return false;
 	}
-	menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(-0.5f, selectorPosition, 1.0f));
+	menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, selectorPosition, 0.0f));
 
 	// Initialize menu buttons
 	for (int i = 0; i < buttonCount; i++)
 	{
-		result = menuButtons.at(i)->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 1.0f));
+		result = menuButtons.at(i)->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(0.0f, (i * (-0.2f))- 0.2f, 0.0f));
 		if (!result)
 		{
 			return false;
@@ -66,7 +66,7 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 	{
 		return false;
 	}
-	menu_background->SetObjMatrix(XMMatrixScaling(1.0f, 1.0f, 1.0f) * XMMatrixTranslation(0.0f, 0.0f, 1.4f));
+	menu_background->SetObjMatrix(XMMatrixScaling(0.7f, 1.0f, 1.0f) * XMMatrixTranslation(0.0f, 0.0f, 0.1f));
 
 	return true;
 }
@@ -124,7 +124,7 @@ int Menu::Update()
 			selectorPosition = -0.4f;
 		}
 
-		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 0.8f) * XMMatrixTranslation(-0.5f, selectorPosition, 1.0f));
+		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, selectorPosition, 0.0f));
 	}
 
 	if (input->GetKeyboardState().key_enter_pressed && !lastKeyboardState.key_enter_pressed)
@@ -146,22 +146,20 @@ int Menu::Update()
 
 void Menu::Render(Direct3D* _direct3D)
 {
-	_direct3D->SetShader();
-
-	// Render menu background
-	_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
-
-	// Render menu buttons
-	for (int i = 0; i < menuButtons.size(); i++)
-	{
-		_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
-
-		_direct3D->SetVertexCBuffer(menuButtons.at(i)->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
-		menuButtons.at(i)->Render(_direct3D->GetDeviceContext());
-	}
-
 	// Render menu selector
 	_direct3D->SetCrosshairShaders();
 
-	_direct3D->Render(menuSelector, XMLoadFloat4x4(&camera->GetViewMatrix()));
+	_direct3D->SetVertexCBuffer(menuSelector->GetObjMatrix());
+	menuSelector->Render(_direct3D->GetDeviceContext());
+
+	// Render menu background
+	_direct3D->SetVertexCBuffer(menu_background->GetObjMatrix());
+	menu_background->Render(_direct3D->GetDeviceContext());
+
+	// Render menu buttons
+	for (size_t i = 0; i < menuButtons.size(); i++)
+	{
+		_direct3D->SetVertexCBuffer(menuButtons.at(i)->GetObjMatrix());
+		menuButtons.at(i)->Render(_direct3D->GetDeviceContext());
+	}	
 }

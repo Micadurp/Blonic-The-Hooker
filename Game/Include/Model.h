@@ -83,7 +83,7 @@ protected:
 	//change
 	UINT32 vertexSize = sizeof(Vertex);
 
-	ID3D11Buffer*   pixelShaderMaterialCB;
+	ID3D11Buffer* pixelShaderMaterialCB;
 
 
 	std::vector<XMFLOAT3> pickingPoints;
@@ -96,15 +96,13 @@ public:
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
-	void Shutdown();
+	virtual void Shutdown();
 
 	virtual void Update(Camera*);
 	virtual void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);
 	virtual void Model::Render(ID3D11DeviceContext* _deviceContext);
 
-	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
-	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
-	bool LoadObj(std::wstring _filename, ID3D11Device* _device);
+	bool LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions = nullptr, std::vector<DWORD> *collidableGeometryIndices = nullptr, bool pickable = false);
 
 	bool CreateShaders(ID3D11Device* _device);
 

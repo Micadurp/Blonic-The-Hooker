@@ -5,22 +5,26 @@
 
 using namespace DirectX;
 
-struct LightInfo
+struct DirectionalLight
 {
-	XMFLOAT3 attenuation = { 0.0f, 0.0f, 0.2f };
-	float intensity = 100.0f;
+	XMFLOAT3 direction;
+	float pad;
 
-	XMFLOAT3 pad;
-	float range = 1000.0f;
-
-	XMFLOAT4 ambient = { 0.3f, 0.3f, 0.3f, 0.3f };
-	XMFLOAT4 Position;
-	XMFLOAT4 Color;
+	XMFLOAT4 ambient;
+	XMFLOAT4 diffuse;
 };
 
-struct SceneLightsStruct
+struct PointLight
 {
-	LightInfo* lights;
+	XMFLOAT4 position;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
+
+	XMFLOAT3 attenuation = { 0.0f, 0.0f, 0.3f };
+	float range = 1000.0f;
+
+	float intensity = 200.0f;
+	XMFLOAT3 pad;
 };
 
 #endif

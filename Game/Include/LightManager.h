@@ -2,47 +2,24 @@
 #define LIGHTMANAGER_H
 
 #include <d3d11.h>
-#include "LightClass.h"
+#include "LightStructure.h"
 
 class LightManager
 {
 private:
 	const int lightCount = 2;
 
-	struct Directional
+	struct EnviromentLightBuffer
 	{
-		Directional()
-		{
-			ZeroMemory(this, sizeof(Directional));
-		}
-		XMFLOAT3 dir;
-		float intensity;
+		DirectionalLight light;
+	} enviroLightObj;
 
-		XMFLOAT4 ambient;
-		XMFLOAT4 diffuse;
-	} dirLight;
-
-	struct lightBufferStruct
+	struct LightBufferStruct
 	{
-		Directional light;
-	} dirBufferObj;
+		PointLight* lights;
+	} lightBufferObj;
 
-	struct LightColorStruct
-	{
-		XMFLOAT4* diff;
-	} lightColor;
-
-	struct LightPositionStruct
-	{
-		XMFLOAT4* pos;
-	} lightPos;
-	
-	LightClass* lights;
-
-	ID3D11Buffer* directionalLightBuffer;
-
-	ID3D11Buffer* lightColorBuffer;
-	ID3D11Buffer* lightPosBuffer;
+	ID3D11Buffer** lightBuffer;
 
 public:
 	LightManager();

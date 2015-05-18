@@ -16,8 +16,8 @@ bool LightClass::Initialize(const XMFLOAT4 &_pos, const XMFLOAT4 &_amb, const XM
 
 	attenuation = _att;
 
-	intensity = _intens;
-	range = _range;
+	intensity = (float) _intens;
+	range = (float) _range;
 
 	return true;
 }

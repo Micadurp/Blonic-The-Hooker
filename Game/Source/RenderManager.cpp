@@ -9,6 +9,7 @@ RenderManager::RenderManager()
 	basicModelVSCB = nullptr;
 	basicModelGSCB = nullptr;
 	basicModelPSCB = nullptr;
+	defaultSampler = nullptr;
 }
 
 RenderManager::~RenderManager()
@@ -114,6 +115,11 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 
 void RenderManager::Shutdown()
 {
+	if (defaultSampler)
+	{
+		defaultSampler->Release();
+		defaultSampler = 0;
+	}
 
 	if (deferredRenderer)
 	{
@@ -196,7 +202,7 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 
-	
+	_deviceContext->PSSetSamplers(0, 1, &defaultSampler);
 
 	return true;
 }
@@ -242,55 +248,10 @@ bool RenderManager::SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const 
 
 	// Now set the constant buffer in the vertex shader with the updated values.
 	_deviceContext->VSSetConstantBuffers(0, 1, &basicModelVSCB);
-}
-
-bool RenderManager::SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount)
-{
-	HRESULT result;
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-
-	_deviceContext->UpdateSubresource(_lightBuffers, 0, nullptr, &_lightInfo[0], 0, 0);
-
-
-	/*
-	result = _deviceContext->Map(_lightBuffers[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	// Get a pointer to the data in the constant buffer.
-	lightInfoPtr = (LightSharedInfo*)mappedResource.pData;
-
-	// Copy the matrices into the constant buffer.
-	lightInfoPtr->ambient = _lightInfo.ambient;
-	lightInfoPtr->attenuation = _lightInfo.attenuation;
-	lightInfoPtr->intensity = _lightInfo.intensity;
-	lightInfoPtr->range = _lightInfo.range;
-
-	// Unlock the constant buffer.
-	_deviceContext->Unmap(_lightBuffers[0], 0);
-
-
-	result = _deviceContext->Map(_lightBuffers[1], 1, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	lightPtr = (LightPosColor*)mappedResource.pData;
-
-	lightPtr->lightPosArray = _lights.lightPosArray;
-	lightPtr->lightColorArray = _lights.lightColorArray;
-
-	_deviceContext->Unmap(_lightBuffers[1], 1);
-	*/
-
-	// Now set the constant buffer in the vertex shader with the updated values.
-	_deviceContext->PSSetConstantBuffers(0, 1, &_lightBuffers);
 
 	return true;
 }
+
 
 void RenderManager::DeferredFirstPass(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView)
 {

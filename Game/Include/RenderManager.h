@@ -6,7 +6,6 @@
 #include <DirectXMath.h>
 
 #include"DeferredRendering.h"
-#include "LightStructure.h"
 
 class RenderManager
 {
@@ -55,7 +54,6 @@ public:
 	bool SetDeferredShaders(ID3D11DeviceContext* _deviceContext);
 
 	bool SetVertexCBuffer(ID3D11DeviceContext* _deviceContext, const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix, const DirectX::XMMATRIX &_projectionMatrix);
-	bool SetPixelCBuffer(ID3D11DeviceContext* _deviceContext, ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount);
 
 };
 #endif

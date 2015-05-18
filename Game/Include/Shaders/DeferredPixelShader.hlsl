@@ -12,18 +12,36 @@ SamplerState sampAni
 	AddressV = WRAP;
 };
 
-struct DirectionalLight
+struct PointLight
 {
-	float3 dir;
-	float intensity;
-	float4 ambient;
+	float4 position;
 	float4 diffuse;
+	float4 ambient;
+	float3 attenuation;
+	float range;
+	float intensity;
 };
 
+struct DirectionalLight
+{
+	float3 direction;
+	float4 diffuse;
+	float4 ambient;
+};
+
+<<<<<<< HEAD
 
 cbuffer LightBuffer : register(b0)
+=======
+cbuffer enviromentLight : register(b0)
 {
-	DirectionalLight light;
+	DirectionalLight dirLight;
+}
+
+cbuffer LightArray : register(b1)
+>>>>>>> cfa0d90e935e5a46995c22280adb6e9c9664960c
+{
+	PointLight lights[LIGHTS_COUNT];
 }
 
 struct VS_OUT
@@ -34,14 +52,46 @@ struct VS_OUT
 	float3 normal : NORMAL;
 };
 
+
+float3 calculateLight(int index, float4 txDiff, float4 txNormal, float4 txWorldPos)
+{
+	float3 color = { 0.0f, 0.0f, 0.0f };
+	float3 lightToPixel = lights[index].position - txWorldPos;
+	float distance = length(lightToPixel);
+
+	lightToPixel /= distance;
+
+	float lightAmount = dot(lightToPixel, txNormal);
+
+	if (lightAmount > 0.0f)
+	{
+		color += lightAmount * txDiff * lights[index].diffuse * lights[index].intensity;
+
+		color /= lights[index].attenuation[0] + (lights[index].attenuation[1] * distance) + (lights[index].attenuation[2] * (distance * distance));
+	}
+
+	return color;
+}
+
+
 float4 PS_main(VS_OUT input) : SV_TARGET
 {
 	float4 diffuse = txDiffuse.Sample(sampAni, input.tex);
 	float4 normal = txNormal.Sample(sampAni, input.tex);
 	float4 worldPos = txWorldP.Sample(sampAni, input.tex);
 
-	float3 finalColor = diffuse * light.ambient;
-	finalColor += saturate(dot(light.dir, normalize(normal)) * light.diffuse * diffuse * light.intensity);
+
+	float3 finalColor = saturate(dot(dirLight.direction, normal) * dirLight.diffuse * diffuse);
+	float3 finalAmbient = diffuse * dirLight.ambient;
+
+	
+	for (int i = 0; i < LIGHTS_COUNT; i++)
+	{
+		finalColor += calculateLight(i, diffuse, normal, worldPos);
+	}
+	
+
+	finalColor = saturate(finalColor + finalAmbient);
 
 	return float4(finalColor, diffuse.a);
 }

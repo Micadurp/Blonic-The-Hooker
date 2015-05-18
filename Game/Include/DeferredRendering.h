@@ -58,8 +58,8 @@ private:
 
 	struct VertexCB
 	{
-		DirectX::XMMATRIX world;
-		DirectX::XMMATRIX viewProjection;
+		DirectX::XMFLOAT4X4 world;
+		DirectX::XMFLOAT4X4 viewProjection;
 	}
 	vertexCB;
 

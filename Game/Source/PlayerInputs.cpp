@@ -159,10 +159,24 @@ void PlayerInputs::Update()
 	}
 
 	// Mouse left click event
-	m_mouseStateObject.btn_left_pressed = mouseCurrentState.rgbButtons[0];
+	if (mouseCurrentState.rgbButtons[0])
+	{
+		m_mouseStateObject.btn_left_pressed = true;
+	}
+	else
+	{
+		m_mouseStateObject.btn_left_pressed = false;
+	}
 
 	// Mouse right click event
-	m_mouseStateObject.btn_right_pressed = mouseCurrentState.rgbButtons[1];
+	if (mouseCurrentState.rgbButtons[1])
+	{
+		m_mouseStateObject.btn_right_pressed = true;
+	}
+	else
+	{
+		m_mouseStateObject.btn_right_pressed = false;
+	}
 	// ------------------------------
 
 	m_mouseLastState = mouseCurrentState;
@@ -175,9 +189,32 @@ void PlayerInputs::Update()
 
 void PlayerInputs::UpdateInputStates(BYTE* keyboardState, DIMOUSESTATE mouseState)
 {
-	m_escapeStillPressed = keyboardState[DIK_ESCAPE] & 0x80;
-	m_returnStillPressed = keyboardState[DIK_RETURN] & 0x80;
-	m_spaceStillPressed = keyboardState[DIK_SPACE] & 0x80;
+	if (keyboardState[DIK_SPACE] & 0x80)
+	{
+		m_spaceStillPressed = true;
+	}
+	else
+	{
+		m_spaceStillPressed = false;
+	}
+
+	if (keyboardState[DIK_RETURN] & 0x80)
+	{
+		m_returnStillPressed = true;
+	}
+	else
+	{
+		m_returnStillPressed = false;
+	}
+
+	if (keyboardState[DIK_ESCAPE] & 0x80)
+	{
+		m_escapeStillPressed = true;
+	}
+	else
+	{
+		m_escapeStillPressed = false;
+	}
 }
 
 KeyboardStateStruct PlayerInputs::GetKeyboardState() const

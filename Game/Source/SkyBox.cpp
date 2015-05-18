@@ -75,6 +75,56 @@ void SkyBox::Update(Camera* camera)
 	XMStoreFloat4x4(&objMatrix,scale * translation);
 }
 
+void SkyBox::Shutdown()
+{
+	if (skyVertexShader)
+	{
+		skyVertexShader->Release();
+		skyVertexShader = 0;
+	}
+	if (skyPixelShader)
+	{
+		skyPixelShader->Release();
+		skyPixelShader = 0;
+	}
+	if (depthStencilState)
+	{
+		depthStencilState->Release();
+		depthStencilState = 0;
+	}
+	// Release the index buffer.
+	if (meshIndexBuff)
+	{
+		meshIndexBuff->Release();
+		meshIndexBuff = 0;
+	}
+
+	// Release the vertex buffer.
+	if (meshVertexBuff)
+	{
+		meshVertexBuff->Release();
+		meshVertexBuff = 0;
+	}
+
+	if (textureShaderResource)
+	{
+		textureShaderResource->Release();
+		textureShaderResource = 0;
+	}
+
+	if (normalShaderResource)
+	{
+		normalShaderResource->Release();
+		normalShaderResource = 0;
+	}
+
+	if (pixelShaderMaterialCB)
+	{
+		pixelShaderMaterialCB->Release();
+		pixelShaderMaterialCB = 0;
+	}
+}
+
 void SkyBox::Render(ID3D11DeviceContext* _deviceContext,ID3D11DepthStencilState * _depthState)
 {
 	_deviceContext->OMSetDepthStencilState(depthStencilState, 1);

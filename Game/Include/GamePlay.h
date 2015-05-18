@@ -6,7 +6,6 @@
 #include "Direct3D.h"
 #include "Model.h"
 #include "Player.h"
-#include "LightStructure.h"
 #include "LightManager.h"
 
 #include "SkyBox.h"
@@ -14,12 +13,7 @@
 class GamePlay
 {
 private:
-	const int lightCount = 1;
-
-	LightInfo* sceneLightsObj;
 	LightManager* lightManager;
-
-	ID3D11Buffer* lightBuffer;
 
 	RenderManager* renderer;
 
