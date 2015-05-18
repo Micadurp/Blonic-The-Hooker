@@ -1,12 +1,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "Camera.h";
-#include "PlayerInputs.h";
-#include "Model.h";
-#include <cmath>;
-#include "DirectXCollision.h";
-#include "HookString.h";
+#include "Camera.h"
+#include "PlayerInputs.h"
+#include "Model.h"
+#include <cmath>
+#include "DirectXCollision.h"
+#include "HookString.h"
 
 using namespace std;
 
