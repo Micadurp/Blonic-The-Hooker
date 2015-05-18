@@ -136,13 +136,18 @@ void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState 
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	if (textureShaderResource)
-		_deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
-
 	if (pixelShaderMaterialCB)
 		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
-	_deviceContext->DrawIndexed(indexCount, 0, 0);
+	int indexStart = 0;
+
+	for (int n = 0; n < modelMats.size(); n++)
+	{
+		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
+
+		_deviceContext->DrawIndexed(modelMats.at(n).indexAmount, indexStart, 0);
+		indexStart += modelMats.at(n).indexAmount;
+	}
 
 	return;
 }
@@ -166,13 +171,18 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	if (textureShaderResource)
-		_deviceContext->PSSetShaderResources(0, 1, &textureShaderResource);
-
 	if (pixelShaderMaterialCB)
 		_deviceContext->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
-	_deviceContext->DrawIndexed(indexCount, 0, 0);
+	int indexStart = 0;
+
+	for (int n = 0; n < modelMats.size(); n++)
+	{
+		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
+
+		_deviceContext->DrawIndexed(modelMats.at(n).indexAmount, indexStart, 0);
+		indexStart += modelMats.at(n).indexAmount;
+	}
 
 	return;
 }
@@ -203,7 +213,16 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	bool hasTexCoord = false;
 	bool hasNorm = false;
 
+	int materialIndex = 0;
+
+	//Material loading 
+	std::vector<std::wstring> meshMaterials;
+
+	std::vector<Material> materials;
+	std::vector<DWORD> matIndex;
+
 	//Temp variables to store into vectors
+	std::wstring meshMaterialsTemp;
 	int vertPosIndexTemp;
 	int vertNormIndexTemp;
 	int vertTCIndexTemp;
@@ -299,6 +318,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					{
 						int firstVIndex, lastVIndex;	//Holds the first and last vertice's index
 
+						materialIndex += 3;
 						for (int i = 0; i < 3; ++i)		//First three vertices (first triangle)
 						{
 							ss >> VertDef;	//Get vertex definition (vPos/vTexCoord/vNorm)
@@ -447,8 +467,45 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 						}
 					}
 				}
-
 				break;
+			
+			case 'u':	//usemtl - which material to use
+				checkChar = fileIn.get();
+				if (checkChar == 's')
+				{
+					checkChar = fileIn.get();
+					if (checkChar == 'e')
+					{
+						checkChar = fileIn.get();
+						if (checkChar == 'm')
+						{
+							checkChar = fileIn.get();
+							if (checkChar == 't')
+							{
+								checkChar = fileIn.get();
+								if (checkChar == 'l')
+								{
+									checkChar = fileIn.get();
+									if (checkChar == ' ')
+									{
+										meshMaterialsTemp = L"";	//Make sure this is cleared
+
+										fileIn >> meshMaterialsTemp; //Get next type (string)
+
+										meshMaterials.push_back(meshMaterialsTemp);
+										if (materialIndex != 0)
+										{
+											matIndex.push_back(materialIndex);
+											materialIndex = 0;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+
 			default:
 				break;
 			}
@@ -464,6 +521,12 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 			L"Error", MB_OK);
 
 		return false;
+	}
+
+	if (materialIndex != 0)
+	{
+		matIndex.push_back(materialIndex);
+		materialIndex = 0;
 	}
 
 	meshSubsetIndexStart.push_back(vIndex); //There won't be another index start after our last subset, so set it here
@@ -585,7 +648,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 										}
 									}
 
-									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &textureShaderResource);
+									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &materials.back().texture);
 								}
 							}
 
@@ -593,6 +656,38 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					}
 				}
 				break;
+
+			case 'n':	//newmtl - Declare new material
+				checkChar = fileIn.get();
+				if (checkChar == 'e')
+				{
+					checkChar = fileIn.get();
+					if (checkChar == 'w')
+					{
+						checkChar = fileIn.get();
+						if (checkChar == 'm')
+						{
+							checkChar = fileIn.get();
+							if (checkChar == 't')
+							{
+								checkChar = fileIn.get();
+								if (checkChar == 'l')
+								{
+									checkChar = fileIn.get();
+									if (checkChar == ' ')
+									{
+										//New material, set its defaults
+										Material tempMat;
+										materials.push_back(tempMat);
+										fileIn >> materials.back().matname;
+									}
+								}
+							}
+						}
+					}
+				}
+				break;
+
 
 			default:
 				break;
@@ -605,6 +700,24 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	}
 
 #pragma endregion
+
+	ModelMaterial modelMaterial;
+	for (int i = 0; i < matIndex.size(); i++)
+	{
+		for (int n = 0; n < materials.size(); n++)
+		{
+			if (meshMaterials.at(i) == materials.at(n).matname)
+			{
+				modelMaterial.indexAmount = matIndex.at(i);
+				modelMaterial.material = materials.at(n);
+
+				modelMats.push_back(modelMaterial);
+			}
+		}
+	}
+
+
+
 
 	//sometimes "g" is defined at the very top of the file, then again before the first group of faces.
 	//This makes sure the first subset does not conatain "0" indices.
@@ -694,13 +807,19 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 			tempVertexPosVec = XMVector3TransformCoord(tempVertexPosVec, XMLoadFloat4x4(&objMatrix));
 			XMStoreFloat3(&tempVertF3, tempVertexPosVec);
 			collidableGeometryPositions->push_back(tempVertF3);
-			pickingPoints.push_back(tempVertF3);
+			if (pickable)
+			{
+				pickingPoints.push_back(tempVertF3);
+			}
 		}
 
 		for (size_t i = 0; i < indices.size(); i++)
 		{
 			collidableGeometryIndices->push_back(indices[i] + vertexOffset);
-			pickingIndices.push_back(indices[i]);
+			if (pickable)
+			{
+				pickingIndices.push_back(indices[i]);
+			}
 		}
 	}
 
@@ -727,12 +846,12 @@ bool Model::CreateShaders(ID3D11Device* _device)
 	materialDesc.StructureByteStride = 0;
 
 
-	HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
+	//HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
 
-	if (FAILED(hr))
-	{
-		return false;
-	}
+	//if (FAILED(hr))
+	//{
+	//	return false;
+	//}
 
 	return true;
 }
