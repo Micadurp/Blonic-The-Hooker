@@ -536,11 +536,6 @@ void Direct3D::SetCrosshairShaders()
 	renderer->SetCrosshairShaders(deviceContext);
 }
 
-bool Direct3D::SetPixelCBuffer(ID3D11Buffer* _lightBuffers, LightInfo* _lightInfo, const int &_lightCount)
-{
-	return renderer->SetPixelCBuffer(deviceContext, _lightBuffers, _lightInfo, _lightCount);
-}
-
 bool Direct3D::SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix)
 {
 	return renderer->SetVertexCBuffer(deviceContext, _worldMatrix, XMMatrixIdentity(), XMMatrixIdentity());

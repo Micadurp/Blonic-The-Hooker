@@ -5,8 +5,6 @@ GamePlay::GamePlay()
 {
 	player = nullptr;
 	lightManager = nullptr;
-	sceneLightsObj= new LightInfo[lightCount];
-	lightBuffer = nullptr;
 
 }
 GamePlay::~GamePlay()
@@ -33,16 +31,6 @@ void GamePlay::Shutdown()
 	{
 		lightManager->ShutDown();
 		delete lightManager;
-	}
-
-	if (sceneLightsObj)
-	{
-		//delete sceneLightsObj;
-	}
-
-	if (lightBuffer)
-	{
-		lightBuffer->Release();
 	}
 }
 
@@ -76,7 +64,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+		models.at(n)->Initialize(L"kristall_export", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}	
 
 
@@ -97,24 +85,6 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		return false;
 	}
-
-	sceneLightsObj[0].Position = { 25.0f, 25.0f, 5.0f, 1.0f };
-	sceneLightsObj[0].Color = { 1.0f, 1.0f, 0.0f, 1.0f };
-
-#pragma endregion
-
-
-#pragma region Create Light buffers
-	HRESULT hr;
-	
-	D3D11_BUFFER_DESC lightBufferDesc;
-
-	memset(&lightBufferDesc, 0, sizeof(lightBufferDesc));
-	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	lightBufferDesc.ByteWidth = sizeof(LightInfo) * lightCount;
-	lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-
-	hr = _device->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffer);
 
 #pragma endregion
 

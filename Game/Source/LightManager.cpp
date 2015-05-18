@@ -14,16 +14,19 @@ bool LightManager::Initialize(ID3D11Device* _device)
 {
 	HRESULT result;
 
-	// Lights
-	lightBufferObj.lights = new LightStruct[lightCount];
+
+	// Directional light
+	enviroLightObj.light.direction = { 0.0f, 1.0f, 2.0f };
+	enviroLightObj.light.diffuse = { 0.8f, 0.8f, 0.7f, 1.0f };
+	enviroLightObj.light.ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
+
+
+	// Point lights
+	lightBufferObj.lights = new PointLight[lightCount];
 	if (!lightBufferObj.lights)
 	{
 		return false;
 	}
-
-	//lightBufferObj.lights[0].position = { 20.0f, 25.0f, 5.0f, 1.0f };
-	//lightBufferObj.lights[0].diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
-
 	
 	XMFLOAT4 pos[] = { XMFLOAT4(25.0f, 25.0f, 5.0f, 1.0f), XMFLOAT4(-25.0f, 20.0f, -50.0f, 1.0f) };
 	XMFLOAT4 diff[] = { XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) };
@@ -33,20 +36,33 @@ bool LightManager::Initialize(ID3D11Device* _device)
 		lightBufferObj.lights[i].position = pos[i];
 		lightBufferObj.lights[i].diffuse = diff[i];
 	}
+
+
+	lightBuffer = new ID3D11Buffer*[2];
 	
 
 	D3D11_BUFFER_DESC lightBufferDesc;
 
 	ZeroMemory(&lightBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	lightBufferDesc.ByteWidth = sizeof(LightStruct) * lightCount;
 	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	lightBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
-	result = _device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer);
+	lightBufferDesc.ByteWidth = sizeof(DirectionalLight);
+	result = _device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer[0]);
 	if (FAILED(result))
 	{
 		return false;
 	}
+
+
+	lightBufferDesc.ByteWidth = sizeof(PointLight) * lightCount;
+	result = _device->CreateBuffer(&lightBufferDesc, NULL, &lightBuffer[1]);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
 
 	return true;
 }
@@ -60,13 +76,15 @@ void LightManager::ShutDown()
 
 	if (lightBuffer)
 	{
-		lightBuffer->Release();
+		lightBuffer[0]->Release();
+		lightBuffer[1]->Release();
 	}
 }
 
 void LightManager::Render(ID3D11DeviceContext* _deviceContext)
 {
-	_deviceContext->UpdateSubresource(lightBuffer, 0, NULL, lightBufferObj.lights, 0, 0);
+	_deviceContext->UpdateSubresource(lightBuffer[0], 0, NULL, &enviroLightObj, 0, 0);
+	_deviceContext->UpdateSubresource(lightBuffer[1], 0, NULL, lightBufferObj.lights, 0, 0);
 
-	_deviceContext->PSSetConstantBuffers(0, 1, &lightBuffer);
+	_deviceContext->PSSetConstantBuffers(0, 2, lightBuffer);
 }

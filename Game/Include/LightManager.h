@@ -2,32 +2,24 @@
 #define LIGHTMANAGER_H
 
 #include <d3d11.h>
-#include "LightClass.h"
+#include "LightStructure.h"
 
 class LightManager
 {
 private:
 	const int lightCount = 2;
 
-	struct LightStruct
+	struct EnviromentLightBuffer
 	{
-		XMFLOAT4 position;
-		XMFLOAT4 diffuse;
-		XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
-
-		XMFLOAT3 attenuation = { 0.0f, 0.0f, 0.3f };
-		float range = 1000.0f;
-
-		float intensity = 200.0f;
-		XMFLOAT3 pad;
-	};
+		DirectionalLight light;
+	} enviroLightObj;
 
 	struct LightBufferStruct
 	{
-		LightStruct* lights;
+		PointLight* lights;
 	} lightBufferObj;
 
-	ID3D11Buffer* lightBuffer;
+	ID3D11Buffer** lightBuffer;
 
 public:
 	LightManager();

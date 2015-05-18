@@ -12,7 +12,7 @@ SamplerState sampAni
 	AddressV = WRAP;
 };
 
-struct Light
+struct PointLight
 {
 	float4 position;
 	float4 diffuse;
@@ -22,9 +22,21 @@ struct Light
 	float intensity;
 };
 
-cbuffer LightArray : register(b0)
+struct DirectionalLight
 {
-	Light lights[LIGHTS_COUNT];
+	float3 direction;
+	float4 diffuse;
+	float4 ambient;
+};
+
+cbuffer enviromentLight : register(b0)
+{
+	DirectionalLight dirLight;
+}
+
+cbuffer LightArray : register(b1)
+{
+	PointLight lights[LIGHTS_COUNT];
 }
 
 struct VS_OUT
@@ -64,27 +76,8 @@ float4 PS_main(VS_OUT input) : SV_TARGET
 	float4 worldPos = txWorldP.Sample(sampAni, input.tex);
 
 
-	float3 finalColor = { 0.0f, 0.0f, 0.0f };
-	float3 finalAmbient = diffuse * lights[0].ambient;
-
-	/*
-	float3 lightToPixel = lights[0].position - worldPos;
-	float distance = length(lightToPixel);
-
-	if (distance > lights[0].range) { return float4(finalAmbient, diffuse.a); }
-
-	lightToPixel /= distance;
-
-	float lightAmount = dot(lightToPixel, normal);
-
-	if (lightAmount > 0.0f)
-	{
-		finalColor += lightAmount * diffuse * lights[0].diffuse;
-
-		finalColor /= lights[0].attenuation[0] + (lights[0].attenuation[1] * distance) + (lights[0].attenuation[2] * (distance * distance));
-	}
-	*/
-	
+	float3 finalColor = saturate(dot(dirLight.direction, normal) * dirLight.diffuse * diffuse);
+	float3 finalAmbient = diffuse * dirLight.ambient;
 
 	
 	for (int i = 0; i < LIGHTS_COUNT; i++)
