@@ -29,17 +29,13 @@ struct DirectionalLight
 	float4 ambient;
 };
 
-<<<<<<< HEAD
 
-cbuffer LightBuffer : register(b0)
-=======
 cbuffer enviromentLight : register(b0)
 {
 	DirectionalLight dirLight;
 }
 
 cbuffer LightArray : register(b1)
->>>>>>> cfa0d90e935e5a46995c22280adb6e9c9664960c
 {
 	PointLight lights[LIGHTS_COUNT];
 }

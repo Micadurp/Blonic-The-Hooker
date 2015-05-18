@@ -56,11 +56,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-<<<<<<< HEAD
 		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
-=======
-		models.at(n)->Initialize(L"hus_export", _device, &collidableGeometryPositions, &collidableGeometryIndices);
->>>>>>> cfa0d90e935e5a46995c22280adb6e9c9664960c
 	} 	
 
 
