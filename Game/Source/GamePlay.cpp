@@ -68,7 +68,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"hus_Export", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->Initialize(L"hus_export", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
 
 
@@ -76,7 +76,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"kristall_export", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 	}	
 
 
