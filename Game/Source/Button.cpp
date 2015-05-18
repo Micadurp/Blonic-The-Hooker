@@ -14,12 +14,12 @@ bool Button::Initialize(ID3D11Device* _device, wstring _modelName, const XMMATRI
 {
 	bool result;
 
-	Model::SetObjMatrix(_newMatrix);
 	result = Model::Initialize(_modelName, _device);
 	if (!result)
 	{
 		return false;
 	}
+	Model::SetObjMatrix(_newMatrix);
 
 	return true;
 }
