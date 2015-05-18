@@ -37,7 +37,7 @@ void GamePlay::Shutdown()
 
 	if (sceneLightsObj)
 	{
-		delete [] sceneLightsObj;
+		//delete sceneLightsObj;
 	}
 
 	if (lightBuffer)

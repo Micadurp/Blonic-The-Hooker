@@ -154,8 +154,6 @@ void Menu::Render(Direct3D* _direct3D)
 	// Render menu buttons
 	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
-		_direct3D->Render(menu_background, XMLoadFloat4x4(&camera->GetViewMatrix()));
-
 		_direct3D->SetVertexCBuffer(menuButtons.at(i)->GetObjMatrix(), XMLoadFloat4x4(&camera->GetViewMatrix()));
 		menuButtons.at(i)->Render(_direct3D->GetDeviceContext());
 	}
