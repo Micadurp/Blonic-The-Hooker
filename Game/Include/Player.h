@@ -6,6 +6,7 @@
 #include "Model.h";
 #include <cmath>;
 #include "DirectXCollision.h";
+#include "HookString.h"
 
 using namespace std;
 
@@ -76,6 +77,8 @@ class Player : public Camera
 		bool m_lastpick;
 		bool m_onGround;
 		bool m_lookAtCrystal;
+
+		HookString * hookString;
 
 	public:
 		Player();

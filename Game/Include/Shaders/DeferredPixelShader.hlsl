@@ -20,6 +20,7 @@ struct DirectionalLight
 	float4 diffuse;
 };
 
+
 cbuffer LightBuffer : register(b0)
 {
 	DirectionalLight light;

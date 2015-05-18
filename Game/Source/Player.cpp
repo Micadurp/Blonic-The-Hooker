@@ -33,6 +33,8 @@ Player::Player()
 
 	m_onGround = false;
 	m_lookAtCrystal = false;
+
+	hookString = new HookString();
 }
 
 Player::~Player()
@@ -57,6 +59,12 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 	}
 
 	result = m_crosshair2->Initialize(L"crosshair2_plane", _device);
+	if (!result)
+	{
+		return false;
+	}
+
+	result = hookString->Initialize(_device);
 	if (!result)
 	{
 		return false;
@@ -88,6 +96,13 @@ void Player::Shutdown()
 		delete m_crosshair;
 		m_crosshair = 0;
 	}
+
+	if (hookString)
+	{
+		hookString->Shutdown();
+		delete hookString;
+		hookString = 0;
+	}
 }
 
 
@@ -114,11 +129,17 @@ int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPosition
 	// Update camera position and rotation according to inputs
 	Move(time, collidableGeometryPositions, collidableGeometryIndices);
 
+
+
 	return -1;
 }
 
 void Player::Render(ID3D11DeviceContext* _deviceContext)
 {
+
+	if (hookString->GetActive())
+		hookString->Update(_deviceContext, &m_hookshot->point, &XMLoadFloat4(&m_camPos));
+
 	if (m_lookAtCrystal)
 	{
 		m_crosshair2->Render(_deviceContext);
@@ -128,6 +149,8 @@ void Player::Render(ID3D11DeviceContext* _deviceContext)
 		m_crosshair->Render(_deviceContext);
 	}
 	m_lookAtCrystal = false;
+
+	hookString->Render(direc);
 }
 
 XMFLOAT4X4 Player::GetCrosshairMatrix()
@@ -262,6 +285,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	// Update camera view
 	UpdateViewMatrix(m_camPos, m_camLook, m_camUp);
+
 }
 
 

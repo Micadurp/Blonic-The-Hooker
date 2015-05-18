@@ -28,9 +28,11 @@ private:
 
 	ID3D11PixelShader* crosshairPixelShader = nullptr;
 
-	ID3D11Buffer*   basicModelVSCB; // Basic model vertex shader constant buffer
-	ID3D11Buffer*   basicModelGSCB; // Basic model pixel shader constant buffer
-	ID3D11Buffer*   basicModelPSCB; // Basic model geometry shader constant buffer
+	ID3D11GeometryShader * hookStringGeometryShader = nullptr;
+
+	ID3D11Buffer*   basicModelVSCB; // Basic model vertex shader constant buffer 
+	ID3D11Buffer*   basicModelGSCB; // Basic model geometry shader constant buffer
+	ID3D11Buffer*   basicModelPSCB; // Basic model pixel shader constant buffer 
 
 	ID3D11SamplerState * defaultSampler;
 
