@@ -2,6 +2,8 @@
 
 LightManager::LightManager()
 {
+	lightBufferObj.lights = nullptr;
+	lightBuffers = nullptr;
 }
 
 LightManager::~LightManager()
@@ -111,6 +113,16 @@ bool LightManager::Initialize(ID3D11Device* _device)
 
 void LightManager::ShutDown()
 {
+	if (lightBufferObj.lights)
+	{
+		delete lightBufferObj.lights;
+	}
+
+	if (lightBuffers)
+	{
+		lightBuffers[0]->Release();
+		lightBuffers[1]->Release();
+	}
 }
 
 void LightManager::Render(ID3D11DeviceContext* _deviceContext)

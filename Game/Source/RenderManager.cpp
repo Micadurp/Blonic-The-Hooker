@@ -202,7 +202,7 @@ bool RenderManager::SetShader(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(basicModelPixelShader, NULL, 0);
 
-	
+	_deviceContext->PSSetSamplers(0, 1, &defaultSampler);
 
 	return true;
 }
