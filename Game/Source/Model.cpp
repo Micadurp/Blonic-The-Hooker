@@ -141,7 +141,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState 
 
 	int indexStart = 0;
 
-	for (int n = 0; n < modelMats.size(); n++)
+	for (size_t n = 0; n < modelMats.size(); n++)
 	{
 		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
 
@@ -176,7 +176,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 
 	int indexStart = 0;
 
-	for (int n = 0; n < modelMats.size(); n++)
+	for (size_t n = 0; n < modelMats.size(); n++)
 	{
 		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
 
@@ -702,9 +702,9 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 #pragma endregion
 
 	ModelMaterial modelMaterial;
-	for (int i = 0; i < matIndex.size(); i++)
+	for (size_t i = 0; i < matIndex.size(); i++)
 	{
-		for (int n = 0; n < materials.size(); n++)
+		for (size_t n = 0; n < materials.size(); n++)
 		{
 			if (meshMaterials.at(i) == materials.at(n).matname)
 			{
