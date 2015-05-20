@@ -5,9 +5,9 @@ SkyBox::SkyBox()
 
 }
 
-SkyBox::SkyBox(ID3D11Device * _device)
+bool SkyBox::Initialize(std::wstring _modelName, ID3D11Device * _device)
 {
-	Initialize(L"sphere", _device);
+	Model::Initialize(_modelName, _device);
 
 	//create vertex shader
 	ID3DBlob* pVS = nullptr;
@@ -15,15 +15,21 @@ SkyBox::SkyBox(ID3D11Device * _device)
 
 	HRESULT result  = _device->CreateVertexShader(pVS->GetBufferPointer(), pVS->GetBufferSize(), nullptr, &skyVertexShader);
 	pVS->Release();
-	if (!result)
-		true;
+	if (FAILED(result))
+	{
+		return false;
+	}
 
 	//create pixel shader
 	ID3DBlob* pPS = nullptr;
 	D3DCompileFromFile(L"SkyBoxPixelShader.hlsl", NULL, nullptr, "PS_main", "ps_4_0", 0, NULL, &pPS, nullptr);
 
-	_device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &skyPixelShader);
+	result = _device->CreatePixelShader(pPS->GetBufferPointer(), pPS->GetBufferSize(), nullptr, &skyPixelShader);
 	pPS->Release();
+	if (FAILED(result))
+	{
+		return false;
+	}
 
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 
@@ -55,8 +61,12 @@ SkyBox::SkyBox(ID3D11Device * _device)
 	// Create the depth stencil state.
 	result = _device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
 
-	if (!result)
-		true;
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 SkyBox::~SkyBox()
@@ -77,6 +87,8 @@ void SkyBox::Update(Camera* camera)
 
 void SkyBox::Shutdown()
 {
+	Model::Shutdown();
+
 	if (skyVertexShader)
 	{
 		skyVertexShader->Release();
@@ -91,37 +103,6 @@ void SkyBox::Shutdown()
 	{
 		depthStencilState->Release();
 		depthStencilState = 0;
-	}
-	// Release the index buffer.
-	if (meshIndexBuff)
-	{
-		meshIndexBuff->Release();
-		meshIndexBuff = 0;
-	}
-
-	// Release the vertex buffer.
-	if (meshVertexBuff)
-	{
-		meshVertexBuff->Release();
-		meshVertexBuff = 0;
-	}
-
-	if (textureShaderResource)
-	{
-		textureShaderResource->Release();
-		textureShaderResource = 0;
-	}
-
-	if (normalShaderResource)
-	{
-		normalShaderResource->Release();
-		normalShaderResource = 0;
-	}
-
-	if (pixelShaderMaterialCB)
-	{
-		pixelShaderMaterialCB->Release();
-		pixelShaderMaterialCB = 0;
 	}
 }
 

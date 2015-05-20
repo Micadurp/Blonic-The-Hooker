@@ -69,8 +69,9 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 
 
-	models.push_back(new SkyBox(_device));
-	models.at(models.size() - 1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+	models.push_back(new SkyBox());
+	models.back()->Initialize(L"sphere", _device);
+	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
 
 #pragma region Create Scene Lights
 
