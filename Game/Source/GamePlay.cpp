@@ -56,7 +56,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"hus_export01", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
 
 
@@ -104,9 +104,6 @@ int GamePlay::Update(double time)
 
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices, models);
 
-
-	//lights[0].Position = player->GetPosition();
-
 	for (size_t n = 0; n < models.size(); n++)
 	{
 		models[n]->Update(player);
@@ -116,19 +113,19 @@ int GamePlay::Update(double time)
 	return state;
 }
 
-void GamePlay::Render(Direct3D *_direct3D)
+void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
 	_direct3D->Render(models, XMLoadFloat4x4(&player->GetViewMatrix()));
 
 	_direct3D->SetCrosshairShaders();
-
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
 
 	player->Render(_direct3D->GetDeviceContext());
 
+	_timer->Render(_direct3D->GetDeviceContext(), XMMatrixScaling(2.0f, 2.0f, 2.0f), XMMatrixIdentity(), XMMatrixIdentity());//XMLoadFloat4x4(&player->GetViewMatrix()), _direct3D->GetOrthoMatrix());
+
 	// Deferred rendering
 	lightManager->Render(_direct3D->GetDeviceContext());
-	//_direct3D->SetPixelCBuffer(lightBuffer, sceneLightsObj, lightCount);
 }
 
 int GamePlay::GameOver()

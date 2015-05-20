@@ -7,6 +7,8 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include <Windows.h>
+
+#include "TextClass.h"
 #include "GamePlay.h"
 #include "Direct3D.h"
 #include "Menu.h"

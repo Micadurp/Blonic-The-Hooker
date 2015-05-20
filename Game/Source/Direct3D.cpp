@@ -184,7 +184,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.
-	result = D3D11CreateDeviceAndSwapChain(NULL,
+	result = D3D11CreateDeviceAndSwapChain(adapter,
 		D3D_DRIVER_TYPE_HARDWARE,
 		NULL,
 		D3D11_CREATE_DEVICE_DEBUG,
