@@ -35,7 +35,8 @@ private:
 	ID3D11DeviceContext* deviceContext;
 	ID3D11RenderTargetView* backBuffer;
 	ID3D11Texture2D* depthStencilBuffer;
-	ID3D11DepthStencilState* depthStencilState;
+	ID3D11DepthStencilState* depthStencilStateON;
+	ID3D11DepthStencilState* depthStencilStateOFF;
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11RasterizerState* rasterState;
 
@@ -88,6 +89,9 @@ public:
 
 	void TurnOnAlphaBlending();
 	void TurnOffAlphaBlending();
+
+	void TurnOnZBuffer();
+	void TurnOffZBuffer();
 
 };
 

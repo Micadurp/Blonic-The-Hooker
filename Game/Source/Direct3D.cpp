@@ -271,14 +271,22 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Create the depth stencil state.
-	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilStateON);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	depthStencilDesc.DepthEnable = false;
+	// Create the depth stencil state.
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilStateOFF);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Set the depth stencil state.
-	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+	deviceContext->OMSetDepthStencilState(depthStencilStateON, 1);
 
 	// Initailze the depth stencil view.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
@@ -420,10 +428,16 @@ void Direct3D::Shutdown()
 		depthStencilView = 0;
 	}
 
-	if (depthStencilState)
+	if (depthStencilStateON)
 	{
-		depthStencilState->Release();
-		depthStencilState = 0;
+		depthStencilStateON->Release();
+		depthStencilStateON = 0;
+	}
+
+	if (depthStencilStateOFF)
+	{
+		depthStencilStateOFF->Release();
+		depthStencilStateOFF = 0;
 	}
 
 	if (depthStencilBuffer)
@@ -561,7 +575,7 @@ bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_vi
 	for (size_t n = 0; n < _models.size(); n++)
 	{
 		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
-		_models.at(n)->Render(deviceContext,depthStencilState);
+		_models.at(n)->Render(deviceContext,depthStencilStateON);
 	}
 
 	return true;
@@ -570,7 +584,7 @@ bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_vi
 bool Direct3D::Render(Model* _model, const DirectX::XMMATRIX &_viewMatrix)
 {
 	SetVertexCBuffer(_model->GetObjMatrix(), _viewMatrix);
-	_model->Render(deviceContext, depthStencilState);
+	_model->Render(deviceContext, depthStencilStateON);
 
 	return true;
 }
@@ -634,4 +648,15 @@ void Direct3D::TurnOffAlphaBlending()
 	blendFactor[3] = 1.0f;
 
 	deviceContext->OMSetBlendState(alphaDisableBlendingState, blendFactor, 0xffffffff);
+}
+
+
+void Direct3D::TurnOnZBuffer()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilStateON, 1);
+}
+
+void Direct3D::TurnOffZBuffer()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilStateOFF, 1);
 }
