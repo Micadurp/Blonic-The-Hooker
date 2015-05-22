@@ -1,71 +1,83 @@
 #ifndef TEXTCLASS_H
 #define TEXTCLASS_H
 
-#pragma comment (lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxgi.lib")
+#pragma comment (lib, "D3D10_1.lib")
+#pragma comment (lib, "d3d11.lib")
+#pragma comment (lib, "D2D1.lib")
+#pragma comment (lib, "dwrite.lib")
 
-#include <d3dcompiler.h>
-#include "fontclass.h"
+
+#include <dxgi.h>
+#include <d3d11.h>
+#include <d3d10_1.h>
+#include <d2d1.h>
+#include <sstream>
+#include <dwrite.h>
+#include <DirectXMath.h>
+
+using namespace std;
 
 
-////////////////////////////////////////////////////////////////////////////////
-// Class name: TextClass
-////////////////////////////////////////////////////////////////////////////////
 class TextClass
 {
-private:
-	struct vertexConstantBufferType
-	{
-		XMFLOAT4X4 worldMatrix;
-		XMFLOAT4X4 viewProjectionMatrix;
-	};
+	private:
+		struct VertexType
+		{
+			VertexType()
+			{
+				position = { 0.0f, 0.0f, 0.0f, 0.0f };
+				texCoord = { 0.0f, 0.0f };
+				normal = { 0.0f, 0.0f, 0.0f };
+			}
 
-	struct pixelConstantBufferType
-	{
-		XMFLOAT4 color;
-	};
+			VertexType(float x, float y, float z,
+				float u, float v,
+				float nx, float ny, float nz) : position(x, y, z, 1.0f), texCoord(u, v), normal(nx, ny, nz) {}
 
-	struct SentenceType
-	{
-		ID3D11Buffer *vertexBuffer, *indexBuffer;
-		int vertexCount, indexCount, maxLength;
-		float red, green, blue;
-	};
+			DirectX::XMFLOAT4 position;
+			DirectX::XMFLOAT2 texCoord;
+			DirectX::XMFLOAT3 normal;
+		};
 
-	struct VertexType
-	{
-		XMFLOAT4 position;
-		XMFLOAT2 texture;
-		XMFLOAT3 normal;
-	};
+		struct VSconstantBufferType
+		{
+			DirectX::XMFLOAT4X4 world;
+			DirectX::XMFLOAT4X4 viewProjection;
+		} vertexCBufferObj;
 
-	FontClass* m_Font;
+		ID3D11Buffer* textCBuffer;
 
-	int m_screenWidth, m_screenHeight;
+		ID3D10Device1 *d3d101Device;
+		IDXGIKeyedMutex *keyedMutex11;
+		IDXGIKeyedMutex *keyedMutex10;
+		ID2D1RenderTarget *d2dRenderTarget;
+		ID2D1SolidColorBrush *brush;
+		ID3D11Texture2D *backBuffer11;
+		ID3D11Texture2D *sharedTex11;
+		ID3D11Buffer *d2dVertBuffer;
+		ID3D11Buffer *d2dIndexBuffer;
+		ID3D11ShaderResourceView *d2dTexture;
+		IDWriteFactory *dwriteFactory;
+		IDWriteTextFormat *textFormat;
 
-	SentenceType* m_sentence1;
+		wstring printText;
 
-	ID3D11Buffer *vertexCBuffer, *pixelCBuffer;
-	ID3D11PixelShader* fontPixelShader;
+		int width, height;
 
-public:
-	TextClass();
-	TextClass(const TextClass&);
-	~TextClass();
+	public:
+		TextClass();
+		~TextClass();
 
-	bool Initialize(ID3D11Device* _device, ID3D11DeviceContext* _deviceContext, HWND _hwnd, int _width, int _height);
-	bool Render(ID3D11DeviceContext* _deviceContext, const XMMATRIX &_worldMatrix, const XMMATRIX &_viewMatrix, const XMMATRIX &_orthographicMatrix);
+		bool Initialize(ID3D11Device* _device, IDXGIAdapter1* adapter, int _width, int _height);
 
-	void Update(ID3D11DeviceContext* _deviceContext, const char* text);
+		void Update(double _time);
+		void Render(ID3D11DeviceContext* _deviceContext);
 
-	void Shutdown();
+		void shutDown();
 
-private:
-	bool InitializeSentence(ID3D11Device* _device, SentenceType** _sentence, int _maxLength);
-
-	bool UpdateSentence(ID3D11DeviceContext* _deviceContext, SentenceType* _sentence, const char* _text, int _posX, int _posY, float _red, float _green, float _blue);
-	bool RenderSentence(ID3D11DeviceContext* _deviceContext, SentenceType* _sentence, const XMMATRIX &_worldMatrix, const XMMATRIX &_viewMatrix, const XMMATRIX &_orthographicMatrix);
-
-	void ReleaseSentence(SentenceType** _sentence);
+	private:
+		bool InitializeD2DSquare(ID3D11Device* _device);
 };
 
 #endif

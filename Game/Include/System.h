@@ -57,6 +57,7 @@ private:
 	Menu* deathMenu;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
+	TextClass* timer;
 
 public:
 	System();

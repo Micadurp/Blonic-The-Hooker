@@ -16,8 +16,10 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include <sstream>
 
 #include "RenderManager.h"
+#include "TextClass.h"
 #include"Model.h"
 
 #include <vector>
@@ -31,6 +33,7 @@ private:
 	int videoCardMemory;
 	char videoCardDescription[128];
 	IDXGISwapChain* swapChain;
+	ID3D10Device1* device10;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ID3D11RenderTargetView* backBuffer;
@@ -52,7 +55,7 @@ public:
 	Direct3D();
 	~Direct3D();
 
-	bool Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear);
+	bool Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear, TextClass* _timer);
 	void Shutdown();
 
 	void BeginScene(float _red, float _green, float _blue, float _alpha);

@@ -123,9 +123,12 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 
 	player->Render(_direct3D->GetDeviceContext());
 
-	_timer->Render(_direct3D->GetDeviceContext(), XMMatrixScaling(2.0f, 2.0f, 2.0f), XMMatrixIdentity(), XMMatrixIdentity());//XMLoadFloat4x4(&player->GetViewMatrix()), _direct3D->GetOrthoMatrix());
+	
+	_direct3D->TurnOnAlphaBlending();
+	_timer->Render(_direct3D->GetDeviceContext());
+	_direct3D->TurnOffAlphaBlending();
 
-	// Deferred rendering
+	// Set lights used in deferred rendering
 	lightManager->Render(_direct3D->GetDeviceContext());
 }
 

@@ -38,7 +38,13 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
+	timer = new TextClass();
+	if (!timer)
+	{
+		return false;
+	}
+
+	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR, timer);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
@@ -78,12 +84,6 @@ bool System::Initialize()
 	{
 		return false;
 	}
-	//result = gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize Gameplay", L"Error", MB_OK);
-	//	return false;
-	//}
 
 
 	return true;
@@ -190,6 +190,7 @@ void System::Run()
 bool System::Frame(double _time)
 {
 	int state;
+
 #pragma region Update
 
 	switch (gameState)
@@ -197,6 +198,7 @@ bool System::Frame(double _time)
 	case GameState::gGamePlay:
 
 		state = gamePlay->Update(_time);
+		timer->Update(_time);
 
 		switch (state)
 		{
@@ -259,7 +261,7 @@ bool System::Frame(double _time)
 	{
 	case GameState::gGamePlay:
 		direct3D->DeferredFirstPass();
-		gamePlay->Render(direct3D);
+		gamePlay->Render(direct3D, timer);
 		direct3D->DeferredRender();
 		break;
 
