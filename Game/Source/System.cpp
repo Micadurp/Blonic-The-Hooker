@@ -198,7 +198,7 @@ bool System::Frame(double _time)
 	case GameState::gGamePlay:
 
 		state = gamePlay->Update(_time);
-		timer->Update(_time);
+		timer->Update((double)fps);
 
 		switch (state)
 		{
