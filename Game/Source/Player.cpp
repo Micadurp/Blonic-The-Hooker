@@ -143,23 +143,24 @@ int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPosition
 	return -1;
 }
 
-void Player::Render(ID3D11DeviceContext* _deviceContext)
+void Player::Render(Direct3D * _direct3D)
 {
 
-	//if (hookString->GetActive())
-	//	hookString->Update(_deviceContext, &m_hookshot->point, &XMLoadFloat4(&m_camPos));
+	if (hookString->GetActive())
+		hookString->Update(_direct3D, &XMLoadFloat4x4(&m_viewMatrix), &XMLoadFloat3(&m_hookshot->point), &XMLoadFloat4(&m_camPos));
 
 	if (m_lookAtCrystal)
 	{
-		m_crosshair2->Render(_deviceContext);
+		m_crosshair2->Render(_direct3D->GetDeviceContext());
 	}
 	else
 	{
-		m_crosshair->Render(_deviceContext);
+		m_crosshair->Render(_direct3D->GetDeviceContext());
 	}
 	m_lookAtCrystal = false;
 
-	//hookString->Render();
+	if (hookString->GetActive())
+		hookString->Render(_direct3D);
 }
 
 XMFLOAT4X4 Player::GetCrosshairMatrix()
@@ -226,14 +227,18 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
+	hookString->SetActive(false);
+
 	if (m_hookshot->active == 1)
 	{
+		hookString->SetActive(true);
 		HookToObj(XMLoadFloat3(&m_hookshot->point));
 		XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity));
 	}
 	else if (m_hookshot->active == 2)
 	{
-		
+		hookString->SetActive(true);
+
 		if (!m_onGround) //not on ground and not using hookshot
 		{
 			// Set maximum falling velocity
@@ -810,7 +815,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 					if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 					{
 						XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
-						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.8f;
+						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.6f;
 						if (m_hookshot->length <= m_hookshot->maxLength)
 						{
 							GrappleToObj(point, XMLoadFloat3(&m_velocity));

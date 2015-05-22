@@ -50,6 +50,8 @@ public:
 	void DeferredRenderer(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilView * _depthStencilView, ID3D11RenderTargetView * backBuffer);
 
 	void SetCrosshairShaders(ID3D11DeviceContext* _deviceContext);
+	void SetHookStringShaders(ID3D11DeviceContext* _deviceContext);
+
 	bool SetShader(ID3D11DeviceContext* _deviceContext);
 	bool SetDeferredShaders(ID3D11DeviceContext* _deviceContext);
 

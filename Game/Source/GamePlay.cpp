@@ -56,9 +56,8 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	{
 		models.push_back(new Model());
 		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"hus_export", _device, &collidableGeometryPositions, &collidableGeometryIndices);
+		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
 	} 	
-
 
 	for (int n = models.size(); n < 2; n++)
 	{
@@ -124,7 +123,7 @@ void GamePlay::Render(Direct3D *_direct3D)
 
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
 
-	player->Render(_direct3D->GetDeviceContext());
+	player->Render(_direct3D);
 
 	// Deferred rendering
 	lightManager->Render(_direct3D->GetDeviceContext());

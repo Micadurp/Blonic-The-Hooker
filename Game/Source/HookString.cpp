@@ -12,13 +12,26 @@ HookString::~HookString()
 
 }
 
-bool HookString::Initialize(ID3D11Device *_device )
+bool HookString::Initialize(ID3D11Device * _device)
 {
 	HRESULT result;
 
 	isActive = false;
 
-	Model::Initialize(L"Cuck",_device);
+	vertexSize = sizeof(Vertex);
+	
+	Vertex triangleVertices[1];
+	triangleVertices[0] = Vertex(0, 0, -2,0,0,0,0,0);
+
+	D3D11_BUFFER_DESC vertexBufDesc;
+	memset(&vertexBufDesc, 0, sizeof(vertexBufDesc));
+	vertexBufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufDesc.ByteWidth = sizeof(triangleVertices);
+
+	D3D11_SUBRESOURCE_DATA data;
+	data.pSysMem = triangleVertices;
+	_device->CreateBuffer(&vertexBufDesc, &data, &meshVertexBuff);
 
 	D3D11_BUFFER_DESC hookStringCBDesc;
 
@@ -36,39 +49,69 @@ bool HookString::Initialize(ID3D11Device *_device )
 	{
 		return false;
 	}
-	
+	XMStoreFloat4x4(&objMatrix,XMMatrixIdentity());
 
+	result = DirectX::CreateDDSTextureFromFile(_device, L"Star_Particle.dds", NULL, &textureShaderResource);
+
+	if (result)
+		true;
+	
 	return true;
 }
 
-void HookString::Update(ID3D11DeviceContext* _deviceContext, XMVECTOR * _playerPos, XMVECTOR * _target)
+void HookString::Update(Direct3D* _direct3D,XMMATRIX * viewMatrix, XMVECTOR * _playerPos, XMVECTOR * _target)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	GeometryShaderBuffer* dataPtr;
 
-	_deviceContext->Map(hookStringGSCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-
+	
+	_direct3D->GetDeviceContext()->Map(hookStringGSCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 
 	// Get a pointer to the data in the constant buffer.
 	dataPtr = (GeometryShaderBuffer*)mappedResource.pData;
 
 	// Copy the matrices into the constant buffer.
-	dataPtr->intNrOfParticles = 1;
+
+	dataPtr->viewMatrix = XMMatrixTranspose(*viewMatrix * _direct3D->GetProjectionMatrix());
 	dataPtr->targetPos = *_target;
 	dataPtr->playerPos = *_playerPos;
 
 	// Unlock the constant buffer.
-	_deviceContext->Unmap(hookStringGSCB, 0);
+	_direct3D->GetDeviceContext()->Unmap(hookStringGSCB, 0);
 
 	// Now set the constant buffer in the vertex shader with the updated values.
-	_deviceContext->GSSetConstantBuffers(0, 1, &hookStringGSCB);
+	_direct3D->GetDeviceContext()->GSSetConstantBuffers(0, 1, &hookStringGSCB);
 }
 
 void HookString::Render(Direct3D* _direct3D)
 {
-	if (isActive)
-		Model::Render(_direct3D->GetDeviceContext());
+	_direct3D->SetHookStringShaders();
+	
+	unsigned int stride;
+	unsigned int offset;
+
+
+	// Set vertex buffer stride and offset.
+	stride = sizeof(Vertex);
+	offset = 0;
+
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
+	_direct3D->GetDeviceContext()->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+
+	// Set the index buffer to active in the input assembler so it can be rendered.
+	_direct3D->GetDeviceContext()->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);
+
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+	_direct3D->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	if (pixelShaderMaterialCB)
+		_direct3D->GetDeviceContext()->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+
+	_direct3D->GetDeviceContext()->PSSetShaderResources(0, 1, &textureShaderResource);
+
+	_direct3D->GetDeviceContext()->Draw(1, 0);
+
 }
 
 bool HookString::GetActive()

@@ -60,6 +60,13 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 	_device->CreatePixelShader(chPS->GetBufferPointer(), chPS->GetBufferSize(), nullptr, &crosshairPixelShader);
 	chPS->Release();
 
+	//create Hookstring Geometry shader
+	//ID3DBlob* pGS = nullptr;
+	D3DCompileFromFile(L"HookStringGeometryShader.hlsl", NULL, nullptr, "GS_main", "gs_5_0", 0, NULL, &pGS, nullptr);
+
+	_device->CreateGeometryShader(pGS->GetBufferPointer(), pGS->GetBufferSize(),nullptr, &hookStringGeometryShader);
+	pGS->Release();
+
 #pragma endregion
 
 #pragma region Create ConstantBuffers
@@ -218,6 +225,18 @@ void RenderManager::SetCrosshairShaders(ID3D11DeviceContext* _deviceContext)
 	_deviceContext->GSSetShader(basicModelGeometryShader, NULL, 0);
 	_deviceContext->PSSetShader(crosshairPixelShader, NULL, 0);
 }
+void RenderManager::SetHookStringShaders(ID3D11DeviceContext* _deviceContext)
+{
+
+	// Set the vertex input layout.
+	_deviceContext->IASetInputLayout(basicModelVertexLayout);
+
+	// Set the vertex and pixel shaders that will be used to render this triangle.
+	_deviceContext->VSSetShader(basicModelVertexShader, NULL, 0);
+	_deviceContext->GSSetShader(hookStringGeometryShader, NULL, 0);
+	_deviceContext->PSSetShader(crosshairPixelShader, NULL, 0);
+}
+
 
 bool RenderManager::SetDeferredShaders(ID3D11DeviceContext* _devicecontext)
 {

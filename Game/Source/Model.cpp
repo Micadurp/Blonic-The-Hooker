@@ -32,7 +32,6 @@ bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vect
 		return false;
 	}
 
-
 	return true;
 }
 
