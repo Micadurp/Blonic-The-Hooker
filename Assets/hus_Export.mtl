@@ -1,16 +1,78 @@
-newmtl blinn1SG
+newmtl crystalRockSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd lolol.dds
+map_Kd stones.dds
 Ni 1.00
 Ks 0.50 0.50 0.50
-newmtl blinn2SG
+Ns 18.00
+newmtl crystalSG
 illum 4
 Kd 0.00 0.00 0.00
 Ka 0.00 0.00 0.00
 Tf 1.00 1.00 1.00
-map_Kd stone.dds
+map_Kd kristall01.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl floorSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd floor_UVmap.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl marbleSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Seamless marble texture (8).dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 0.06
+newmtl railsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Rails_textures.dds
+Ni 1.00
+newmtl stairsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd trappa_text_curved.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl wallCrackedSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wallcracked_UVmap.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl wallsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd WallConcrede.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl windowsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd WallVictorian3.dds
 Ni 1.00
 Ks 0.50 0.50 0.50

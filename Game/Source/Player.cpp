@@ -70,8 +70,8 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 		return false;
 	}
 
-	m_crosshair->SetObjMatrix(XMMatrixScaling(0.05f, 0.065f, 0.05f) * XMMatrixTranslation(0, 0, 0));
-	m_crosshair2->SetObjMatrix(XMMatrixScaling(0.05f, 0.065f, 0.05f) * XMMatrixTranslation(0, 0, 0));
+	m_crosshair->SetObjMatrix(XMMatrixScaling(0.15f, 0.2f, 0.15f) * XMMatrixTranslation(0, 0, 0));
+	m_crosshair2->SetObjMatrix(XMMatrixScaling(0.15f, 0.2f, 0.15f) * XMMatrixTranslation(0, 0, 0));
 
 	return true;
 }

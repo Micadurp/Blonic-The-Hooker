@@ -261,7 +261,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					float vtcu, vtcv;
 					fileIn >> vtcu >> vtcv;		//Store next two types
 
-					vertTexCoord.push_back(DirectX::XMFLOAT2(vtcu, vtcv));
+					vertTexCoord.push_back(DirectX::XMFLOAT2(vtcu, -1.0f - vtcv));
 
 					hasTexCoord = true;	//We know the model uses texture coords
 				}
