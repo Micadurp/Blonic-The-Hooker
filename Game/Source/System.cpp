@@ -207,6 +207,8 @@ bool System::Frame(double _time)
 			break;
 		case 2:
 			gameState = GameState::gRestart;
+		case 3: //VICTORY
+			return false;
 		}
 		prevState = GameState::gGamePlay;
 	break;
