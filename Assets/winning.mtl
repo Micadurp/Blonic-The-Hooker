@@ -1,0 +1,90 @@
+newmtl hus01_collision:initialShadingGroup1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl hus_export:crystalRockSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd stones.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:crystalSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd kristall01.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:floorSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd floor_UVmap.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:marbleSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 0.06
+newmtl hus_export:railsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Rails_textures.dds
+Ni 1.00
+newmtl hus_export:stairsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd trappa_text_curved.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:wallCrackedSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd wallcracked_UVmap.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:wallsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd WallConcrede.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 18.00
+newmtl hus_export:windowsSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd WallVictorian3.dds
+Ni 1.00
+Ks 0.50 0.50 0.50
+Ns 0.06
+newmtl initialShadingGroup
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00
