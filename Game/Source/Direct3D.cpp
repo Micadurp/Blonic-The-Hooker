@@ -12,11 +12,11 @@ Direct3D::~Direct3D()
 
 }
 
-bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear)
+bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND _hwnd, bool _fullscreen, float _screenDepth, float _screenNear, TextClass* _timer)
 {
 	HRESULT result;
-	IDXGIFactory* factory;
-	IDXGIAdapter* adapter;
+	IDXGIFactory1* factory;
+	IDXGIAdapter1* adapter;
 	IDXGIOutput* adapterOutput;
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	DXGI_MODE_DESC* displayModeList;
@@ -31,19 +31,21 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	D3D11_RASTERIZER_DESC rasterDesc;
 	float fieldOfView, screenAspect;
 	D3D11_BLEND_DESC blendStateDescription;
+	bool success;
+
 
 	// Store the vsync setting.
 	vsync_enabled = _vsync;
 
 	// Create a DirectX graphics interface factory.
-	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	result = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&factory);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface (video card).
-	result = factory->EnumAdapters(0, &adapter);
+	result = factory->EnumAdapters1(0, &adapter);
 	if (FAILED(result))
 	{
 		return false;
@@ -116,10 +118,6 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	adapterOutput->Release();
 	adapterOutput = 0;
 
-	// Release the adapter.
-	adapter->Release();
-	adapter = 0;
-
 	// Release the factory.
 	factory->Release();
 	factory = 0;
@@ -136,7 +134,7 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	swapChainDesc.BufferDesc.Height = _screenHeight;
 
 	// Set regular 32-bit surface for the back buffer.
-	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 
 	// Set the refresh rate of the back buffer.
 	if (vsync_enabled)
@@ -184,10 +182,10 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	// Create the swap chain, Direct3D device, and Direct3D device context.
-	result = D3D11CreateDeviceAndSwapChain(NULL,
-		D3D_DRIVER_TYPE_HARDWARE,
+	result = D3D11CreateDeviceAndSwapChain(adapter,
+		D3D_DRIVER_TYPE_UNKNOWN,
 		NULL,
-		D3D11_CREATE_DEVICE_DEBUG,
+		D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT,
 		&featureLevel,
 		1,
 		D3D11_SDK_VERSION,
@@ -201,6 +199,16 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	{
 		return false;
 	}
+
+	success = _timer->Initialize(device, adapter, _screenWidth, _screenHeight);
+	if (!success)
+	{
+		return false;
+	}
+
+	// Release the adapter.
+	adapter->Release();
+	adapter = 0;
 
 	// Get the pointer to the back buffer.
 	result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
@@ -271,14 +279,22 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Create the depth stencil state.
-	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilStateON);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	depthStencilDesc.DepthEnable = false;
+	// Create the depth stencil state.
+	result = device->CreateDepthStencilState(&depthStencilDesc, &depthStencilStateOFF);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Set the depth stencil state.
-	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+	deviceContext->OMSetDepthStencilState(depthStencilStateON, 1);
 
 	// Initailze the depth stencil view.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
@@ -346,8 +362,8 @@ bool Direct3D::Initialize(int _screenWidth, int _screenHeight, bool _vsync, HWND
 
 	// Create an alpha enabled blend state description.
 	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
-	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_COLOR;
+	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;;
 	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
 	blendStateDescription.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 	blendStateDescription.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
@@ -420,10 +436,16 @@ void Direct3D::Shutdown()
 		depthStencilView = 0;
 	}
 
-	if (depthStencilState)
+	if (depthStencilStateON)
 	{
-		depthStencilState->Release();
-		depthStencilState = 0;
+		depthStencilStateON->Release();
+		depthStencilStateON = 0;
+	}
+
+	if (depthStencilStateOFF)
+	{
+		depthStencilStateOFF->Release();
+		depthStencilStateOFF = 0;
 	}
 
 	if (depthStencilBuffer)
@@ -565,7 +587,7 @@ bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_vi
 	for (size_t n = 0; n < _models.size(); n++)
 	{
 		SetVertexCBuffer(_models[n]->GetObjMatrix(), _viewMatrix);
-		_models.at(n)->Render(deviceContext,depthStencilState);
+		_models.at(n)->Render(deviceContext,depthStencilStateON);
 	}
 
 	return true;
@@ -574,7 +596,7 @@ bool Direct3D::Render(std::vector<Model*> &_models, const DirectX::XMMATRIX &_vi
 bool Direct3D::Render(Model* _model, const DirectX::XMMATRIX &_viewMatrix)
 {
 	SetVertexCBuffer(_model->GetObjMatrix(), _viewMatrix);
-	_model->Render(deviceContext, depthStencilState);
+	_model->Render(deviceContext, depthStencilStateON);
 
 	return true;
 }
@@ -638,4 +660,15 @@ void Direct3D::TurnOffAlphaBlending()
 	blendFactor[3] = 1.0f;
 
 	deviceContext->OMSetBlendState(alphaDisableBlendingState, blendFactor, 0xffffffff);
+}
+
+
+void Direct3D::TurnOnZBuffer()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilStateON, 1);
+}
+
+void Direct3D::TurnOffZBuffer()
+{
+	deviceContext->OMSetDepthStencilState(depthStencilStateOFF, 1);
 }

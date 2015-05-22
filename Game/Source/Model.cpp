@@ -3,7 +3,6 @@
 Model::Model()
 {
 	DirectX::XMStoreFloat4x4(&objMatrix, DirectX::XMMatrixIdentity());
-	textureShaderResource = nullptr;
 	normalShaderResource = nullptr;
 	meshVertexBuff = nullptr;
 	meshIndexBuff = nullptr;
@@ -92,10 +91,13 @@ void Model::Shutdown()
 		meshVertexBuff = 0;
 	}
 
-	if (textureShaderResource)
+	for (size_t i = 0; i < modelMats.size(); i++)
 	{
-		textureShaderResource->Release();
-		textureShaderResource = 0;
+		if (modelMats.at(i).texture)
+		{
+			modelMats.at(i).texture->Release();
+			modelMats.at(i).texture = 0;
+		}
 	}
 
 	if (normalShaderResource)
@@ -142,7 +144,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState 
 
 	for (size_t n = 0; n < modelMats.size(); n++)
 	{
-		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
+		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).texture);
 
 		_deviceContext->DrawIndexed(modelMats.at(n).indexAmount, indexStart, 0);
 		indexStart += modelMats.at(n).indexAmount;
@@ -177,7 +179,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 
 	for (size_t n = 0; n < modelMats.size(); n++)
 	{
-		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).material.texture);
+		_deviceContext->PSSetShaderResources(0, 1, &modelMats.at(n).texture);
 
 		_deviceContext->DrawIndexed(modelMats.at(n).indexAmount, indexStart, 0);
 		indexStart += modelMats.at(n).indexAmount;
@@ -215,10 +217,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	int materialIndex = 0;
 
 	//Material loading 
-	std::vector<std::wstring> meshMaterials;
-
 	std::vector<Material> materials;
-	std::vector<DWORD> matIndex;
 
 	//Temp variables to store into vectors
 	std::wstring meshMaterialsTemp;
@@ -261,7 +260,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					float vtcu, vtcv;
 					fileIn >> vtcu >> vtcv;		//Store next two types
 
-					vertTexCoord.push_back(DirectX::XMFLOAT2(vtcu, vtcv));
+					vertTexCoord.push_back(DirectX::XMFLOAT2(vtcu, -1.0f - vtcv));
 
 					hasTexCoord = true;	//We know the model uses texture coords
 				}
@@ -487,16 +486,17 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 									checkChar = fileIn.get();
 									if (checkChar == ' ')
 									{
-										meshMaterialsTemp = L"";	//Make sure this is cleared
-
-										fileIn >> meshMaterialsTemp; //Get next type (string)
-
-										meshMaterials.push_back(meshMaterialsTemp);
 										if (materialIndex != 0)
 										{
-											matIndex.push_back(materialIndex);
+											modelMats.back().indexAmount = materialIndex; //.push_back(materialIndex);
 											materialIndex = 0;
 										}
+
+										ModelMaterial temp;
+										temp.matname = L"";	//Make sure this is cleared
+										
+										fileIn >> temp.matname; //Get next type (string)
+										modelMats.push_back(temp);
 									}
 								}
 							}
@@ -524,7 +524,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 
 	if (materialIndex != 0)
 	{
-		matIndex.push_back(materialIndex);
+		modelMats.back().indexAmount = materialIndex; //.push_back(materialIndex);
 		materialIndex = 0;
 	}
 
@@ -536,7 +536,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 	fileIn.close();
 	fileIn.open(meshMatLib.c_str());
 
-
+	int vectorIndex = 0;
 	//kdset - If our diffuse color was not set, we can use the ambient color (which is usually the same)
 	//If the diffuse color WAS set, then we don't need to set our diffuse color to ambient
 	bool kdset = false;
@@ -562,9 +562,9 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 				{
 					checkChar = fileIn.get();	//remove space
 
-					fileIn >> material.Kd.x;
-					fileIn >> material.Kd.y;
-					fileIn >> material.Kd.z;
+					fileIn >> modelMats.at(vectorIndex).material.Kd.x;
+					fileIn >> modelMats.at(vectorIndex).material.Kd.y;
+					fileIn >> modelMats.at(vectorIndex).material.Kd.z;
 				}
 
 				//Ambient Color (We'll store it in diffuse if there isn't a diffuse already)
@@ -573,9 +573,9 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					checkChar = fileIn.get();	//remove space
 					if (!kdset)
 					{
-						fileIn >> material.Ka.x;
-						fileIn >> material.Ka.y;
-						fileIn >> material.Ka.z;
+						fileIn >> modelMats.at(vectorIndex).material.Ka.x;
+						fileIn >> modelMats.at(vectorIndex).material.Ka.y;
+						fileIn >> modelMats.at(vectorIndex).material.Ka.z;
 					}
 				}
 				break;
@@ -588,7 +588,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					float Transparency;
 					fileIn >> Transparency;
 
-					material.Tr = Transparency;
+					modelMats.at(vectorIndex).material.Tr = Transparency;
 
 				}
 				break;
@@ -603,7 +603,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 					//'d' - 0 being most transparent, and 1 being opaque, opposite of Tr
 					Transparency = 1.0f - Transparency;
 
-					material.d = Transparency;
+					modelMats.at(vectorIndex).material.d = Transparency;
 				}
 				break;
 
@@ -647,7 +647,7 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 										}
 									}
 
-									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &materials.back().texture);
+									hr = DirectX::CreateDDSTextureFromFile(_device, fileNamePath.c_str(), NULL, &modelMats.at(vectorIndex).texture);
 								}
 							}
 
@@ -677,8 +677,16 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 									{
 										//New material, set its defaults
 										Material tempMat;
-										materials.push_back(tempMat);
-										fileIn >> materials.back().matname;
+										std::wstring tempName;
+										fileIn >> tempName;
+
+										for (size_t i = 0; i < modelMats.size(); i++)
+										{
+											if (modelMats.at(i).matname == tempName)
+											{
+												vectorIndex = i;
+											}
+										}
 									}
 								}
 							}
@@ -700,23 +708,17 @@ bool Model::LoadObj(std::wstring _filename, ID3D11Device* _device, std::vector<X
 
 #pragma endregion
 
-	ModelMaterial modelMaterial;
-	for (size_t i = 0; i < matIndex.size(); i++)
+	for (size_t i = 0; i < modelMats.size(); i++)
 	{
-		for (size_t n = 0; n < materials.size(); n++)
+		for (size_t n = i; n < modelMats.size(); n++)
 		{
-			if (meshMaterials.at(i) == materials.at(n).matname)
+			if (modelMats.at(i).matname == modelMats.at(n).matname)
 			{
-				modelMaterial.indexAmount = matIndex.at(i);
-				modelMaterial.material = materials.at(n);
-
-				modelMats.push_back(modelMaterial);
+				modelMats.at(i).material = modelMats.at(n).material;
+				modelMats.at(i).texture = modelMats.at(n).texture;
 			}
 		}
 	}
-
-
-
 
 	//sometimes "g" is defined at the very top of the file, then again before the first group of faces.
 	//This makes sure the first subset does not conatain "0" indices.
@@ -833,7 +835,7 @@ bool Model::CreateShaders(ID3D11Device* _device)
 
 	memset(&materialDesc, 0, sizeof(materialDesc));
 
-	materialSubResource.pSysMem = &material;
+	materialSubResource.pSysMem = &modelMats.front().material;
 	materialSubResource.SysMemPitch = 0;
 	materialSubResource.SysMemSlicePitch = 0;
 
@@ -845,12 +847,12 @@ bool Model::CreateShaders(ID3D11Device* _device)
 	materialDesc.StructureByteStride = 0;
 
 
-	//HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
+	HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
 
-	//if (FAILED(hr))
-	//{
-	//	return false;
-	//}
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
 	return true;
 }

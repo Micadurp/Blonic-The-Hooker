@@ -13,8 +13,9 @@ private:
 
 public:
 	SkyBox();
-	SkyBox(ID3D11Device *);
 	~SkyBox();
+
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	void Update(Camera*);
 	void Shutdown();
 

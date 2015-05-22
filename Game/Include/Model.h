@@ -57,8 +57,6 @@ protected:
 
 	struct Material
 	{
-		std::wstring matname = L"";
-		ID3D11ShaderResourceView* texture = nullptr;
 		float Ns; //Specular Power
 		float Ni; //Optical Density, 0-10, jobbar med transparanta objekt
 		float d; // Transparacy
@@ -69,11 +67,13 @@ protected:
 		DirectX::XMFLOAT3 Kd; //Diffuse map, kolla denna om objekt inte har texturer
 		DirectX::XMFLOAT3 Ks; //Specular Color är färgen som objektet får när ljus reflekteras emot den
 		DirectX::XMFLOAT3 Ke;//Emissive color is the color of a surface when it "lights up". For example a lightbulb.
-	} material;
+	};
 
 
 	struct ModelMaterial
 	{
+		std::wstring matname = L"";
+		ID3D11ShaderResourceView* texture = nullptr;
 		DWORD indexAmount;
 		Material material;
 	};
@@ -82,7 +82,6 @@ protected:
 	ID3D11Buffer* meshIndexBuff;
 	int indexCount;
 
-	ID3D11ShaderResourceView* textureShaderResource;
 	ID3D11ShaderResourceView* normalShaderResource;
 
 	std::vector<ModelMaterial> modelMats;
@@ -107,7 +106,7 @@ public:
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices);
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable);
-	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
+	virtual bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	virtual void Shutdown();
 
 	virtual void Update(Camera*);

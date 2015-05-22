@@ -7,8 +7,8 @@
 #include "Model.h"
 #include "Player.h"
 #include "LightManager.h"
-
 #include "SkyBox.h"
+#include "TextClass.h"
 
 class GamePlay
 {
@@ -35,7 +35,7 @@ public:
 
 	int Update(double _time);
 
-	void Render(Direct3D * _direct3D);
+	void Render(Direct3D * _direct3D, TextClass* _timer);
 
 	int GameOver();
 

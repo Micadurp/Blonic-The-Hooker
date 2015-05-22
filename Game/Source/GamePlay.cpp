@@ -68,8 +68,9 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 
 
-	models.push_back(new SkyBox(_device));
-	models.at(models.size() - 1)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+	models.push_back(new SkyBox());
+	models.back()->Initialize(L"sphere", _device);
+	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
 
 #pragma region Create Scene Lights
 
@@ -103,9 +104,6 @@ int GamePlay::Update(double time)
 
 	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices, models);
 
-
-	//lights[0].Position = player->GetPosition();
-
 	for (size_t n = 0; n < models.size(); n++)
 	{
 		models[n]->Update(player);
@@ -115,19 +113,22 @@ int GamePlay::Update(double time)
 	return state;
 }
 
-void GamePlay::Render(Direct3D *_direct3D)
+void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
 	_direct3D->Render(models, XMLoadFloat4x4(&player->GetViewMatrix()));
 
 	_direct3D->SetCrosshairShaders();
-
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
 
 	player->Render(_direct3D);
 
-	// Deferred rendering
+	
+	_direct3D->TurnOnAlphaBlending();
+	_timer->Render(_direct3D->GetDeviceContext());
+	_direct3D->TurnOffAlphaBlending();
+
+	// Set lights used in deferred rendering
 	lightManager->Render(_direct3D->GetDeviceContext());
-	//_direct3D->SetPixelCBuffer(lightBuffer, sceneLightsObj, lightCount);
 }
 
 int GamePlay::GameOver()

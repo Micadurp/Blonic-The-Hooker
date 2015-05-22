@@ -1,10 +1,9 @@
-newmtl Default_Smoothing
-Ka 0 0 0
-Kd 0.784314 0.784314 0.784314
-Ks 0 0 0
-Ni 1
-Ns 400
-Tf 1 1 1
-d 1
+newmtl sphere:Default_Smoothing
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
 map_Kd SkyBox.dds
-
+Ni 1.00
+Ks 0.00 0.00 0.00
+Ns 400.00
