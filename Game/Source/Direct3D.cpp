@@ -557,6 +557,10 @@ void Direct3D::SetCrosshairShaders()
 {
 	renderer->SetCrosshairShaders(deviceContext);
 }
+void Direct3D::SetHookStringShaders()
+{
+	renderer->SetHookStringShaders(deviceContext);
+}
 
 bool Direct3D::SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix)
 {

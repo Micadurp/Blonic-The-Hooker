@@ -16,9 +16,9 @@ private:
 
 	struct GeometryShaderBuffer
 	{
+		XMMATRIX viewMatrix;
 		XMVECTOR playerPos;
 		XMVECTOR targetPos;
-		int intNrOfParticles;
 	};
 
 	ID3D11Buffer*   hookStringGSCB; // Basic model geometry shader constant buffer
@@ -28,7 +28,7 @@ public:
 
 	bool Initialize(ID3D11Device *);
 
-	void Update(ID3D11DeviceContext* _deviceContext, XMVECTOR * _playerPos, XMVECTOR * _target);
+	void Update(Direct3D* _direct3D,XMMATRIX * , XMVECTOR * _playerPos, XMVECTOR * _target);
 
 	void Render(Direct3D* _direct3D);
 

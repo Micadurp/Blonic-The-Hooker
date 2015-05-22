@@ -67,6 +67,7 @@ public:
 	void SetCrosshairShaders();
 	bool SetShader();
 	bool SetDeferredShaders();
+	void SetHookStringShaders();
 
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix);
 	bool SetVertexCBuffer(const DirectX::XMMATRIX &_worldMatrix, const DirectX::XMMATRIX &_viewMatrix);

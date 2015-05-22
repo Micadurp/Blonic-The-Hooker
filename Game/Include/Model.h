@@ -82,6 +82,7 @@ protected:
 	ID3D11Buffer* meshIndexBuff;
 	int indexCount;
 
+	ID3D11ShaderResourceView* textureShaderResource = nullptr;
 	ID3D11ShaderResourceView* normalShaderResource;
 
 	std::vector<ModelMaterial> modelMats;

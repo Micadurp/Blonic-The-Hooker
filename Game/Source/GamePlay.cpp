@@ -124,7 +124,7 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 	_direct3D->SetCrosshairShaders();
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
 
-	player->Render(_direct3D->GetDeviceContext());
+	player->Render(_direct3D);
 
 	
 	_direct3D->TurnOnAlphaBlending();

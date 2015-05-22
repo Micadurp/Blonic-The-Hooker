@@ -90,7 +90,7 @@ class Player : public Camera
 		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices, vector<Model*> models);
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
 
-		void Render(ID3D11DeviceContext* _deviceContext);
+		void Render(Direct3D * _direct3D);
 
 		XMFLOAT4X4 GetCrosshairMatrix();
 
