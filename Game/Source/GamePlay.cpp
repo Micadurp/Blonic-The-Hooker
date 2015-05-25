@@ -123,6 +123,7 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
 
 	_direct3D->Render(models.at(0), XMLoadFloat4x4(&player->GetViewMatrix()));
+	_direct3D->Render(models.at(3), XMLoadFloat4x4(&player->GetViewMatrix()));
 
 	_direct3D->SetCrosshairShaders();
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
