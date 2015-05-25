@@ -21,11 +21,10 @@ struct GS_OUT
 	float2 tex : TEXCOORD;
 	float3 normal : NORMAL;
 };
-float3 GeneratePosition(int current)
+float3 GeneratePosition(float3 length, float3 directionVector, int current)
 {
-	float3 dd = targetPos - playerPos;
 	float3 nPlayerPos = playerPos.xyz;
-	nPlayerPos += dd * (2.0f /current);
+	nPlayerPos += directionVector * (length / 100) * current;
 	return nPlayerPos;
 };
 
@@ -38,9 +37,13 @@ void GS_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 
 	float3 upVector = float3(0.0f, height, 0.0f);
 
-	for (int n = 0; n <10; n++)
+	float3 size = targetPos - playerPos;
+	float3 directionVector = normalize(size);
+	size = length(size);
+
+	for (int n = 0; n <100; n++)
 	{
-		float3 newPos = GeneratePosition(n);
+		float3 newPos = GeneratePosition(size, directionVector, n);
 
 		float3 normal = float3(newPos - playerPos);
 

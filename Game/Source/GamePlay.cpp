@@ -132,6 +132,7 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 
 	
 	_direct3D->TurnOnAlphaBlending();
+	_direct3D->SetCrosshairShaders();
 	_timer->Update(timer->GetTimer());
 	_timer->Render(_direct3D->GetDeviceContext());
 	_direct3D->TurnOffAlphaBlending();

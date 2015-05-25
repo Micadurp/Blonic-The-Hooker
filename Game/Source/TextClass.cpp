@@ -306,6 +306,7 @@ void TextClass::Render(ID3D11DeviceContext* _deviceContext)
 
 	//Set the d2d Index buffer
 	_deviceContext->IASetIndexBuffer(d2dIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Set the d2d vertex buffer
 	UINT stride = sizeof(VertexType);
