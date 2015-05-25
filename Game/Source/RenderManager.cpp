@@ -62,10 +62,10 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 
 	//create Hookstring Geometry shader
 	//ID3DBlob* pGS = nullptr;
-	D3DCompileFromFile(L"HookStringGeometryShader.hlsl", NULL, nullptr, "GS_main", "gs_5_0", 0, NULL, &pGS, nullptr);
+	//D3DCompileFromFile(L"HookStringGeometryShader.hlsl", NULL, nullptr, "GS_main", "gs_5_0", 0, NULL, &pGS, nullptr);
 
-	_device->CreateGeometryShader(pGS->GetBufferPointer(), pGS->GetBufferSize(),nullptr, &hookStringGeometryShader);
-	pGS->Release();
+	//_device->CreateGeometryShader(pGS->GetBufferPointer(), pGS->GetBufferSize(),nullptr, &hookStringGeometryShader);
+	//pGS->Release();
 
 #pragma endregion
 

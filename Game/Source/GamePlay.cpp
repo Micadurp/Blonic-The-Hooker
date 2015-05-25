@@ -51,26 +51,25 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		return false;
 	}
 
+	models.push_back(new Model());
+	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+	models.back()->Initialize(L"hus_export", _device);
 
-	for (int n = models.size(); n < 1; n++)
-	{
-		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"bana", _device, &collidableGeometryPositions, &collidableGeometryIndices);
-	} 	
+	models.push_back(new Model());
+	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
+	models.back()->Initialize(L"hus01_collision", _device, &collidableGeometryPositions, &collidableGeometryIndices, false);
 
-	for (int n = models.size(); n < 2; n++)
-	{
-		models.push_back(new Model());
-		models.at(n)->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-		models.at(n)->Initialize(L"kristall", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
-	}	
-
-
+	models.push_back(new Model());
+	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
+	models.back()->Initialize(L"kristall_kollision", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
 	models.push_back(new SkyBox());
 	models.back()->Initialize(L"sphere", _device);
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+
+	models.push_back(new Model());
+	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
+	models.back()->Initialize(L"winning", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
 #pragma region Create Scene Lights
 
@@ -109,13 +108,18 @@ int GamePlay::Update(double time)
 		models[n]->Update(player);
 	}
 
+	if (player->Win(models.back()))
+	{
+		state = 3;
+	}
 
 	return state;
 }
 
 void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
-	_direct3D->Render(models, XMLoadFloat4x4(&player->GetViewMatrix()));
+
+	_direct3D->Render(models.at(0), XMLoadFloat4x4(&player->GetViewMatrix()));
 
 	_direct3D->SetCrosshairShaders();
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));

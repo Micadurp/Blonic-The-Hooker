@@ -97,6 +97,7 @@ class Player : public Camera
 		void ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
 
 		bool IsDead();
+		bool Win(Model * winZone);
 	private:
 		void Move(double time);
 

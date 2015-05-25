@@ -726,7 +726,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 	float shortestLength = 1000;
 
 	//look at crystal check + blocked by stuff check
-	for (size_t n = 1; n < models.size(); n++)
+	for (size_t n = 1; n < models.size()-1; n++)
 	{
 		for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 		{
@@ -776,7 +776,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (size_t n = 1; n < models.size(); n++)
+			for (size_t n = 1; n < models.size()-1; n++)
 			{
 				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 				{
@@ -805,7 +805,7 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (size_t n = 1; n < models.size(); n++)
+			for (size_t n = 1; n < models.size()-1; n++)
 			{
 				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
 				{
@@ -1046,4 +1046,23 @@ bool Player::IsDead()
 		return true;
 	}
 	return false;
+}
+
+bool Player::Win(Model * winZone)
+{
+	bool victory = false;
+	float dist = 10.0f;
+	XMVECTOR t;
+
+	for (size_t i = 0; i < winZone->GetPickingPoints()->size(); ++i)
+	{
+		t = XMLoadFloat4(&m_camPos) - XMLoadFloat3(&winZone->GetPickingPoints()->at(i));
+		dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+		
+		if (dist < 2.0f)
+		{
+			victory = true;
+		}
+	}
+	return victory;
 }
