@@ -85,9 +85,9 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 		return false;
 	}
 
+	timer = new Timer();
+	timer->Initialize();
 #pragma endregion
-
-
 
 	return true;
 }
@@ -108,11 +108,14 @@ int GamePlay::Update(double time)
 		models[n]->Update(player);
 	}
 
+
 	if (player->Win(models.back()))
 	{
 		state = 3;
 	}
 
+	timer->UpdateTimer(time);
+	
 	return state;
 }
 
@@ -128,6 +131,7 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 
 	
 	_direct3D->TurnOnAlphaBlending();
+	_timer->Update(timer->GetTimer());
 	_timer->Render(_direct3D->GetDeviceContext());
 	_direct3D->TurnOffAlphaBlending();
 
