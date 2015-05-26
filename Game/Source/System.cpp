@@ -259,6 +259,7 @@ bool System::Frame(double _time)
 			break;
 		case 2:
 			gameState = GameState::gMenu;
+			currentLevel = 0;
 		}
 
 		break;
@@ -267,6 +268,8 @@ bool System::Frame(double _time)
 		if (prevState == GameState::gGamePlay)
 		{
 			gamePlay->Shutdown();
+			delete gamePlay;
+			gamePlay = new GamePlay();
 			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane);
 			gameState = GameState::gGamePlay;
 		}
