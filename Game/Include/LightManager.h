@@ -10,7 +10,7 @@ using namespace std;
 class LightManager
 {
 private:
-	const int LIGHT_COUNT = 12;
+	const int LIGHT_COUNT = 30;
 
 	struct EnviromentLightBuffer
 	{
@@ -28,7 +28,7 @@ public:
 	LightManager();
 	~LightManager();
 
-	bool Initialize(ID3D11Device* _device);
+	bool Initialize(ID3D11Device* _device, int _currentLevel);
 
 	void SetLightPosition(XMFLOAT4 _pos);
 	void ShutDown();

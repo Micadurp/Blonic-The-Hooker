@@ -16,8 +16,8 @@ struct DirectionalLight
 
 struct PointLight
 {
-	XMFLOAT4 position;
-	XMFLOAT4 diffuse;
+	XMFLOAT4 position = {0.0f, 0.0f, 0.0f, 0.0f};
+	XMFLOAT4 diffuse = { 0.0f, 0.0f, 0.0f, 0.0f };
 	XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
 
 	XMFLOAT3 attenuation = { 0.0f, 0.0f, 0.3f };

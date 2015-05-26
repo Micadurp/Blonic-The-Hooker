@@ -1,4 +1,4 @@
-#define LIGHTS_COUNT 12
+#define LIGHT_COUNT 30
 
 Texture2D txDiffuse : register(t0);
 Texture2D txNormal : register(t1);
@@ -37,7 +37,7 @@ cbuffer enviromentLight : register(b0)
 
 cbuffer LightArray : register(b1)
 {
-	PointLight lights[LIGHTS_COUNT];
+	PointLight lights[LIGHT_COUNT];
 }
 
 struct VS_OUT
@@ -81,9 +81,13 @@ float4 PS_main(VS_OUT input) : SV_TARGET
 	float3 finalAmbient = diffuse * dirLight.ambient;
 
 	
-	for (int i = 0; i < LIGHTS_COUNT; i++)
+	for (int i = 0; i < LIGHT_COUNT; i++)
 	{
-		finalColor += calculateLight(i, diffuse, normal, worldPos);
+		// Don't calculate black light
+		if (lights[i].diffuse.x > 0.0f && lights[i].diffuse.y > 0.0f && lights[i].diffuse.z > 0.0f)
+		{
+			finalColor += calculateLight(i, diffuse, normal, worldPos);
+		}
 	}
 	
 

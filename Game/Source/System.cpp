@@ -2,7 +2,7 @@
 
 System::System()
 {
-	currentLevel = 0;
+	currentLevel = 1;
 
 	LevelInfo level;
 	level.scene = L"hus01_export";
@@ -241,7 +241,7 @@ bool System::Frame(double _time)
 		{
 		case 1:
 			gameState = GameState::gGamePlay;
-			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane);
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
 			break;
 		case 2:
 			return false;
@@ -270,7 +270,7 @@ bool System::Frame(double _time)
 			gamePlay->Shutdown();
 			delete gamePlay;
 			gamePlay = new GamePlay();
-			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane);
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
 			gameState = GameState::gGamePlay;
 		}
 		prevState = GameState::gRestart;
