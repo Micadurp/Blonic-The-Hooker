@@ -9,6 +9,7 @@
 #include "LightManager.h"
 #include "SkyBox.h"
 #include "TextClass.h"
+#include "Timer.h"
 
 class GamePlay
 {
@@ -23,6 +24,8 @@ private:
 
 	vector<XMFLOAT3> collidableGeometryPositions;
 	vector<DWORD> collidableGeometryIndices;
+
+	Timer * timer;
 	
 public:
 	GamePlay();
