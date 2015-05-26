@@ -33,7 +33,7 @@ public:
 
 	void Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix);
 
-	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance);
+	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring scene, wstring sceneCollision, wstring kristall, wstring winPlane);
 	void Shutdown();
 
 	int Update(double _time);

@@ -35,7 +35,7 @@ void GamePlay::Shutdown()
 }
 
 
-bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance)
+bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring scene, wstring sceneCollision, wstring kristall, wstring winPlane)
 {
 	bool result;
 
@@ -53,16 +53,16 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(L"hus02_export", _device);
+	models.back()->Initialize(scene, _device);
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(L"hus02_collision", _device, &collidableGeometryPositions, &collidableGeometryIndices, false);
+	models.back()->Initialize(sceneCollision, _device, &collidableGeometryPositions, &collidableGeometryIndices, false);
 
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(L"kristall02_collision", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+	models.back()->Initialize(kristall, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
 	models.push_back(new SkyBox());
 	models.back()->Initialize(L"sphere", _device);
@@ -70,7 +70,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(L"hus02_winning", _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+	models.back()->Initialize(winPlane, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
 #pragma region Create Scene Lights
 

@@ -25,6 +25,17 @@ const float SCREEN_NEAR = 0.1f;
 class System
 {
 private:
+	struct LevelInfo
+	{
+		wstring scene;
+		wstring collision;
+		wstring kristall;
+		wstring winPlane;
+	};
+	
+	vector<LevelInfo> levels;
+	int currentLevel;
+
 	int screenWidth;
 	int screenHeight;
 

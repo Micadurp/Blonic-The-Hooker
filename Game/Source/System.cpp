@@ -2,6 +2,20 @@
 
 System::System()
 {
+	currentLevel = 0;
+
+	LevelInfo level;
+	level.scene = L"hus01_export";
+	level.collision = L"hus01_collision";
+	level.kristall = L"kristall_kollision";
+	level.winPlane = L"hus01_winning";
+	levels.push_back(level);
+
+	level.scene = L"hus02_export";
+	level.collision = L"hus02_collision";
+	level.kristall = L"kristall02_collision";
+	level.winPlane = L"hus02_winning";
+	levels.push_back(level);
 }
 
 System::~System()
@@ -126,8 +140,6 @@ void System::Shutdown()
 		direct3D = 0;
 	}
 
-
-
 	// Shutdown the window.
 	ShutdownWindows();
 }
@@ -208,7 +220,16 @@ bool System::Frame(double _time)
 		case 2:
 			gameState = GameState::gRestart;
 		case 3: //VICTORY
-			return false;
+			if (currentLevel < levels.size() - 1)
+			{
+				gameState = GameState::gRestart;
+				currentLevel++;
+			}
+			else
+			{
+				gameState = GameState::gMenu;
+				currentLevel = 0;
+			}
 		}
 		prevState = GameState::gGamePlay;
 	break;
@@ -220,7 +241,7 @@ bool System::Frame(double _time)
 		{
 		case 1:
 			gameState = GameState::gGamePlay;
-			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane);
 			break;
 		case 2:
 			return false;
@@ -246,7 +267,7 @@ bool System::Frame(double _time)
 		if (prevState == GameState::gGamePlay)
 		{
 			gamePlay->Shutdown();
-			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance);
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane);
 			gameState = GameState::gGamePlay;
 		}
 		prevState = GameState::gRestart;
