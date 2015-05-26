@@ -1,4 +1,4 @@
-#define LIGHTS_COUNT 2
+#define LIGHTS_COUNT 12
 
 Texture2D txDiffuse : register(t0);
 Texture2D txNormal : register(t1);

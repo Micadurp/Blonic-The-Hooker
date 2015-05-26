@@ -2,12 +2,15 @@
 #define LIGHTMANAGER_H
 
 #include <d3d11.h>
+#include <ctime>
 #include "LightStructure.h"
+
+using namespace std;
 
 class LightManager
 {
 private:
-	const int lightCount = 2;
+	const int LIGHT_COUNT = 12;
 
 	struct EnviromentLightBuffer
 	{
@@ -27,6 +30,7 @@ public:
 
 	bool Initialize(ID3D11Device* _device);
 
+	void SetLightPosition(XMFLOAT4 _pos);
 	void ShutDown();
 
 	void Render(ID3D11DeviceContext* _deviceContext);
