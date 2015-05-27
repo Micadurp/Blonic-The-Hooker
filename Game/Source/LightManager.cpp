@@ -26,16 +26,17 @@ bool LightManager::Initialize(ID3D11Device* _device, int _currentLevel)
 
 	// Level 2
 	XMFLOAT4 hus02_lightPos[] = { XMFLOAT4(-1.0f, 46.0f, 7.5f, 1.0f), XMFLOAT4(-1.3f, 26.0f, 65.0f, 1.0f),
-		XMFLOAT4(-3.70f, 65.20f, 70.5f, 1.0f), XMFLOAT4(-113.8f, 26.7f, 81.5f, 1.0f),
-		XMFLOAT4(-121.3f, 64.7f, 61.0f, 1.0f), XMFLOAT4(-117.8f, 51.7f, 37.2f, 1.0f),
-		XMFLOAT4(-111.8f, 50.7f, -12.5f, 1.0f), XMFLOAT4(-175.8f, 57.7f, -10.5f, 1.0f),
-		XMFLOAT4(-227.8f, 69.7f, 77.5f, 1.0f), XMFLOAT4(-233.8f, 73.7f, 36.5f, 1.0f),
-		XMFLOAT4(-266.4f, 56.7f, 23.5f, 1.0f), XMFLOAT4(-266.4f, 64.7f, 68.5f, 1.0f),
-		XMFLOAT4(0.0f, 0.0f, 35.0f, 1.0f), XMFLOAT4(0.0f, 19.0f, 31.0f, 1.0f),
-		XMFLOAT4(0.0f, 19.0f, 3.0f, 1.0f), XMFLOAT4(0.0f, 38.0f, 44.0f, 1.0f),
-		XMFLOAT4(-11.8f, 60.1f, 32.7f, 1.0f), XMFLOAT4(85.4f, 72.9f, 8.5f, 1.0f),
-		XMFLOAT4(-74.7f, 38.2f, 33.0f, 1.0f), XMFLOAT4(-176.6, 46.0f, 33.0f, 1.0f)
-	};
+								  XMFLOAT4(-3.70f, 65.20f, 70.5f, 1.0f), XMFLOAT4(-113.8f, 26.7f, 81.5f, 1.0f),
+								  XMFLOAT4(-121.3f, 64.7f, 61.0f, 1.0f), XMFLOAT4(-117.8f, 51.7f, 37.2f, 1.0f),
+								  XMFLOAT4(-111.8f, 50.7f, -12.5f, 1.0f), XMFLOAT4(-175.8f, 57.7f, -10.5f, 1.0f),
+								  XMFLOAT4(-227.8f, 69.7f, 77.5f, 1.0f), XMFLOAT4(-233.8f, 73.7f, 36.5f, 1.0f),
+								  XMFLOAT4(-266.4f, 56.7f, 23.5f, 1.0f), XMFLOAT4(-266.4f, 64.7f, 68.5f, 1.0f),
+								  XMFLOAT4(0.0f, 0.0f, 35.0f, 1.0f), XMFLOAT4(0.0f, 19.0f, 31.0f, 1.0f),
+								  XMFLOAT4(0.0f, 19.0f, 3.0f, 1.0f), XMFLOAT4(0.0f, 38.0f, 44.0f, 1.0f),
+								  XMFLOAT4(-11.8f, 60.1f, 32.7f, 1.0f), XMFLOAT4(85.4f, 72.9f, 8.5f, 1.0f),
+								  XMFLOAT4(-74.7f, 38.2f, 33.0f, 1.0f), XMFLOAT4(-176.6, 46.0f, 33.0f, 1.0f),
+								  XMFLOAT4(-200.0f, 68.3f, 68.1f, 1.0f)
+								};
 
 	// Level 3
 
@@ -86,7 +87,7 @@ bool LightManager::Initialize(ID3D11Device* _device, int _currentLevel)
 		break;
 
 	case 1:
-		count = 20;
+		count = 21;
 
 		// Crystal lights
 		for (int i = 0; i < count - 8; i++)
