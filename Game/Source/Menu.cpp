@@ -4,16 +4,12 @@ Menu::Menu()
 {
 	menu_background = new Model();
 
-	menuSelector = new Model();
+	menuSelector = nullptr;
 	selectorPosition = -0.2f;
 
 	camera = new Camera();
 	input = new PlayerInputs();
 
-	for (int i = 0; i < buttonCount; i++)
-	{
-		menuButtons.push_back(new Button());
-	}
 
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixIdentity());
 }
@@ -42,21 +38,32 @@ bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInst
 		return false;
 	}
 
-	// Initialize menu selector
-	result = menuSelector->Initialize(L"menuSelector", _device);
-	if (!result)
+	if (_buttons)
 	{
-		return false;
-	}
-	menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, selectorPosition, 0.0f));
+		menuSelector = new Model();
 
-	// Initialize menu buttons
-	for (int i = 0; i < buttonCount; i++)
-	{
-		result = menuButtons.at(i)->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(0.0f, (i * (-0.2f))- 0.2f, 0.0f));
+		// Initialize menu selector
+		result = menuSelector->Initialize(L"menuSelector", _device);
 		if (!result)
 		{
 			return false;
+		}
+		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, selectorPosition, 0.0f));
+
+
+		for (int i = 0; i < buttonCount; i++)
+		{
+			menuButtons.push_back(new Button());
+		}
+
+		// Initialize menu buttons
+		for (int i = 0; i < buttonCount; i++)
+		{
+			result = menuButtons.at(i)->Initialize(_device, _buttons[i], XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(0.0f, (i * (-0.2f)) - 0.2f, 0.0f));
+			if (!result)
+			{
+				return false;
+			}
 		}
 	}
 
@@ -149,8 +156,11 @@ void Menu::Render(Direct3D* _direct3D)
 	// Render menu selector
 	_direct3D->SetCrosshairShaders();
 
-	_direct3D->SetVertexCBuffer(menuSelector->GetObjMatrix());
-	menuSelector->Render(_direct3D->GetDeviceContext());
+	if (menuSelector)
+	{
+		_direct3D->SetVertexCBuffer(menuSelector->GetObjMatrix());
+		menuSelector->Render(_direct3D->GetDeviceContext());
+	}
 
 	// Render menu background
 	_direct3D->SetVertexCBuffer(menu_background->GetObjMatrix());

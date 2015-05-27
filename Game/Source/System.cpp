@@ -2,12 +2,12 @@
 
 System::System()
 {
-	currentLevel = 1;
+	currentLevel = 0;
 
 	LevelInfo level;
 	level.scene = L"hus01_export";
 	level.collision = L"hus01_collision";
-	level.kristall = L"kristall_kollision";
+	level.kristall = L"kristall01_collision";
 	level.winPlane = L"hus01_winning";
 	levels.push_back(level);
 
@@ -84,21 +84,29 @@ bool System::Initialize()
 	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	
-	deathMenu = new Menu();
-	if (!deathMenu)
+	deathScreen = new Menu();
+	if (!deathScreen)
 	{
 		return false;
 	}
 
-	wstring deathMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = deathMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", deathMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = deathScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
-	gamePlay = new GamePlay();
-	if (!gamePlay)
+	winScreen = new Menu();
+	if (!winScreen)
 	{
 		return false;
 	}
 
+	result = winScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_win", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+
+	loadScreen = new Menu();
+	if (!loadScreen)
+	{
+		return false;
+	}
+
+	result = loadScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_load", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	return true;
 }
@@ -118,12 +126,26 @@ void System::Shutdown()
 		delete pauseMenu;
 		pauseMenu = 0;
 	}
-
-	if (deathMenu)
+	
+	if (deathScreen)
 	{
-		deathMenu->Shutdown();
-		delete deathMenu;
-		deathMenu = 0;
+		deathScreen->Shutdown();
+		delete deathScreen;
+		deathScreen = 0;
+	}
+
+	if (winScreen)
+	{
+		winScreen->Shutdown();
+		delete winScreen;
+		winScreen = 0;
+	}
+
+	if (loadScreen)
+	{
+		loadScreen->Shutdown();
+		delete loadScreen;
+		loadScreen = 0;
 	}
 
 	if (gamePlay)
@@ -218,16 +240,17 @@ bool System::Frame(double _time)
 			gameState = GameState::gPause;
 			break;
 		case 2:
-			gameState = GameState::gRestart;
+			gameState = GameState::gDeath;
+			prevState = GameState::gGamePlay;
 		case 3: //VICTORY
 			if (currentLevel < levels.size() - 1)
 			{
-				gameState = GameState::gRestart;
+				gameState = GameState::gLoading;
 				currentLevel++;
 			}
 			else
 			{
-				gameState = GameState::gMenu;
+				gameState = GameState::gWin;
 				currentLevel = 0;
 			}
 		}
@@ -240,8 +263,8 @@ bool System::Frame(double _time)
 		switch (state)
 		{
 		case 1:
-			gameState = GameState::gGamePlay;
-			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
+			gameState = GameState::gLoading;
+			prevState = GameState::gMenu;
 			break;
 		case 2:
 			return false;
@@ -260,11 +283,13 @@ bool System::Frame(double _time)
 		case 2:
 			gameState = GameState::gMenu;
 			currentLevel = 0;
+			gamePlay->Shutdown();
+			delete gamePlay;
 		}
 
 		break;
 
-	case GameState::gRestart:
+	case GameState::gDeath:
 		if (prevState == GameState::gGamePlay)
 		{
 			gamePlay->Shutdown();
@@ -273,8 +298,29 @@ bool System::Frame(double _time)
 			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
 			gameState = GameState::gGamePlay;
 		}
-		prevState = GameState::gRestart;
+		prevState = GameState::gDeath;
 		break;
+
+	case GameState::gLoading:
+		if (prevState == GameState::gGamePlay)
+		{
+			gamePlay->Shutdown();
+			delete gamePlay;
+			gamePlay = new GamePlay();
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
+			gameState = GameState::gGamePlay;
+		}
+		else if(prevState == GameState::gMenu)
+		{
+			gamePlay = new GamePlay();
+			gamePlay->Initialize(direct3D->GetDevice(), hwnd, hinstance, levels.at(currentLevel).scene, levels.at(currentLevel).collision, levels.at(currentLevel).kristall, levels.at(currentLevel).winPlane, currentLevel);
+			gameState = GameState::gGamePlay;
+		}
+		prevState = GameState::gLoading;
+		break;
+
+	default:
+			break;
 	}
 #pragma endregion
 
@@ -299,8 +345,15 @@ bool System::Frame(double _time)
 		pauseMenu->Render(direct3D);
 		break;	
 	
-	case GameState::gRestart:
-		deathMenu->Render(direct3D);
+	case GameState::gDeath:
+		deathScreen->Render(direct3D);
+		break;
+	case GameState::gWin:
+		winScreen->Render(direct3D);
+		break;
+
+	case GameState::gLoading:
+		loadScreen->Render(direct3D);
 		break;
 
 

@@ -57,7 +57,9 @@ private:
 		gMenu,
 		gGamePlay,
 		gPause,
-		gRestart
+		gDeath,
+		gWin,
+		gLoading
 	}
 	gameState;
 
@@ -65,10 +67,14 @@ private:
 
 	Menu* menu;
 	Menu* pauseMenu;
-	Menu* deathMenu;
+	Menu* deathScreen;
+	Menu* winScreen;
+	Menu* loadScreen;
 	GamePlay* gamePlay;
 	Direct3D* direct3D;
 	TextClass* timer;
+
+	float lastTime;
 
 public:
 	System();
