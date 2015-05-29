@@ -20,6 +20,8 @@ bool HookString::Initialize(ID3D11Device * _device)
 
 	vertexSize = sizeof(Vertex);
 	
+	//Model::Initialize(L"starParticle", _device);
+
 	Vertex triangleVertices[1];
 	triangleVertices[0] = Vertex(0, 0, -2,0,0,0,0,0);
 
@@ -51,7 +53,10 @@ bool HookString::Initialize(ID3D11Device * _device)
 	}
 	XMStoreFloat4x4(&objMatrix,XMMatrixIdentity());
 
-	result = DirectX::CreateDDSTextureFromFile(_device, L"Star_Particle.dds", NULL, &textureShaderResource);
+
+	result = DirectX::CreateDDSTextureFromFile(_device, L"Rope.dds", NULL, &textureShaderResource);
+
+	
 
 	if (result)
 		true;
@@ -88,6 +93,8 @@ void HookString::Render(Direct3D* _direct3D)
 {
 	_direct3D->SetHookStringShaders();
 	
+	//Model::Render(_direct3D->GetDeviceContext());
+
 	unsigned int stride;
 	unsigned int offset;
 
@@ -105,13 +112,15 @@ void HookString::Render(Direct3D* _direct3D)
 	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	_direct3D->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	if (pixelShaderMaterialCB)
-		_direct3D->GetDeviceContext()->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
 
 	_direct3D->GetDeviceContext()->PSSetShaderResources(0, 1, &textureShaderResource);
 
+	if (pixelShaderMaterialCB)
+		_direct3D->GetDeviceContext()->PSSetConstantBuffers(0, 1, &pixelShaderMaterialCB);
+
 	_direct3D->GetDeviceContext()->Draw(1, 0);
 
+	return;
 }
 
 bool HookString::GetActive()

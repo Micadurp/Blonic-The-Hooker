@@ -147,7 +147,7 @@ void Player::Render(Direct3D * _direct3D)
 {
 
 	if (hookString->GetActive())
-		hookString->Update(_direct3D, &XMLoadFloat4x4(&m_viewMatrix), &XMLoadFloat3(&m_hookshot->point), &XMLoadFloat4(&m_camPos));
+		hookString->Update(_direct3D, &XMLoadFloat4x4(&m_viewMatrix), &XMLoadFloat4(&m_camPos), &XMLoadFloat3(&m_hookshot->point));
 
 	if (m_lookAtCrystal)
 	{

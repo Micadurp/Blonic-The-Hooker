@@ -7,7 +7,6 @@
 #pragma comment (lib, "D2D1.lib")
 #pragma comment (lib, "dwrite.lib")
 
-
 #include <dxgi.h>
 #include <d3d11.h>
 #include <d3d10_1.h>
@@ -15,6 +14,7 @@
 #include <sstream>
 #include <dwrite.h>
 #include <DirectXMath.h>
+
 
 using namespace std;
 
@@ -73,7 +73,6 @@ class TextClass
 
 		void Update(double _time);
 		void Render(ID3D11DeviceContext* _deviceContext);
-
 		void shutDown();
 
 	private:

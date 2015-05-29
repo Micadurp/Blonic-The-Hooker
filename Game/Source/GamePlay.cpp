@@ -64,6 +64,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
 	models.back()->Initialize(_crystall, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
+
 	models.push_back(new SkyBox());
 	models.back()->Initialize(L"sphere", _device);
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
@@ -135,6 +136,8 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 	_direct3D->TurnOnAlphaBlending();
 	_direct3D->SetCrosshairShaders();
 	_timer->Update(timer->GetTimer());
+
+	//_direct3D->SetShader();
 	_timer->Render(_direct3D->GetDeviceContext());
 	_direct3D->TurnOffAlphaBlending();
 

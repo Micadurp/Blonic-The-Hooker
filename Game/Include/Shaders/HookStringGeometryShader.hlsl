@@ -3,7 +3,6 @@ cbuffer StringConstants: register(b0)
 	matrix viewProjection;
 	float4 playerPos;
 	float4 targetPos;
-
 }
 
 struct VS_OUT
@@ -21,42 +20,35 @@ struct GS_OUT
 	float2 tex : TEXCOORD;
 	float3 normal : NORMAL;
 };
-float3 GeneratePosition(float3 length, float3 directionVector, int current)
-{
-	float3 nPlayerPos = playerPos.xyz;
-	nPlayerPos += directionVector * (length / 100) * current;
-	return nPlayerPos;
-};
 
-[maxvertexcount(4 * 10)]
+
+[maxvertexcount(4)]
 void GS_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 {
-	float width = 0.3;
-	float height = 0.3;
+	float width = 0.1;
+	float height = 0.1;
 	GS_OUT output;
 
-	float3 upVector = float3(0.0f, height, 0.0f);
+		float3 newPos = float3(playerPos.x, playerPos.y, playerPos.z);
+		float3 nTargetPos = targetPos.xyz;
 
-	float3 size = targetPos - playerPos;
-	float3 directionVector = normalize(size);
-	size = length(size);
+		//nTargetPos = normalize(nTargetPos);
+		//newPos = normalize(newPos);
 
-	for (int n = 0; n <100; n++)
-	{
-		float3 newPos = GeneratePosition(size, directionVector, n);
+		float3 normal = float3(targetPos  - newPos);
 
-		float3 normal = float3(newPos - playerPos);
-
-		normal = normalize(normal);
+		//normal = normalize(normal);
 
 		float3 rightVector = normalize(cross(normal, float3(0, 1, 0)));
 			rightVector = rightVector *width;
 
+		float3 upVector = float3(0, 1, 0);
+
 		float4 vertc[4];
-		vertc[0] = float4(newPos - rightVector - upVector, 1);
-		vertc[1] = float4(newPos + rightVector - upVector, 1);
-		vertc[2] = float4(newPos - rightVector + upVector, 1);
-		vertc[3] = float4(newPos + rightVector + upVector, 1);
+		vertc[0] = float4(targetPos.xyz - rightVector , 1);
+		vertc[1] = float4(targetPos.xyz + rightVector, 1);
+		vertc[2] = float4(playerPos.xyz - rightVector -upVector, 1);
+		vertc[3] = float4(playerPos.xyz + rightVector -upVector, 1);
 
 		float2 Uvs[4];
 		Uvs[2] = float2(0, 0);
@@ -66,7 +58,7 @@ void GS_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 
 		for (uint i = 0; i < 4; i++)
 		{
-			
+
 			output.pos = mul(vertc[i], viewProjection);
 			output.worldPos = float4(0,0,0,0);
 			output.tex = Uvs[i];
@@ -74,6 +66,4 @@ void GS_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 			triStream.Append(output);
 		}
 		triStream.RestartStrip();
-	}
-	
 }

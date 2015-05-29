@@ -29,7 +29,6 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 	vertices[nrOfVertices++] = Vertex(1.0f, -1.0f, 0, 1.0f, 1.0f); //4
 
 
-
 	D3D11_BUFFER_DESC bufferDesc;
 	memset(&bufferDesc, 0, sizeof(bufferDesc));
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -41,7 +40,6 @@ void DeferredRendering::Initilize(ID3D11Device* _device, const DirectX::XMMATRIX
 	_device->CreateBuffer(&bufferDesc, &data, &meshVertBuff);
 
 #pragma endregion
-
 
 	ID3D11Texture2D** renderTargetTextureMap = new ID3D11Texture2D*[nrOfRenderTargets];
 

@@ -87,7 +87,6 @@ protected:
 
 	std::vector<ModelMaterial> modelMats;
 
-
 	int nrOfVertices;
 
 	DirectX::XMFLOAT4X4 objMatrix;

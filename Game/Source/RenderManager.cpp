@@ -67,6 +67,7 @@ bool RenderManager::Initialize(ID3D11Device* _device, const DirectX::XMMATRIX &_
 	_device->CreateGeometryShader(hGS->GetBufferPointer(), hGS->GetBufferSize(),nullptr, &hookStringGeometryShader);
 	hGS->Release();
 
+
 #pragma endregion
 
 #pragma region Create ConstantBuffers
