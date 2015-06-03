@@ -108,6 +108,8 @@ bool System::Initialize()
 
 	result = loadScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_load", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
+	gamePlay = nullptr;
+
 	return true;
 }
 

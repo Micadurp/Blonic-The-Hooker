@@ -66,7 +66,7 @@ bool HookString::Initialize(ID3D11Device * _device)
 
 void HookString::Update(Direct3D* _direct3D,XMMATRIX * viewMatrix, XMVECTOR * _playerPos, XMVECTOR * _target)
 {
-	HRESULT result;
+//	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	GeometryShaderBuffer* dataPtr;
 
