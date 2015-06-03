@@ -313,7 +313,7 @@ void TextClass::Render(ID3D11DeviceContext* _deviceContext)
 	UINT offset = 0;
 	_deviceContext->IASetVertexBuffers(0, 1, &d2dVertBuffer, &stride, &offset);
 
-	DirectX::XMStoreFloat4x4(&vertexCBufferObj.world, DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity()));
+	DirectX::XMStoreFloat4x4(&vertexCBufferObj.world, DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(0.18, -0.15, 0)));
 	DirectX::XMStoreFloat4x4(&vertexCBufferObj.viewProjection, DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity()));
 
 	_deviceContext->UpdateSubresource(textCBuffer, 0, NULL, &vertexCBufferObj, 0, 0);
