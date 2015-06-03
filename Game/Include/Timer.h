@@ -12,7 +12,7 @@ public:
 
 	void Initialize();
 
-	void UpdateTimer(double _time);
+	void UpdateTimer();
 	double GetTimer();
 };
 #endif
