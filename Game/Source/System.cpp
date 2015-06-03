@@ -2,7 +2,9 @@
 
 System::System()
 {
-	currentLevel = 0;
+	currentLevel = 2;
+
+	gamePlay = nullptr;
 
 	LevelInfo level;
 	level.scene = L"hus01_export";
@@ -15,6 +17,12 @@ System::System()
 	level.collision = L"hus02_collision";
 	level.kristall = L"kristall02_collision";
 	level.winPlane = L"hus02_winning";
+	levels.push_back(level);
+
+	level.scene = L"hus04_export";
+	level.collision = L"hus04_collision";
+	level.kristall = L"crystal04_collision";
+	level.winPlane = L"hus04_winning";
 	levels.push_back(level);
 }
 
@@ -148,11 +156,11 @@ void System::Shutdown()
 		loadScreen = 0;
 	}
 
-	if (gamePlay)
+	if (gamePlay != nullptr)
 	{
 		gamePlay->Shutdown();
 		delete gamePlay;
-		gamePlay = 0;
+		gamePlay = nullptr;
 	}
 
 	if (direct3D)
@@ -285,6 +293,7 @@ bool System::Frame(double _time)
 			currentLevel = 0;
 			gamePlay->Shutdown();
 			delete gamePlay;
+			gamePlay = nullptr;
 		}
 
 		break;
