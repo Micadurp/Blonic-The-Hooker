@@ -40,6 +40,8 @@ public:
 
 	void Render(Direct3D * _direct3D, TextClass* _timer);
 
+	void RenderHUD(Direct3D * _direct3D, TextClass* _timer);
+
 	int GameOver();
 
 };

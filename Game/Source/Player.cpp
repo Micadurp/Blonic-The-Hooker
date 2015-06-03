@@ -145,10 +145,6 @@ int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 void Player::Render(Direct3D * _direct3D)
 {
-
-	if (hookString->GetActive())
-		hookString->Update(_direct3D, &XMLoadFloat4x4(&m_viewMatrix), &XMLoadFloat4(&m_camPos), &XMLoadFloat3(&m_hookshot->point));
-
 	if (m_lookAtCrystal)
 	{
 		m_crosshair2->Render(_direct3D->GetDeviceContext());
@@ -158,9 +154,16 @@ void Player::Render(Direct3D * _direct3D)
 		m_crosshair->Render(_direct3D->GetDeviceContext());
 	}
 	m_lookAtCrystal = false;
+}
+
+void Player::RenderRope(Direct3D * _direct3D)
+{
 
 	if (hookString->GetActive())
+	{
+		hookString->Update(_direct3D, &XMLoadFloat4x4(&m_viewMatrix), &XMLoadFloat4(&m_camPos), &XMLoadFloat3(&m_hookshot->point));
 		hookString->Render(_direct3D);
+	}
 }
 
 XMFLOAT4X4 Player::GetCrosshairMatrix()
