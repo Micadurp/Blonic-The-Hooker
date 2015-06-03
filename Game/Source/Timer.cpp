@@ -16,12 +16,12 @@ void Timer::Initialize()
 	offset = 0;
 }
 
-void Timer::UpdateTimer(double _time)
+void Timer::UpdateTimer()
 {
 	time += 0.01999f;
 }
 
 double Timer::GetTimer()
 {
-	return time;
+	return (int)time;
 }

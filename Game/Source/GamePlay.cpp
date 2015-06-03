@@ -116,7 +116,7 @@ int GamePlay::Update(double time)
 		state = 3;
 	}
 
-	timer->UpdateTimer(time);
+	timer->UpdateTimer();
 	
 	return state;
 }
