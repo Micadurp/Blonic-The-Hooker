@@ -10,7 +10,7 @@ using namespace std;
 class LightManager
 {
 private:
-	const int LIGHT_COUNT = 30;
+	const int LIGHT_COUNT = 40;
 
 	struct EnviromentLightBuffer
 	{
