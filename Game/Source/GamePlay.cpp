@@ -71,7 +71,7 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 	models.push_back(new Model());
 	models.back()->Initialize(L"Timer", _device);
-	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(0.20, 0.20, 1) * DirectX::XMMatrixTranslation(-0.80, 0.80, 0));
+	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(0.20f, 0.20f, 1) * DirectX::XMMatrixTranslation(-0.80f, 0.80f, 0));
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
