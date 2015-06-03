@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib hus4_export.mtl
+mtllib hus04_export.mtl
 g default
 v -134.387512 51.000000 149.855743
 v -74.387512 51.000000 149.855728
