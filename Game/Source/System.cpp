@@ -250,6 +250,7 @@ bool System::Frame(double _time)
 		case 2:
 			gameState = GameState::gDeath;
 			prevState = GameState::gGamePlay;
+			break;
 		case 3: //VICTORY
 			if (currentLevel < levels.size() - 1)
 			{
@@ -276,6 +277,7 @@ bool System::Frame(double _time)
 			break;
 		case 2:
 			return false;
+			break;
 		}
 
 		break;
@@ -294,6 +296,7 @@ bool System::Frame(double _time)
 			gamePlay->Shutdown();
 			delete gamePlay;
 			gamePlay = nullptr;
+			break;
 		}
 
 		break;
