@@ -11,11 +11,13 @@ using namespace std;
 
 class Button: public Model
 {
+private:
 	public:
 		Button();
 		virtual ~Button();
 
 		bool Initialize(ID3D11Device* _device, wstring _modelName, const XMMATRIX& _newMatrix);
+
 };
 
 #endif

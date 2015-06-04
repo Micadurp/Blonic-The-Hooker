@@ -18,9 +18,12 @@ Menu::~Menu()
 {
 }
 
-bool Menu::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width, float _height, float _nearZ, float _farZ)
+bool Menu::Initialize(ID3D11Device* _device, int nrOf, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _background, wstring* _buttons, float _width, float _height, float _nearZ, float _farZ)
 {
 	bool result;
+
+	currentBtn = 0;
+	buttonCount = nrOf;
 
 	if (_width > 0.0f && _height > 0.0f && _nearZ > 0.0f && _farZ > 0.0f)
 	{
@@ -120,32 +123,27 @@ int Menu::Update()
 
 	input->Update();
 
-	if ((input->GetKeyboardState().key_w_pressed && !lastKeyboardState.key_w_pressed) || (input->GetKeyboardState().key_s_pressed && !lastKeyboardState.key_s_pressed))
+	if ((input->GetKeyboardState().key_w_pressed && !lastKeyboardState.key_w_pressed))
 	{
-		if (selectorPosition < -0.2f)
-		{
-			selectorPosition = -0.2f;
-		}
-		else
-		{
-			selectorPosition = -0.4f;
-		}
-
-		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, selectorPosition, 0.0f));
+		currentBtn--;
+		if (currentBtn < 0)
+			currentBtn = buttonCount - 1;
 	}
+
+	if ((input->GetKeyboardState().key_s_pressed && !lastKeyboardState.key_s_pressed))
+	{
+		currentBtn++;
+		if (currentBtn >= buttonCount)
+			currentBtn = 0;
+		
+	}
+	if (menuSelector)
+		menuSelector->SetObjMatrix(XMMatrixScaling(0.8f, 0.8f, 1.0f) * XMMatrixTranslation(-0.5f, -0.2f +(currentBtn * -0.2f), 0.0f));
+
 
 	if (input->GetKeyboardState().key_enter_pressed && !lastKeyboardState.key_enter_pressed)
 	{
-		// New game
-		if (selectorPosition > -0.4f)
-		{
-			return 1;
-		}
-		// Quit game
-		else
-		{
-			return 2;
-		}
+		return currentBtn;
 	}
 
 	return -1;

@@ -71,8 +71,8 @@ bool System::Initialize()
 		return false;
 	}
 
-	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_Quit" };
-	result = menu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_menu", menuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_howToPlay", L"menuBtn_Quit" };
+	result = menu->Initialize(direct3D->GetDevice(),3, hwnd, hinstance, L"menuBgrd_menu", menuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	pauseMenu = new Menu();
 	if (!pauseMenu)
@@ -81,7 +81,7 @@ bool System::Initialize()
 	}
 
 	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
-	result = pauseMenu->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = pauseMenu->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	
 	deathScreen = new Menu();
@@ -90,7 +90,7 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = deathScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_dead", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = deathScreen->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_dead", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	winScreen = new Menu();
 	if (!winScreen)
@@ -98,7 +98,7 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = winScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_win", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = winScreen->Initialize(direct3D->GetDevice(),1, hwnd, hinstance, L"menuBgrd_win", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
 
 	loadScreen = new Menu();
 	if (!loadScreen)
@@ -106,7 +106,17 @@ bool System::Initialize()
 		return false;
 	}
 
-	result = loadScreen->Initialize(direct3D->GetDevice(), hwnd, hinstance, L"menuBgrd_load", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	result = loadScreen->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_load", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+
+	howToPlay = new Menu();
+	if (!howToPlay)
+	{
+		return false;
+	}
+
+	result = howToPlay->Initialize(direct3D->GetDevice(), 1, hwnd, hinstance, L"menuBgrd_howToPlay", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+
+	
 
 	return true;
 }
@@ -146,6 +156,13 @@ void System::Shutdown()
 		loadScreen->Shutdown();
 		delete loadScreen;
 		loadScreen = 0;
+	}
+
+	if (howToPlay)
+	{
+		howToPlay->Shutdown();
+		delete howToPlay;
+		howToPlay = 0;
 	}
 
 	if (gamePlay)
@@ -262,8 +279,12 @@ bool System::Frame(double _time)
 
 		switch (state)
 		{
-		case 1:
+		case 0:
 			gameState = GameState::gLoading;
+			prevState = GameState::gMenu;
+			break;
+		case 1:
+			gameState = GameState::gHowToPlay;
 			prevState = GameState::gMenu;
 			break;
 		case 2:
@@ -319,6 +340,13 @@ bool System::Frame(double _time)
 		prevState = GameState::gLoading;
 		break;
 
+	case GameState::gHowToPlay:
+		state = howToPlay->Update();
+		if (state != -1)
+		{
+			gameState = GameState::gMenu;
+		}
+		break;
 	default:
 			break;
 	}
@@ -335,6 +363,9 @@ bool System::Frame(double _time)
 		direct3D->DeferredFirstPass();
 		gamePlay->Render(direct3D, timer);
 		direct3D->DeferredRender();
+		break;
+	case GameState::gHowToPlay:
+		howToPlay->Render(direct3D);
 		break;
 
 	case GameState::gMenu:

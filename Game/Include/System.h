@@ -59,7 +59,8 @@ private:
 		gPause,
 		gDeath,
 		gWin,
-		gLoading
+		gLoading,
+		gHowToPlay
 	}
 	gameState;
 
@@ -68,6 +69,7 @@ private:
 	Menu* menu;
 	Menu* pauseMenu;
 	Menu* deathScreen;
+	Menu* howToPlay;
 	Menu* winScreen;
 	Menu* loadScreen;
 	GamePlay* gamePlay;
