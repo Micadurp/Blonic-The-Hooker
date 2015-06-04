@@ -34,7 +34,7 @@ private:
 	};
 	
 	vector<LevelInfo> levels;
-	int currentLevel;
+	size_t currentLevel;
 
 	int screenWidth;
 	int screenHeight;

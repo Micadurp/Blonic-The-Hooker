@@ -284,7 +284,7 @@ void TextClass::Render(ID3D11DeviceContext* _deviceContext)
 	brush->SetColor(fontColor);
 	
 	// Create the d2d render area
-	D2D1_RECT_F layoutRect = D2D1::RectF(0, 0, width, height);
+	D2D1_RECT_F layoutRect = D2D1::RectF(0.0f, 0.0f, (float) width, (float)height);
 
 	// Draw the text
 	d2dRenderTarget->DrawTextW(printText.c_str(), wcslen(printText.c_str()), textFormat, layoutRect, brush);
@@ -313,7 +313,7 @@ void TextClass::Render(ID3D11DeviceContext* _deviceContext)
 	UINT offset = 0;
 	_deviceContext->IASetVertexBuffers(0, 1, &d2dVertBuffer, &stride, &offset);
 
-	DirectX::XMStoreFloat4x4(&vertexCBufferObj.world, DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity()));
+	DirectX::XMStoreFloat4x4(&vertexCBufferObj.world, DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(0.18f, -0.15f, 0)));
 	DirectX::XMStoreFloat4x4(&vertexCBufferObj.viewProjection, DirectX::XMMatrixTranspose(DirectX::XMMatrixIdentity()));
 
 	_deviceContext->UpdateSubresource(textCBuffer, 0, NULL, &vertexCBufferObj, 0, 0);

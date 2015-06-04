@@ -91,6 +91,7 @@ class Player : public Camera
 		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
 
 		void Render(Direct3D * _direct3D);
+		void RenderRope(Direct3D * _direct3D);
 
 		XMFLOAT4X4 GetCrosshairMatrix();
 

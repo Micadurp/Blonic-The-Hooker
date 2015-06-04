@@ -70,6 +70,10 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
 
 	models.push_back(new Model());
+	models.back()->Initialize(L"Timer", _device);
+	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(0.20f, 0.20f, 1) * DirectX::XMMatrixTranslation(-0.80f, 0.80f, 0));
+
+	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
 	models.back()->Initialize(_winPlane, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
 
@@ -127,22 +131,28 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 	_direct3D->Render(models.at(0), XMLoadFloat4x4(&player->GetViewMatrix()));
 	_direct3D->Render(models.at(3), XMLoadFloat4x4(&player->GetViewMatrix()));
 
+	player->RenderRope(_direct3D);
+
+	_direct3D->SetShader();
+	// Set lights used in deferred rendering
+	lightManager->Render(_direct3D->GetDeviceContext());
+}
+void GamePlay::RenderHUD(Direct3D *_direct3D, TextClass* _timer)
+{
 	_direct3D->SetCrosshairShaders();
 	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
 
 	player->Render(_direct3D);
-
-	
 	_direct3D->TurnOnAlphaBlending();
 	_direct3D->SetCrosshairShaders();
 	_timer->Update(timer->GetTimer());
 
-	//_direct3D->SetShader();
 	_timer->Render(_direct3D->GetDeviceContext());
 	_direct3D->TurnOffAlphaBlending();
 
-	// Set lights used in deferred rendering
-	lightManager->Render(_direct3D->GetDeviceContext());
+	_direct3D->SetVertexCBuffer(models.at(4)->GetObjMatrix());
+	models.at(4)->Render(_direct3D->GetDeviceContext());
+
 }
 
 int GamePlay::GameOver()

@@ -2,7 +2,9 @@
 
 System::System()
 {
-	currentLevel = 0;
+	currentLevel = 2;
+
+	gamePlay = nullptr;
 
 	LevelInfo level;
 	level.scene = L"hus01_export";
@@ -15,6 +17,12 @@ System::System()
 	level.collision = L"hus02_collision";
 	level.kristall = L"kristall02_collision";
 	level.winPlane = L"hus02_winning";
+	levels.push_back(level);
+
+	level.scene = L"hus04_export";
+	level.collision = L"hus04_collision";
+	level.kristall = L"crystal04_collision";
+	level.winPlane = L"hus04_winning";
 	levels.push_back(level);
 }
 
@@ -158,6 +166,7 @@ void System::Shutdown()
 		loadScreen = 0;
 	}
 
+<<<<<<< HEAD
 	if (howToPlay)
 	{
 		howToPlay->Shutdown();
@@ -166,10 +175,13 @@ void System::Shutdown()
 	}
 
 	if (gamePlay)
+=======
+	if (gamePlay != nullptr)
+>>>>>>> 06a20e29d338680f9a5f4d1596020bd037a74f28
 	{
 		gamePlay->Shutdown();
 		delete gamePlay;
-		gamePlay = 0;
+		gamePlay = nullptr;
 	}
 
 	if (direct3D)
@@ -259,6 +271,7 @@ bool System::Frame(double _time)
 		case 2:
 			gameState = GameState::gDeath;
 			prevState = GameState::gGamePlay;
+			break;
 		case 3: //VICTORY
 			if (currentLevel < levels.size() - 1)
 			{
@@ -289,6 +302,7 @@ bool System::Frame(double _time)
 			break;
 		case 2:
 			return false;
+			break;
 		}
 
 		break;
@@ -306,6 +320,8 @@ bool System::Frame(double _time)
 			currentLevel = 0;
 			gamePlay->Shutdown();
 			delete gamePlay;
+			gamePlay = nullptr;
+			break;
 		}
 
 		break;
@@ -360,6 +376,7 @@ bool System::Frame(double _time)
 	switch (gameState)
 	{
 	case GameState::gGamePlay:
+		gamePlay->RenderHUD(direct3D, timer);
 		direct3D->DeferredFirstPass();
 		gamePlay->Render(direct3D, timer);
 		direct3D->DeferredRender();
