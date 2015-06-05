@@ -1062,7 +1062,7 @@ bool Player::Win(Model * winZone)
 		t = XMLoadFloat4(&m_camPos) - XMLoadFloat3(&winZone->GetPickingPoints()->at(i));
 		dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 		
-		if (dist < 2.0f)
+		if (dist < 4.0f)
 		{
 			victory = true;
 		}

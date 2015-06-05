@@ -2,7 +2,7 @@
 
 System::System()
 {
-	currentLevel = 2;
+	currentLevel = 0;
 
 	gamePlay = nullptr;
 
@@ -166,7 +166,6 @@ void System::Shutdown()
 		loadScreen = 0;
 	}
 
-<<<<<<< HEAD
 	if (howToPlay)
 	{
 		howToPlay->Shutdown();
@@ -175,9 +174,6 @@ void System::Shutdown()
 	}
 
 	if (gamePlay)
-=======
-	if (gamePlay != nullptr)
->>>>>>> 06a20e29d338680f9a5f4d1596020bd037a74f28
 	{
 		gamePlay->Shutdown();
 		delete gamePlay;
