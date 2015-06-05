@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib winning.mtl
+mtllib hus01_winning.mtl
 g default
 v -8.949812 16.709660 -36.738593
 v -7.949812 16.709660 -36.738593

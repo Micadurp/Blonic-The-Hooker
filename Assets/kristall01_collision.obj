@@ -1,6 +1,6 @@
 # This file uses centimeters as units for non-parametric coordinates.
 
-mtllib kristall_kollision.mtl
+mtllib kristall01_collision.mtl
 g default
 v -20.649383 32.522343 -1.078837
 v -19.094094 32.969724 -1.730056
