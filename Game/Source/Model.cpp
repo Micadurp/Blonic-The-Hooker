@@ -17,7 +17,7 @@ Model::~Model()
 
 bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices)
 {
-	bool result = true;
+	bool result;
 
 	result = LoadObj(_modelName, _device, collidableGeometryPositions, collidableGeometryIndices);
 	if (!result)
@@ -36,7 +36,7 @@ bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vect
 
 bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3> *collidableGeometryPositions, std::vector<DWORD> *collidableGeometryIndices, bool pickable)
 {
-	bool result = true;
+	bool result;
 
 	result = LoadObj(_modelName, _device, collidableGeometryPositions, collidableGeometryIndices, pickable);
 	if (!result)
@@ -56,7 +56,7 @@ bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device, std::vect
 
 bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device)
 {
-	bool result = true;
+	bool result;
 
 	result = LoadObj(_modelName, _device);
 	if (!result)
@@ -129,7 +129,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState 
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	_deviceContext->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);
@@ -164,7 +164,7 @@ void Model::Render(ID3D11DeviceContext* _deviceContext)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+	_deviceContext->IASetVertexBuffers(0, 1, &meshVertexBuff, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	_deviceContext->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);

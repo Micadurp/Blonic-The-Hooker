@@ -35,7 +35,7 @@ void GS_main(point VS_OUT input[1], inout TriangleStream<GS_OUT> triStream)
 		//nTargetPos = normalize(nTargetPos);
 		//newPos = normalize(newPos);
 
-		float3 normal = float3(targetPos  - newPos);
+		float3 normal = float3(targetPos.xyz  - newPos);
 
 		//normal = normalize(normal);
 

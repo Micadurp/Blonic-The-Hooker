@@ -13,6 +13,6 @@ public:
 	void Initialize();
 
 	void UpdateTimer();
-	double GetTimer();
+	int GetTimer();
 };
 #endif

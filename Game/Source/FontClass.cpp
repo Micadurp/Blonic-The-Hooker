@@ -137,7 +137,7 @@ ID3D11ShaderResourceView* FontClass::GetTexture()
 void FontClass::BuildVertexArray(void* _vertices, const char* _sentence, float _drawX, float _drawY)
 {
 	VertexType* vertexPtr;
-	int numLetters, index, letter;
+	int numLetters, index;
 
 
 	// Coerce the input vertices into a VertexType structure.
@@ -152,7 +152,7 @@ void FontClass::BuildVertexArray(void* _vertices, const char* _sentence, float _
 	// Draw each letter onto a quad.
 	for (int i = 0; i<numLetters; i++)
 	{
-		letter = ((int)_sentence[i]) - 32;
+		int letter = ((int)_sentence[i]) - 32;
 
 		// If the letter is a space then just move over three pixels.
 		if (letter == 0)

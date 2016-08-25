@@ -52,16 +52,16 @@ struct VS_OUT
 float3 calculateLight(int index, float4 txDiff, float4 txNormal, float4 txWorldPos)
 {
 	float3 color = { 0.0f, 0.0f, 0.0f };
-	float3 lightToPixel = lights[index].position - txWorldPos;
+	float3 lightToPixel = lights[index].position.xyz - txWorldPos.xyz;
 	float distance = length(lightToPixel);
 
 	lightToPixel /= distance;
 
-	float lightAmount = dot(lightToPixel, txNormal);
+	float lightAmount = dot(lightToPixel, txNormal.xyz);
 
 	if (lightAmount > 0.0f)
 	{
-		color += lightAmount * txDiff * lights[index].diffuse * lights[index].intensity;
+		color += lightAmount * txDiff.xyz * lights[index].diffuse.xyz * lights[index].intensity;
 
 		color /= lights[index].attenuation[0] + (lights[index].attenuation[1] * distance) + (lights[index].attenuation[2] * (distance * distance));
 	}
@@ -77,8 +77,8 @@ float4 PS_main(VS_OUT input) : SV_TARGET
 	float4 worldPos = txWorldP.Sample(sampAni, input.tex);
 
 
-	float3 finalColor = saturate(dot(dirLight.direction, normal) * dirLight.diffuse * diffuse);
-	float3 finalAmbient = diffuse * dirLight.ambient;
+	float3 finalColor = saturate(dot(dirLight.direction, normal.xyz) * dirLight.diffuse.xyz * diffuse.xyz);
+	float3 finalAmbient = diffuse.xyz * dirLight.ambient.xyz;
 
 	
 	for (int i = 0; i < LIGHT_COUNT; i++)

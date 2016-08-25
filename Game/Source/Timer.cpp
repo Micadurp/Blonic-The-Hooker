@@ -21,7 +21,7 @@ void Timer::UpdateTimer()
 	time += 0.01999f;
 }
 
-double Timer::GetTimer()
+int Timer::GetTimer()
 {
 	return (int)time;
 }

@@ -15,7 +15,7 @@ struct PS_OUT
 	float4 WorldPos : SV_Target2;
 };
 
-PS_OUT PS_main(VS_OUT input) : SV_TARGET
+PS_OUT PS_main(VS_OUT input)
 {
 	PS_OUT outPut;
 
@@ -23,7 +23,7 @@ PS_OUT PS_main(VS_OUT input) : SV_TARGET
 	float4 lightFalloff = float4(0.2f, 0.1f, 0.4f, 1);
 
 	//outPut.Diffuse = (((input.tex.y * darkFalloff) / lightFalloff) * float4(0.21f, 1, 1, 1));
-	outPut.Diffuse = txDiffuse.Sample(sampAni, input.tex) / float4(0.3f, 0.3f, 0.3f, 0.3f);
+	outPut.Diffuse = txDiffuse.Sample(sampAni, input.tex.xy) / float4(0.3f, 0.3f, 0.3f, 0.3f);
 	outPut.Normal = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	outPut.WorldPos = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	return outPut;

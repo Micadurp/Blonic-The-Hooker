@@ -211,11 +211,9 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	// Temporary convert to XMVECTOR
 	XMVECTOR temp_camPos = XMVectorSet(m_camPos.x, m_camPos.y, m_camPos.z, m_camPos.w);
-	XMVECTOR temp_camLook = XMVectorSet(m_camLook.x, m_camLook.y, m_camLook.z, m_camLook.w);
-	XMVECTOR temp_camUp = XMVectorSet(m_camUp.x, m_camUp.y, m_camUp.z, m_camUp.w);
 
 	// Align vectors and look at position according to mouse input
-	temp_camLook = XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), cameraRotationMatrix);
+	XMVECTOR temp_camLook = XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), cameraRotationMatrix);
 	temp_camLook = XMVector3Normalize(temp_camLook);
 
 	/*XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), cameraRotationMatrix));
@@ -228,7 +226,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 	XMStoreFloat4(&m_currentRight, XMVector3TransformCoord(XMLoadFloat4(&m_defaultRight), RotateYTempMatrix));
 	XMStoreFloat4(&m_currentForward, XMVector3TransformCoord(XMLoadFloat4(&m_defaultForward), RotateYTempMatrix));
 
-	temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
+	XMVECTOR temp_camUp = XMVector3Cross(XMLoadFloat4(&m_currentForward), XMLoadFloat4(&m_currentRight));
 
 	hookString->SetActive(false);
 
@@ -899,7 +897,6 @@ bool Player::TestIntersection(XMVECTOR * point, Model* _obj)
 	XMFLOAT4 direction, origin;
 	XMVECTOR rayOrigin, rayDirection;
 	bool intersect;
-	intersect = false;
 
 	// Get the inverse of the view matrix.
 	inverseView = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_viewMatrix)).r[2];
@@ -937,7 +934,6 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMA
 	XMFLOAT4 direction, origin;
 	XMVECTOR rayOrigin, rayDirection;
 	bool intersect;
-	intersect = false;
 
 	// Get the inverse of the view matrix.
 	inverseView = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_viewMatrix)).r[2];
@@ -1054,13 +1050,12 @@ bool Player::IsDead()
 bool Player::Win(Model * winZone)
 {
 	bool victory = false;
-	float dist = 10.0f;
 	XMVECTOR t;
 
 	for (size_t i = 0; i < winZone->GetPickingPoints()->size(); ++i)
 	{
 		t = XMLoadFloat4(&m_camPos) - XMLoadFloat3(&winZone->GetPickingPoints()->at(i));
-		dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+		float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 		
 		if (dist < 4.0f)
 		{

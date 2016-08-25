@@ -91,9 +91,6 @@ protected:
 
 	DirectX::XMFLOAT4X4 objMatrix;
 
-	//change
-	UINT32 vertexSize = sizeof(Vertex);
-
 	ID3D11Buffer* pixelShaderMaterialCB;
 
 

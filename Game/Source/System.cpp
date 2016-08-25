@@ -32,8 +32,6 @@ System::~System()
 
 bool System::Initialize()
 {
-	//Window Handeling////
-	int screenWidth, screenHeight;
 	bool result;
 
 	// Initialize the width and height of the screen to zero before sending the variables into the function.
@@ -81,6 +79,11 @@ bool System::Initialize()
 
 	wstring menuButtons[] = { L"menuBtn_newGame", L"menuBtn_howToPlay", L"menuBtn_Quit" };
 	result = menu->Initialize(direct3D->GetDevice(),3, hwnd, hinstance, L"menuBgrd_menu", menuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize main menu", L"Error", MB_OK);
+		return false;
+	}
 
 	pauseMenu = new Menu();
 	if (!pauseMenu)
@@ -90,7 +93,11 @@ bool System::Initialize()
 
 	wstring pauseMenuButtons[] = { L"menuBtn_resume", L"menuBtn_Quit" };
 	result = pauseMenu->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_pause", pauseMenuButtons, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
-
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize pause menu", L"Error", MB_OK);
+		return false;
+	}
 	
 	deathScreen = new Menu();
 	if (!deathScreen)
@@ -99,6 +106,11 @@ bool System::Initialize()
 	}
 
 	result = deathScreen->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_dead", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize death screen", L"Error", MB_OK);
+		return false;
+	}
 
 	winScreen = new Menu();
 	if (!winScreen)
@@ -107,6 +119,11 @@ bool System::Initialize()
 	}
 
 	result = winScreen->Initialize(direct3D->GetDevice(),1, hwnd, hinstance, L"menuBgrd_win", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize win screen", L"Error", MB_OK);
+		return false;
+	}
 
 	loadScreen = new Menu();
 	if (!loadScreen)
@@ -115,6 +132,11 @@ bool System::Initialize()
 	}
 
 	result = loadScreen->Initialize(direct3D->GetDevice(),2, hwnd, hinstance, L"menuBgrd_load", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize load screen", L"Error", MB_OK);
+		return false;
+	}
 
 	howToPlay = new Menu();
 	if (!howToPlay)
@@ -123,7 +145,11 @@ bool System::Initialize()
 	}
 
 	result = howToPlay->Initialize(direct3D->GetDevice(), 1, hwnd, hinstance, L"menuBgrd_howToPlay", nullptr, (float)screenWidth, (float)screenHeight, SCREEN_NEAR, SCREEN_DEPTH);
-
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize how to play screen", L"Error", MB_OK);
+		return false;
+	}
 	
 
 	return true;

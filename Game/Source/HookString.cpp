@@ -2,8 +2,6 @@
 
 HookString::HookString()
 {
-	point = new XMVECTOR();
-
 	hookStringGSCB = nullptr;
 }
 
@@ -17,8 +15,6 @@ bool HookString::Initialize(ID3D11Device * _device)
 	HRESULT result;
 
 	isActive = false;
-
-	vertexSize = sizeof(Vertex);
 	
 	//Model::Initialize(L"starParticle", _device);
 
@@ -104,7 +100,7 @@ void HookString::Render(Direct3D* _direct3D)
 	offset = 0;
 
 	// Set the vertex buffer to active in the input assembler so it can be rendered.
-	_direct3D->GetDeviceContext()->IASetVertexBuffers(0, 1, &meshVertexBuff, &vertexSize, &offset);
+	_direct3D->GetDeviceContext()->IASetVertexBuffers(0, 1, &meshVertexBuff, &stride, &offset);
 
 	// Set the index buffer to active in the input assembler so it can be rendered.
 	_direct3D->GetDeviceContext()->IASetIndexBuffer(meshIndexBuff, DXGI_FORMAT_R32_UINT, 0);

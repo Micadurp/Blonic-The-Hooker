@@ -12,7 +12,6 @@ class HookString:public Model
 {
 private:
 	bool isActive;
-	XMVECTOR * point;
 
 	struct GeometryShaderBuffer
 	{
