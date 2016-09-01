@@ -3,7 +3,6 @@
 
 GamePlay::GamePlay()
 {
-	player = nullptr;
 	lightManager = nullptr;
 
 }
@@ -20,12 +19,7 @@ void GamePlay::Shutdown()
 		models.pop_back();
 	}
 
-	if (player)
-	{
-		player->Shutdown();
-		delete player;
-		player = 0;
-	}
+	player.Shutdown();
 
 	if (lightManager)
 	{
@@ -39,13 +33,9 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 {
 	bool result;
 
-	player = new Player();
-	if (!player)
-	{
-		return false;
-	}
+	player = Player();
 
-	result = player->Initialize(_wndHandle, _hInstance, _device);
+	result = player.Initialize(_wndHandle, _hInstance, _device);
 	if (!result)
 	{
 		return false;
@@ -107,7 +97,7 @@ int GamePlay::Update(double time)
 		return 2;
 	}
 
-	state = player->Update(time, collidableGeometryPositions, collidableGeometryIndices, models);
+	state = player.Update(time, collidableGeometryPositions, collidableGeometryIndices, models);
 
 	for (size_t n = 0; n < models.size(); n++)
 	{
@@ -115,7 +105,7 @@ int GamePlay::Update(double time)
 	}
 
 
-	if (player->Win(models.back()))
+	if (player.Win(models.back()))
 	{
 		state = 3;
 	}
@@ -127,11 +117,11 @@ int GamePlay::Update(double time)
 
 void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
+	DirectX::XMMATRIX viewMatrix = XMLoadFloat4x4(&player.GetViewMatrix());
+	_direct3D->Render(models.at(0), viewMatrix);
+	_direct3D->Render(models.at(3), viewMatrix);
 
-	_direct3D->Render(models.at(0), XMLoadFloat4x4(&player->GetViewMatrix()));
-	_direct3D->Render(models.at(3), XMLoadFloat4x4(&player->GetViewMatrix()));
-
-	player->RenderRope(_direct3D);
+	player.RenderRope(_direct3D);
 
 	_direct3D->SetShader();
 	// Set lights used in deferred rendering
@@ -140,9 +130,9 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 void GamePlay::RenderHUD(Direct3D *_direct3D, TextClass* _timer)
 {
 	_direct3D->SetCrosshairShaders();
-	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player->GetCrosshairMatrix()));
+	_direct3D->SetVertexCBuffer(XMLoadFloat4x4(&player.GetCrosshairMatrix()));
 
-	player->Render(_direct3D);
+	player.Render(_direct3D);
 	_direct3D->TurnOnAlphaBlending();
 	_direct3D->SetCrosshairShaders();
 	_timer->Update(timer->GetTimer());
@@ -157,7 +147,7 @@ void GamePlay::RenderHUD(Direct3D *_direct3D, TextClass* _timer)
 
 int GamePlay::GameOver()
 {
-	if (player->IsDead())
+	if (player.IsDead())
 	{
 		return 2;
 	}

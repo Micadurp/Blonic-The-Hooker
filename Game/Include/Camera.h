@@ -16,7 +16,7 @@ protected:
 	XMFLOAT4 m_camLook;
 	XMFLOAT4 m_camUp;
 
-	void UpdateViewMatrix(XMFLOAT4 camPos, XMFLOAT4 camLook, XMFLOAT4 camUp);
+	void UpdateViewMatrix(const XMFLOAT4& camPos, const XMFLOAT4& camLook, const XMFLOAT4& camUp);
 
 public:
 	Camera();
@@ -24,13 +24,13 @@ public:
 
 	virtual bool Initialize();
 
-	void SetPosition(float _x, float _y, float _z);
-	XMFLOAT4 GetPosition();
+	void SetPosition(const float _x, const float _y, const float _z);
+	const XMFLOAT4& GetPosition() const;
 
-	virtual void Update(double time);
+	virtual void Update(const double time);
 
-	XMFLOAT4X4 GetViewMatrix();
-	XMFLOAT4 GetCamLook();
+	const XMFLOAT4X4& GetViewMatrix() const;
+	const XMFLOAT4& GetCamLook() const;
 };
 
 #endif

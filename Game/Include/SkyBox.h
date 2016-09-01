@@ -1,7 +1,8 @@
 #ifndef SKYBOX_H
 #define SKYBOX_H
 
-#include"Model.h"
+#include "Model.h"
+#include "Player.h"
 
 class SkyBox: public Model
 {
@@ -16,7 +17,7 @@ public:
 	~SkyBox();
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
-	void Update(Camera*);
+	void Update(const Player&);
 	void Shutdown();
 
 	void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);

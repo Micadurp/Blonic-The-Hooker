@@ -20,7 +20,7 @@ private:
 
 	std::vector< Model*> models;
 
-	Player* player;
+	Player player;
 
 	vector<XMFLOAT3> collidableGeometryPositions;
 	vector<DWORD> collidableGeometryIndices;

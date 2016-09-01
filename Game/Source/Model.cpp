@@ -1,4 +1,5 @@
-#include"Model.h"
+#include "Model.h"
+#include "Player.h"
 
 Model::Model()
 {
@@ -69,8 +70,6 @@ bool Model::Initialize(std::wstring _modelName, ID3D11Device* _device)
 	{
 		return false;
 	}
-
-
 	return true;
 }
 
@@ -113,9 +112,9 @@ void Model::Shutdown()
 	}
 }
 
-void Model::Update(Camera* camera)
+void Model::Update(const Player& _player)
 {
-
+	return;
 }
 
 void Model::Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState)

@@ -73,16 +73,16 @@ SkyBox::~SkyBox()
 {
 
 }
-void SkyBox::Update(Camera* camera)
+void SkyBox::Update(const Player& _player)
 {
 	XMMATRIX scale;
 	XMMATRIX translation;
 
-	XMLoadFloat4x4(&objMatrix) = XMMatrixIdentity();
 	scale = XMMatrixScaling(20, 20, 20);
-	translation = XMMatrixTranslation(XMVectorGetX(XMLoadFloat4(&camera->GetPosition())), XMVectorGetY(XMLoadFloat4(&camera->GetPosition())), XMVectorGetZ(XMLoadFloat4(&camera->GetPosition())));
 	
-	XMStoreFloat4x4(&objMatrix,scale * translation);
+	translation = DirectX::XMMatrixTranslationFromVector(XMLoadFloat4(&_player.GetPosition()));
+	
+	XMStoreFloat4x4(&objMatrix, scale * translation);
 }
 
 void SkyBox::Shutdown()

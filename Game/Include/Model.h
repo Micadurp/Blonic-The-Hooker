@@ -5,7 +5,6 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include "DDSTextureLoader.h"
-#include"Camera.h"
 
 #include <fstream>
 #include <istream>
@@ -13,6 +12,8 @@
 
 #include <iostream>
 #include <vector>
+
+class Player;
 
 using namespace DirectX;
 
@@ -93,6 +94,7 @@ protected:
 
 	ID3D11Buffer* pixelShaderMaterialCB;
 
+	Player* player;
 
 	std::vector<XMFLOAT3> pickingPoints;
 	std::vector<DWORD> pickingIndices;
@@ -106,7 +108,7 @@ public:
 	virtual bool Initialize(std::wstring _modelName, ID3D11Device* _device);
 	virtual void Shutdown();
 
-	virtual void Update(Camera*);
+	virtual void Update(const Player& _player);
 	virtual void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);
 	virtual void Model::Render(ID3D11DeviceContext* _deviceContext);
 

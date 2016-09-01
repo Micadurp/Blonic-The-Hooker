@@ -21,7 +21,7 @@
 #pragma once
 #endif
 
-//#define _WIN32_WINNT _WIN32_WINNT_WIN7 // Must be defined, look it up.
+#define _WIN32_WINNT _WIN32_WINNT_WIN7 // Defining as windows 7, needed for ddstextureloader to call things correctly
 
 /*
 #if defined(_XBOX_ONE) && defined(_TITLE) && MONOLITHIC
