@@ -47,25 +47,25 @@ bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_h
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(_sceneCollision, _device, &collidableGeometryPositions, &collidableGeometryIndices, false);
+	models.back()->Initialize(_sceneCollision, _device, collidableGeometryPositions, collidableGeometryIndices, false);
 
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(_crystall, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+	models.back()->Initialize(_crystall, _device, collidableGeometryPositions, collidableGeometryIndices, true);
 
 
 	models.push_back(new SkyBox());
-	models.back()->Initialize(L"sphere", _device);
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(1, 1, 1) * DirectX::XMMatrixTranslation(0, 0, 0));
+	models.back()->Initialize(L"sphere", _device);
 
 	models.push_back(new Model());
-	models.back()->Initialize(L"Timer", _device);
 	models.back()->SetObjMatrix(DirectX::XMMatrixScaling(0.20f, 0.20f, 1) * DirectX::XMMatrixTranslation(-0.80f, 0.80f, 0));
+	models.back()->Initialize(L"Timer", _device);
 
 	models.push_back(new Model());
 	models.back()->SetObjMatrix(DirectX::XMMatrixTranslation(0, 0, 0));
-	models.back()->Initialize(_winPlane, _device, &collidableGeometryPositions, &collidableGeometryIndices, true);
+	models.back()->Initialize(_winPlane, _device, collidableGeometryPositions, collidableGeometryIndices, true);
 
 #pragma region Create Scene Lights
 
@@ -118,8 +118,8 @@ int GamePlay::Update(double time)
 void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 {
 	DirectX::XMMATRIX viewMatrix = XMLoadFloat4x4(&player.GetViewMatrix());
-	_direct3D->Render(models.at(0), viewMatrix);
-	_direct3D->Render(models.at(3), viewMatrix);
+	_direct3D->Render(models.at(0), viewMatrix); //renders scene
+	_direct3D->Render(models.at(3), viewMatrix); //renders crystals
 
 	player.RenderRope(_direct3D);
 

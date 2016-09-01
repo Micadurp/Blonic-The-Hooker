@@ -16,7 +16,7 @@ public:
 	SkyBox();
 	~SkyBox();
 
-	bool Initialize(std::wstring _modelName, ID3D11Device* _device);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device) override;
 	void Update(const Player&);
 	void Shutdown();
 
