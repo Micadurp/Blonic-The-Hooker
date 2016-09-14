@@ -86,7 +86,6 @@ class Player : public Camera
 		bool IsDead();
 		bool Win(Model * winZone);
 	private:
-		void Move(double time);
 
 		// Collision Detection and Response Function Prototypes
 		XMVECTOR Collision(vector<XMFLOAT3>& vertPos,		// An array holding the polygon soup vertex positions

@@ -230,17 +230,17 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 
 	hookString->SetActive(false);
 
-	if (m_hookshot->active == 1)
+	if (m_hookshot->active == 1) // Using hookshot
 	{
 		hookString->SetActive(true);
 		HookToObj(XMLoadFloat3(&m_hookshot->point));
 		XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity));
 	}
-	else if (m_hookshot->active == 2)
+	else if (m_hookshot->active == 2) //Using grappling hook
 	{
 		hookString->SetActive(true);
 
-		if (!m_onGround) //not on ground and not using hookshot
+		if (!m_onGround) // Not on ground
 		{
 			// Set maximum falling velocity
 			if (m_velocity.y > -2.0f)
@@ -252,17 +252,21 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity) * 0.998f);
 
 		}
-		else
+		else // On ground
 		{
+			if (m_velocity.y < 0.0f)
+			{
+				m_velocity.y = 0.0f;
+			}
+
 			GrappleToObj(XMLoadFloat3(&m_hookshot->point), XMLoadFloat3(&m_velocity));
 			XMStoreFloat3(&m_velocity, XMLoadFloat3(&m_hookshot->velocity));
 			XMStoreFloat3(&m_velocity, m_position.x * XMLoadFloat4(&m_currentRight) + m_position.y * XMLoadFloat4(&m_currentForward) + (m_velocity.y - m_gravity.y) * temp_camUp);
 		}
 	}
-	else // hookshot not active
+	else // Hookshots not active
 	{
-		//On ground check
-		if (!m_onGround) //not on ground and not using hookshot
+		if (!m_onGround) //Not on ground
 		{
 			m_velocity.y -= m_gravity.y;
 			// Set maximum falling velocity
@@ -271,7 +275,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 				m_velocity.y = -2.0f;
 			}
 		}
-		else
+		else //On ground
 		{
 			if (m_velocity.y < 0.0f)
 			{
