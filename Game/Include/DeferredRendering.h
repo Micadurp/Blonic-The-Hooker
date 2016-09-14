@@ -5,6 +5,7 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include "Structs\Vertex.h"
 
 class DeferredRendering
 {
@@ -19,42 +20,6 @@ private:
 	ID3D11ShaderResourceView** shaderResourceView;
 
 	ID3D11ShaderResourceView ** clearRV;
-
-	struct Vertex
-	{
-		DirectX::XMFLOAT4 position;
-		DirectX::XMFLOAT2 texture;
-		DirectX::XMFLOAT3 normal;
-
-		Vertex()
-		{
-			position.x = 0;
-			position.y = 0;
-			position.z = 0;
-			position.w = 0;
-
-			texture.x = 0;
-			texture.y = 0;
-
-			normal.x = 0;
-			normal.y = 0;
-			normal.z = 0;
-		}
-		Vertex(float _x, float _y, float _z, float _U, float _V)
-		{
-			position.x = _x;
-			position.y = _y;
-			position.z = _z;
-			position.w = 1;
-
-			texture.x = _U;
-			texture.y = _V;
-
-			normal.x = 0;
-			normal.y = 0;
-			normal.z = 0;
-		}
-	};
 
 	struct VertexCB
 	{

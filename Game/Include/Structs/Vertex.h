@@ -23,6 +23,20 @@ struct Vertex
 		normal.y = 0;
 		normal.z = 0;
 	}
+	Vertex(float _x, float _y, float _z, float _U, float _V)
+	{
+		position.x = _x;
+		position.y = _y;
+		position.z = _z;
+		position.w = 1;
+
+		texture.x = _U;
+		texture.y = _V;
+
+		normal.x = 0;
+		normal.y = 0;
+		normal.z = 0;
+	}
 	Vertex(float _x, float _y, float _z, float _U, float _V, float _nX, float _nY, float _nZ)
 	{
 		position.x = _x;
