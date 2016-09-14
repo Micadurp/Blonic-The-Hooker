@@ -31,8 +31,6 @@ public:
 	GamePlay();
 	virtual ~GamePlay();
 
-	void Render(ID3D11DeviceContext* _deviceContext, RenderManager* _renderer, const DirectX::XMMATRIX &_projectionMatrix);
-
 	bool Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _scene, wstring _sceneCollision, wstring _crystal, wstring _winPlane, int _currentLevel);
 	void Shutdown();
 

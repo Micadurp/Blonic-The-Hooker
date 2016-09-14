@@ -9,7 +9,6 @@ class SkyBox: public Model
 private:
 	ID3D11VertexShader * skyVertexShader;
 	ID3D11PixelShader * skyPixelShader;
-
 	ID3D11DepthStencilState* depthStencilState;
 
 public:

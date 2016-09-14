@@ -127,6 +127,7 @@ void GamePlay::Render(Direct3D *_direct3D, TextClass* _timer)
 	// Set lights used in deferred rendering
 	lightManager->Render(_direct3D->GetDeviceContext());
 }
+
 void GamePlay::RenderHUD(Direct3D *_direct3D, TextClass* _timer)
 {
 	_direct3D->SetCrosshairShaders();

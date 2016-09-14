@@ -10,6 +10,7 @@ RenderManager::RenderManager()
 	basicModelGSCB = nullptr;
 	basicModelPSCB = nullptr;
 	defaultSampler = nullptr;
+	deferredRenderer = nullptr;
 }
 
 RenderManager::~RenderManager()
