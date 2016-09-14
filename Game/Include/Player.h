@@ -8,6 +8,10 @@
 #include "DirectXCollision.h"
 #include "HookString.h"
 
+#include "Structs\HookShot.h"
+#include "Structs\Triangle.h"
+#include "Structs\Ray.h"
+
 using namespace std;
 
 class Player : public Camera
@@ -29,24 +33,6 @@ class Player : public Camera
 			float nearestDistance;
 			XMVECTOR intersectionPoint;
 			int collisionRecursionDepth;
-		};
-
-		struct HookShot
-		{
-			XMFLOAT3 velocity;
-			XMFLOAT3 point;
-			float length;
-			float maxLength;
-			int active;
-		};
-
-		struct Triangle
-		{
-			XMVECTOR vertex0, vertex1, vertex2;
-		};
-		struct Ray
-		{
-			XMVECTOR point0, point1;
 		};
 
 		//float m_jumpVelocity;
