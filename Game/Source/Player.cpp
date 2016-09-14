@@ -890,43 +890,6 @@ bool Player::CheckHookState()
 	return false;
 }
 
-bool Player::TestIntersection(XMVECTOR * point, Model* _obj)
-{
-	XMMATRIX inverseWorldMatrix;
-	XMVECTOR inverseView;
-	XMFLOAT4 direction, origin;
-	XMVECTOR rayOrigin, rayDirection;
-	bool intersect;
-
-	// Get the inverse of the view matrix.
-	inverseView = XMMatrixInverse(NULL, XMLoadFloat4x4(&m_viewMatrix)).r[2];
-
-	// Calculate the direction of the picking ray in view space.
-	direction.x = XMVectorGetX(inverseView);
-	direction.y = XMVectorGetY(inverseView);
-	direction.z = XMVectorGetZ(inverseView);
-
-	// Get the origin of the picking ray which is the position of the camera.
-	origin = m_camPos;
-
-	// Now get the inverse of the translated world matrix.
-	inverseWorldMatrix = XMMatrixInverse(NULL, _obj->GetObjMatrix());
-
-	// Now transform the ray origin and the ray direction from view space to world space.
-	rayOrigin = XMVector3TransformCoord(XMLoadFloat4(&origin), inverseWorldMatrix);
-	rayDirection = XMVector3TransformNormal(XMLoadFloat4(&direction), inverseWorldMatrix);
-
-	// Normalize the ray direction.
-	rayDirection = XMVector3Normalize(rayDirection);
-
-	// Now perform the ray-sphere intersection test.
-	intersect = RaySphereIntersect(rayOrigin, rayDirection, 1.0f);
-
-	*point = _obj->GetObjMatrix().r[3];
-
-	return intersect;
-}
-
 bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMATRIX & objMatrix)
 {
 	XMMATRIX inverseWorldMatrix;
@@ -956,87 +919,13 @@ bool Player::TestIntersection(const Triangle & tri, XMVECTOR * point, const XMMA
 	// Normalize the ray direction.
 	rayDirection = XMVector3Normalize(rayDirection);
 
-	float r;
-	intersect = DirectX::TriangleTests::Intersects(rayOrigin, rayDirection, tri.vertex0, tri.vertex1, tri.vertex2, r);
-	*point = rayOrigin + r * rayDirection;
+	//Test intersection between the ray and the triangle
+	float distance;
+	intersect = DirectX::TriangleTests::Intersects(rayOrigin, rayDirection, tri.vertex0, tri.vertex1, tri.vertex2, distance);
+	*point = rayOrigin + distance * rayDirection;
 
 	return intersect;
 }
-
-bool Player::RaySphereIntersect(XMVECTOR _rayOrigin, XMVECTOR _rayDirection, float _radius)
-{
-	float a, b, c, discriminant;
-	XMFLOAT3 rayOrigin, rayDirection;
-
-	DirectX::XMStoreFloat3(&rayOrigin, _rayOrigin);
-	DirectX::XMStoreFloat3(&rayDirection, _rayDirection);
-
-	// Calculate the a, b, and c coefficients.
-	a = (rayDirection.x * rayDirection.x) + (rayDirection.y * rayDirection.y) + (rayDirection.z * rayDirection.z);
-	b = ((rayDirection.x * rayOrigin.x) + (rayDirection.y * rayOrigin.y) + (rayDirection.z * rayOrigin.z)) * 2.0f;
-	c = ((rayOrigin.x * rayOrigin.x) + (rayOrigin.y * rayOrigin.y) + (rayOrigin.z * rayOrigin.z)) - (_radius * _radius);
-
-	// Find the discriminant.
-	discriminant = (b * b) - (4 * a * c);
-
-	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
-	if (discriminant < 0.0f)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool Player::RayTriangleIntersect(const Ray & ray, const Triangle & tri, XMVECTOR * point)
-{
-	XMVECTOR  u, v, n;              // triangle vectors
-	XMVECTOR  dir, w0, w;           // ray vectors
-	float     r, a, b;              // params to calc ray-plane intersect
-	*point = XMVectorSet(0, 0, 0, 0);
-	// get triangle edge vectors and plane normal
-	u = tri.vertex1 - tri.vertex0;
-	v = tri.vertex2 - tri.vertex0;
-	n = u * v;              // cross product
-
-	dir = ray.point1 - ray.point0;              // ray direction vector
-	w0 = ray.point0 - tri.vertex0;
-	XMStoreFloat(&a, -XMVector3Dot(n, w0));
-	XMStoreFloat(&b, XMVector3Dot(n, dir));
-	if (fabs(b) <= 0) {     // ray is  parallel to triangle plane       does not check if line is inside the plane
-		return false;              // ray disjoint from plane
-	}
-
-	// get intersect point of ray with triangle plane
-	r = a / b;
-	if (r < 0.0)                    // ray goes away from triangle
-		return false;                   // => no intersect
-	// for a segment, also test if (r > 1.0) => no intersect
-
-	*point = ray.point0 + r * dir;            // intersect point of ray and plane
-
-	// is I inside T?
-	float    uu, uv, vv, wu, wv, D;
-	XMStoreFloat(&uu, XMVector3Dot(u, u));
-	XMStoreFloat(&uv, XMVector3Dot(u, v));
-	XMStoreFloat(&vv, XMVector3Dot(v, v));
-	w = *point - tri.vertex0;
-	XMStoreFloat(&wu, XMVector3Dot(w, u));
-	XMStoreFloat(&wv, XMVector3Dot(w, v));
-	D = uv * uv - uu * vv;
-	
-	// get and test parametric coords
-	float s, t;
-	s = (uv * wv - vv * wu) / D;
-	if (s <= 0.0 )         // I is outside T
-		return false;
-	t = (uv * wu - uu * wv) / D;
-	if (t <= 0.0 || (s + t) >= 1.0)  // I is outside T
-		return false;
-
-	return true;                       // I is in T
-}
-
 
 bool Player::IsDead()
 {
