@@ -8,7 +8,7 @@
 
 #include <dinput.h>
 #include <DirectXMath.h>
-#include "InputStructure.h"
+#include "Structs\InputStructure.h"
 
 using namespace DirectX;
 

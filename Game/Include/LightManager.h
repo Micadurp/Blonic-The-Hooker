@@ -3,7 +3,7 @@
 
 #include <d3d11.h>
 #include <ctime>
-#include "LightStructure.h"
+#include "Structs\LightStructure.h"
 
 using namespace std;
 
