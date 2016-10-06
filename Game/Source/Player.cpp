@@ -115,7 +115,7 @@ void Player::Shutdown()
 }
 
 
-int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices, vector<Model*> models)
+int Player::Update(double time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<uint32_t> collidableGeometryIndices, vector<Model*> models)
 {
 
 	m_lastKeyboard = m_input->GetKeyboardState();
@@ -175,9 +175,9 @@ XMFLOAT4X4 Player::GetCrosshairMatrix()
 }
 
 
-void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPositions, std::vector<uint32_t> collidableGeometryIndices)
 {
-	float speed = 15.0f * (float)_time;
+	const float speed = 15.0f * (float)_time;
 
 	// Change camera position according to keyboard inputs
 	if (m_keyboard.key_a_pressed)
@@ -308,7 +308,7 @@ void Player::Move(double _time, std::vector<XMFLOAT3> collidableGeometryPosition
 }
 
 
-XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices, const XMVECTOR &velocity)
+XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<uint32_t>& _indices, const XMVECTOR &velocity)
 {
 	CollisionPacket collisionPack;
 	collisionPack.ellipsoidSpace = XMVectorSet(1.0f, 3.0f, 1.0f, 0.0f);
@@ -343,9 +343,9 @@ XMVECTOR Player::Collision(vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices, 
 }
 
 
-XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertPos, vector<DWORD>& _indices)
+XMVECTOR Player::CollideWithWorld(CollisionPacket& _cP, vector<XMFLOAT3>& _vertPos, vector<uint32_t>& _indices)
 {
-	float veryCloseDistance = 0.005f;
+	const float veryCloseDistance = 0.005f;
 
 	if (_cP.collisionRecursionDepth > 5)
 		return _cP.e_Position;
@@ -691,19 +691,19 @@ bool Player::CheckPointInTriangle(const XMVECTOR& _point, const XMVECTOR& _triV1
 }
 
 // This function solves the quadratic eqation "At^2 + Bt + C = 0"
-bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _root)
+bool Player::GetLowestRoot(const float _a, const float _b, const float _c, const float _maxR, float * _root)
 {
 	// Check if a solution exists
-	float determinant = _b*_b - 4.0f*_a*_c;
+	const float determinant = _b*_b - 4.0f*_a*_c;
 	// If determinant is negative it means no solutions.
 	if (determinant < 0.0f) return false;
 	// calculate the two roots
-	float sqrtD = sqrt(determinant);
+	const float sqrtD = sqrt(determinant);
 	float r1 = (-_b - sqrtD) / (2 * _a);
 	float r2 = (-_b + sqrtD) / (2 * _a);
 	// Sort so x1 <= x2
 	if (r1 > r2) {
-		float temp = r2;
+		const float temp = r2;
 		r2 = r1;
 		r1 = temp;
 	}
@@ -723,24 +723,28 @@ bool Player::GetLowestRoot(float _a, float _b, float _c, float _maxR, float* _ro
 	return false;
 }
 
-void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices)
+void Player::ChangeHookState(const std::vector<Model*> models, const std::vector<XMFLOAT3> collidableGeometryPositions, const std::vector<uint32_t> collidableGeometryIndices)
 {
-	MouseStateStruct mousestate = m_input->GetMouseState();
+	const MouseStateStruct mousestate = m_input->GetMouseState();
 	Triangle tri;
 	XMVECTOR point;
 	float shortestLength = 1000;
+	const size_t modelSize = models.size();
 
 	//look at crystal check + blocked by stuff check
-	for (size_t n = 1; n < models.size()-1; n++)
+	for (size_t n = 1; n < modelSize-1; n++)
 	{
-		for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+		const std::vector<XMFLOAT3> const * pickingPoints = models.at(n)->GetPickingPoints();
+		const std::vector<uint32_t> const * pickingIndicies = models.at(n)->GetPickingIndicies();
+		const size_t pickingIndiciesSize = pickingIndicies->size();
+		for (size_t i = 0; i < pickingIndiciesSize; i += 3)
 		{
-			tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
-			tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
-			tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+			tri.vertex0 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i)));
+			tri.vertex1 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 1)));
+			tri.vertex2 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 2)));
 			if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 			{
-				XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+				const XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 				float length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 				if (shortestLength > length)
 				{
@@ -756,14 +760,15 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 	{
 		m_lookAtCrystal = true;
 
-		for (size_t i = 0; i < collidableGeometryIndices.size(); i += 3)
+		const size_t collidableGeometryIndicesSize = collidableGeometryIndices.size();
+		for (size_t i = 0; i < collidableGeometryIndicesSize; i += 3)
 		{
 			tri.vertex0 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i)));
 			tri.vertex1 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 1)));
 			tri.vertex2 = XMLoadFloat3(&collidableGeometryPositions.at(collidableGeometryIndices.at(i + 2)));
 			if (TestIntersection(tri, &point, XMMatrixIdentity()))
 			{
-				XMVECTOR b = XMLoadFloat4(&m_camPos) - point;
+				const XMVECTOR b = XMLoadFloat4(&m_camPos) - point;
 				float block = sqrt(pow(XMVectorGetX(b), 2) + pow(XMVectorGetY(b), 2) + pow(XMVectorGetZ(b), 2));
 				if (shortestLength > block)
 				{
@@ -781,16 +786,20 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (size_t n = 1; n < models.size()-1; n++)
+			for (size_t n = 1; n < modelSize-1; n++)
 			{
-				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+				const std::vector<XMFLOAT3> const * pickingPoints = models.at(n)->GetPickingPoints();
+				const std::vector<uint32_t> const * pickingIndicies = models.at(n)->GetPickingIndicies();
+
+				const size_t pickingIndiciesSize = pickingIndicies->size();
+				for (size_t i = 0; i < pickingIndiciesSize; i += 3)
 				{
-					tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
-					tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
-					tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+					tri.vertex0 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i)));
+					tri.vertex1 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 1)));
+					tri.vertex2 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 2)));
 					if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 					{
-						XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+						const XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 						m_hookshot->length = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 						if (m_hookshot->length <= m_hookshot->maxLength)
 						{
@@ -810,16 +819,20 @@ void Player::ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableG
 		}
 		if (m_lookAtCrystal)
 		{
-			for (size_t n = 1; n < models.size()-1; n++)
+			for (size_t n = 1; n < modelSize-1; n++)
 			{
-				for (size_t i = 0; i < models.at(n)->GetPickingIndicies()->size(); i += 3)
+				const std::vector<XMFLOAT3> const * pickingPoints = models.at(n)->GetPickingPoints();
+				const std::vector<uint32_t> const * pickingIndicies = models.at(n)->GetPickingIndicies();
+
+				const size_t pickingIndiciesSize = pickingIndicies->size();
+				for (size_t i = 0; i < pickingIndiciesSize; i += 3)
 				{
-					tri.vertex0 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i)));
-					tri.vertex1 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 1)));
-					tri.vertex2 = XMLoadFloat3(&models.at(n)->GetPickingPoints()->at(models.at(n)->GetPickingIndicies()->at(i + 2)));
+					tri.vertex0 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i)));
+					tri.vertex1 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 1)));
+					tri.vertex2 = XMLoadFloat3(&pickingPoints->at(pickingIndicies->at(i + 2)));
 					if (TestIntersection(tri, &point, models.at(n)->GetObjMatrix()))
 					{
-						XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
+						const XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 						m_hookshot->length = (sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2))) * 0.6f;
 						if (m_hookshot->length <= m_hookshot->maxLength)
 						{
@@ -852,7 +865,7 @@ void Player::GrappleToObj(const XMVECTOR &point, XMVECTOR &velocity)
 {
 	XMVECTOR t = XMLoadFloat4(&m_camPos) - point;
 
-	float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+	const float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 	if (dist > m_hookshot->length)
 	{
 		//mVelocity += (1000 * moveVec / mMass) * TickSec;
@@ -948,7 +961,7 @@ bool Player::Win(Model * winZone)
 	for (size_t i = 0; i < winZone->GetPickingPoints()->size(); ++i)
 	{
 		t = XMLoadFloat4(&m_camPos) - XMLoadFloat3(&winZone->GetPickingPoints()->at(i));
-		float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
+		const float dist = sqrt(pow(XMVectorGetX(t), 2) + pow(XMVectorGetY(t), 2) + pow(XMVectorGetZ(t), 2));
 		
 		if (dist < 4.0f)
 		{

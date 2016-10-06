@@ -17,11 +17,11 @@ bool ObjLoader::LoadObj(
 	ID3D11Buffer*& meshIndexBuff, 
 	int& indexCount,
 	std::vector<DirectX::XMFLOAT3>& pickingPoints,
-	std::vector<DWORD>& pickingIndices,
+	std::vector<uint32_t>& pickingIndices,
 	DirectX::XMFLOAT4X4& objMatrix,
 	std::vector<ModelMaterial>& modelMats, 
 	std::vector<DirectX::XMFLOAT3> *collidableGeometryPositions, 
-	std::vector<DWORD> *collidableGeometryIndices, 
+	std::vector<uint32_t> *collidableGeometryIndices, 
 	bool pickable
 )
 {
@@ -32,7 +32,7 @@ bool ObjLoader::LoadObj(
 	std::wstring meshMatLib;					//String to hold our obj material library filename
 
 												//Arrays to store our model's information
-	std::vector<DWORD> indices;
+	std::vector<uint32_t> indices;
 	std::vector<DirectX::XMFLOAT3> vertPos;
 	std::vector<DirectX::XMFLOAT3> vertNorm;
 	std::vector<DirectX::XMFLOAT2> vertTexCoord;

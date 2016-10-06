@@ -22,12 +22,8 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	virtual bool Initialize();
-
 	void SetPosition(const float _x, const float _y, const float _z);
 	const XMFLOAT4& GetPosition() const;
-
-	virtual void Update(const double time);
 
 	const XMFLOAT4X4& GetViewMatrix() const;
 	const XMFLOAT4& GetCamLook() const;

@@ -27,11 +27,11 @@ public:
 		ID3D11Buffer*& meshIndexBuff,
 		int& indexCount,
 		std::vector<DirectX::XMFLOAT3>& pickingPoints,
-		std::vector<DWORD>& pickingIndices,
+		std::vector<uint32_t>& pickingIndices,
 		DirectX::XMFLOAT4X4& objMatrix,
 		std::vector<ModelMaterial>& modelMats,
 		std::vector<DirectX::XMFLOAT3>* collidableGeometryPositions = nullptr, 
-		std::vector<DWORD>* collidableGeometryIndices = nullptr, 
+		std::vector<uint32_t>* collidableGeometryIndices = nullptr,
 		bool pickable = false
 	);
 

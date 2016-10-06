@@ -23,7 +23,7 @@ private:
 	Player player;
 
 	vector<XMFLOAT3> collidableGeometryPositions;
-	vector<DWORD> collidableGeometryIndices;
+	vector<uint32_t> collidableGeometryIndices;
 
 	Timer * timer;
 	

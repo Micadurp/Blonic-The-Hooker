@@ -43,14 +43,14 @@ protected:
 	Player* player;
 
 	std::vector<XMFLOAT3> pickingPoints;
-	std::vector<DWORD> pickingIndices;
+	std::vector<uint32_t> pickingIndices;
 public:
 	Model();
 	virtual ~Model();
 
 	virtual bool Initialize(std::wstring _modelName, ID3D11Device* _device);
-	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3>& collidableGeometryPositions, std::vector<DWORD>& collidableGeometryIndices);
-	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3>& collidableGeometryPositions, std::vector<DWORD>& collidableGeometryIndices, bool pickable);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3>& collidableGeometryPositions, std::vector<uint32_t>& collidableGeometryIndices);
+	bool Initialize(std::wstring _modelName, ID3D11Device* _device, std::vector<XMFLOAT3>& collidableGeometryPositions, std::vector<uint32_t>& collidableGeometryIndices, bool pickable);
 	
 	virtual void Shutdown();
 
@@ -67,6 +67,6 @@ public:
 
 
 	std::vector<XMFLOAT3>* GetPickingPoints();
-	std::vector<DWORD>* GetPickingIndicies();
+	std::vector<uint32_t>* GetPickingIndicies();
 };
 #endif

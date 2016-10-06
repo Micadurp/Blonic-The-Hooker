@@ -48,7 +48,7 @@ bool Model::Initialize(std::wstring _modelName,
 bool Model::Initialize(std::wstring _modelName,
 	ID3D11Device* _device,
 	std::vector<XMFLOAT3>& _collidableGeometryPositions,
-	std::vector<DWORD>& _collidableGeometryIndices
+	std::vector<uint32_t>& _collidableGeometryIndices
 )
 {
 	bool result;
@@ -81,7 +81,7 @@ bool Model::Initialize(std::wstring _modelName,
 bool Model::Initialize(std::wstring _modelName, 
 	ID3D11Device* _device, 
 	std::vector<XMFLOAT3>& _collidableGeometryPositions, 
-	std::vector<DWORD>& _collidableGeometryIndices, 
+	std::vector<uint32_t>& _collidableGeometryIndices,
 	bool _pickable)
 {
 	bool result;
@@ -276,7 +276,7 @@ std::vector<XMFLOAT3>* Model::GetPickingPoints()
 	return &pickingPoints;
 }
 
-std::vector<DWORD>* Model::GetPickingIndicies()
+std::vector<uint32_t>* Model::GetPickingIndicies()
 {
 
 	return &pickingIndices;

@@ -11,30 +11,13 @@
 #include "Structs\HookShot.h"
 #include "Structs\Triangle.h"
 #include "Structs\Ray.h"
+#include "Structs\CollisionPacket.h"
 
 using namespace std;
 
 class Player : public Camera
 {
 	private:
-		struct CollisionPacket{
-			// Information about ellipsoid (in world space)
-			XMVECTOR ellipsoidSpace;
-			XMVECTOR w_Position;
-			XMVECTOR w_Velocity;
-
-			// Information about ellipsoid (in ellipsoid space)
-			XMVECTOR e_Position;
-			XMVECTOR e_Velocity;
-			XMVECTOR e_normalizedVelocity;
-
-			// Collision Information
-			bool foundCollision;
-			float nearestDistance;
-			XMVECTOR intersectionPoint;
-			int collisionRecursionDepth;
-		};
-
 		//float m_jumpVelocity;
 		//bool m_isJumping;
 
@@ -73,15 +56,15 @@ class Player : public Camera
 		bool Initialize(HWND &_wndHandle, HINSTANCE &_hInstance, ID3D11Device* _device);
 		void Shutdown();
 
-		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices, vector<Model*> models);
-		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<DWORD> collidableGeometryIndices);
+		int Update(double time, vector<XMFLOAT3> collidableGeometryPositions, std::vector<uint32_t> collidableGeometryIndices, vector<Model*> models);
+		void Move(double time, vector<XMFLOAT3> collidableGeometryPositions, vector<uint32_t> collidableGeometryIndices);
 
 		void Render(Direct3D * _direct3D);
 		void RenderRope(Direct3D * _direct3D);
 
 		XMFLOAT4X4 GetCrosshairMatrix();
 
-		void ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableGeometryPositions, std::vector<DWORD> collidableGeometryIndices);
+		void ChangeHookState(vector<Model*> models, vector<XMFLOAT3> collidableGeometryPositions, std::vector<uint32_t> collidableGeometryIndices);
 
 		bool IsDead();
 		bool Win(Model * winZone);
@@ -89,13 +72,13 @@ class Player : public Camera
 
 		// Collision Detection and Response Function Prototypes
 		XMVECTOR Collision(vector<XMFLOAT3>& vertPos,		// An array holding the polygon soup vertex positions
-			vector<DWORD>& indices,							// An array holding the polygon soup indices (triangles)
+			vector<uint32_t>& indices,							// An array holding the polygon soup indices (triangles)
 			const XMVECTOR &velocity);
 			
 
 		XMVECTOR CollideWithWorld(CollisionPacket& cP,			// Same arguments as the above function
 			vector<XMFLOAT3>& vertPos,
-			vector<DWORD>& indices);
+			vector<uint32_t>& indices);
 
 		bool SphereCollidingWithTriangle(CollisionPacket& cP,	// Pointer to a CollisionPacket object	
 			XMVECTOR &p0,										// First vertex position of triangle
