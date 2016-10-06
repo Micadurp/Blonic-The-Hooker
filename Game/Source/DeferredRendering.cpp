@@ -2,6 +2,13 @@
 
 DeferredRendering::DeferredRendering()
 {
+	meshVertBuff = nullptr;
+	indexBuffer = nullptr;
+	renderTargetView = nullptr;
+	shaderResourceView = nullptr;
+	clearRV = nullptr;
+	deferredPixelShader = nullptr;
+	deferredCB = nullptr;
 }
 
 DeferredRendering::~DeferredRendering()
@@ -141,11 +148,11 @@ void DeferredRendering::Shutdown()
 		meshVertBuff = 0;
 	}
 
-	//if (indexBuffer)
-	//{
-	//	indexBuffer->Release();
-	//	indexBuffer = 0;
-	//}
+	if (indexBuffer)
+	{
+		indexBuffer->Release();
+		indexBuffer = 0;
+	}
 
 	if (renderTargetView)
 	{

@@ -97,7 +97,6 @@ void Player::Shutdown()
 		m_crosshair = 0;
 	}
 
-
 	if (hookString)
 	{
 		hookString->Shutdown();

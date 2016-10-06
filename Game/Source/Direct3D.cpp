@@ -3,7 +3,7 @@
 
 Direct3D::Direct3D()
 {
-
+	device10 = nullptr;
 	depthStencilView = 0;
 }
 
@@ -470,6 +470,12 @@ void Direct3D::Shutdown()
 	{
 		device->Release();
 		device = 0;
+	}
+
+	if (device10)
+	{
+		device10->Release();
+		device10 = 0;
 	}
 
 	if (swapChain)

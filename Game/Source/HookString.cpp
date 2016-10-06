@@ -60,6 +60,15 @@ bool HookString::Initialize(ID3D11Device * _device)
 	return true;
 }
 
+void HookString::Shutdown()
+{
+	if (hookStringGSCB)
+	{
+		delete hookStringGSCB;
+		hookStringGSCB = 0;
+	}
+}
+
 void HookString::Update(Direct3D* _direct3D,XMMATRIX * viewMatrix, XMVECTOR * _playerPos, XMVECTOR * _target)
 {
 //	HRESULT result;

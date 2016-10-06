@@ -8,12 +8,12 @@ Model::Model()
 	meshVertexBuff = nullptr;
 	meshIndexBuff = nullptr;
 	pixelShaderMaterialCB = nullptr;
+	textureShaderResource = nullptr;
 	indexCount = 0;
 }
 
 Model::~Model()
 {
-
 }
 
 bool Model::Initialize(std::wstring _modelName,
@@ -238,13 +238,11 @@ bool Model::CreateShaders(ID3D11Device* _device)
 	materialSubResource.SysMemPitch = 0;
 	materialSubResource.SysMemSlicePitch = 0;
 
-
 	materialDesc.ByteWidth = sizeof(Material);
 	materialDesc.Usage = D3D11_USAGE_DEFAULT;
 	materialDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	materialDesc.MiscFlags = 0;
 	materialDesc.StructureByteStride = 0;
-
 
 	HRESULT hr = _device->CreateBuffer(&materialDesc, &materialSubResource, &pixelShaderMaterialCB);
 
@@ -278,6 +276,5 @@ std::vector<XMFLOAT3>* Model::GetPickingPoints()
 
 std::vector<uint32_t>* Model::GetPickingIndicies()
 {
-
 	return &pickingIndices;
 }

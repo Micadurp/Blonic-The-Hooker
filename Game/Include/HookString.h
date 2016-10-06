@@ -27,6 +27,8 @@ public:
 
 	bool Initialize(ID3D11Device *);
 
+	void Shutdown() override;
+
 	void Update(Direct3D* _direct3D,XMMATRIX * , XMVECTOR * _playerPos, XMVECTOR * _target);
 
 	void Render(Direct3D* _direct3D);
