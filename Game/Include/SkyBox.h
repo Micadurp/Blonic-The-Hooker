@@ -17,7 +17,7 @@ public:
 
 	bool Initialize(std::wstring _modelName, ID3D11Device* _device) override;
 	void Update(const Player&);
-	void Shutdown();
+	void Shutdown() override;
 
 	void Render(ID3D11DeviceContext* _deviceContext, ID3D11DepthStencilState * _depthState);
 };

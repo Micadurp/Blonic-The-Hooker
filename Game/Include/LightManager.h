@@ -26,7 +26,7 @@ private:
 
 public:
 	LightManager();
-	~LightManager();
+	virtual ~LightManager();
 
 	bool Initialize(ID3D11Device* _device, int _currentLevel);
 

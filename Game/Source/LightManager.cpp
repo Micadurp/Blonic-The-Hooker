@@ -167,23 +167,26 @@ bool LightManager::Initialize(ID3D11Device* _device, int _currentLevel)
 		return false;
 	}
 
-
-
 	return true;
 }
 
 void LightManager::ShutDown()
 {
+
 	if (lightBufferObj.lights)
 	{
 		delete lightBufferObj.lights;
-		lightBufferObj.lights = nullptr;
+		lightBufferObj.lights = 0;
 	}
 
 	if (lightBuffer)
 	{
 		lightBuffer[0]->Release();
+		lightBuffer[0] = 0;
 		lightBuffer[1]->Release();
+		lightBuffer[1] = 0;
+		delete lightBuffer;
+		lightBuffer = 0;
 	}
 }
 

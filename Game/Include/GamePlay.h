@@ -16,8 +16,6 @@ class GamePlay
 private:
 	LightManager* lightManager;
 
-	RenderManager* renderer;
-
 	std::vector< Model*> models;
 
 	Player player;

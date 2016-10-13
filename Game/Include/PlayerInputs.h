@@ -38,6 +38,7 @@ class PlayerInputs
 		~PlayerInputs();
 
 		bool Initialize(HWND &wndHandle, HINSTANCE &hInstance);
+		void ShutDown();
 		void Update();
 
 		KeyboardStateStruct GetKeyboardState() const;
@@ -45,8 +46,6 @@ class PlayerInputs
 
 		bool IsEscapePressed() const;
 		bool LeftMouseClick() const;
-
-		void ReleaseCOM();
 };
 
 #endif

@@ -12,6 +12,13 @@ GamePlay::~GamePlay()
 }
 void GamePlay::Shutdown()
 {
+	if (lightManager)
+	{
+		lightManager->ShutDown();
+		delete lightManager;
+		lightManager = 0;
+	}
+
 	while (!models.empty())
 	{
 		models.back()->Shutdown();
@@ -21,20 +28,19 @@ void GamePlay::Shutdown()
 
 	player.Shutdown();
 
-	if (lightManager)
+	if (timer)
 	{
-		lightManager->ShutDown();
-		delete lightManager;
+		delete timer;
+		timer = 0;
 	}
+
 }
 
 
 bool GamePlay::Initialize(ID3D11Device* _device, HWND &_wndHandle, HINSTANCE &_hInstance, wstring _scene, wstring _sceneCollision, wstring _crystall, wstring _winPlane, int _currentLevel)
 {
 	bool result;
-
-	player = Player();
-
+	
 	result = player.Initialize(_wndHandle, _hInstance, _device);
 	if (!result)
 	{

@@ -78,18 +78,6 @@ bool Player::Initialize(HWND &wndHandle, HINSTANCE &hInstance, ID3D11Device* _de
 
 void Player::Shutdown()
 {
-	if (m_hookshot)
-	{
-		delete m_hookshot;
-		m_hookshot = 0;
-	}
-
-	if (m_input)
-	{
-		delete m_input;
-		m_input = 0;
-	}
-
 	if (m_crosshair)
 	{
 		m_crosshair->Shutdown();
@@ -97,19 +85,31 @@ void Player::Shutdown()
 		m_crosshair = 0;
 	}
 
-	if (hookString)
-	{
-		hookString->Shutdown();
-		delete hookString;
-		hookString = 0;
-	}
-
 	if (m_crosshair2)
 	{
 		m_crosshair2->Shutdown();
 		delete m_crosshair2;
 		m_crosshair2 = 0;
+	}
 
+	if (m_input)
+	{
+		m_input->ShutDown();
+		delete m_input;
+		m_input = 0;
+	}
+
+	if (m_hookshot)
+	{
+		delete m_hookshot;
+		m_hookshot = 0;
+	}
+
+	if (hookString)
+	{
+		hookString->Shutdown();
+		delete hookString;
+		hookString = 0;
 	}
 }
 

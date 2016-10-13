@@ -71,6 +71,27 @@ bool PlayerInputs::Initialize(HWND &wndHandle, HINSTANCE &hInstance)
 	return true;
 }
 
+void PlayerInputs::ShutDown()
+{
+	if (m_keyboard)
+	{
+		m_keyboard->Unacquire();
+		m_keyboard = 0;
+	}
+
+	if (m_mouse)
+	{
+		m_mouse->Unacquire();
+		m_mouse = 0;
+	}
+
+	if (m_directInput)
+	{
+		m_directInput->Release();
+		m_directInput = 0;
+	}
+}
+
 void PlayerInputs::Update()
 {
 	DIMOUSESTATE mouseCurrentState;
@@ -234,11 +255,4 @@ bool PlayerInputs::IsEscapePressed() const
 bool PlayerInputs::LeftMouseClick() const
 {
 	return m_isMousePressed;
-}
-
-void PlayerInputs::ReleaseCOM()
-{
-	m_keyboard->Unacquire();
-	m_mouse->Unacquire();
-	m_directInput->Release();
 }

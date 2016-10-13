@@ -62,6 +62,7 @@ bool HookString::Initialize(ID3D11Device * _device)
 
 void HookString::Shutdown()
 {
+	Model::Shutdown();
 	if (hookStringGSCB)
 	{
 		hookStringGSCB->Release();

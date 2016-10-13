@@ -139,6 +139,12 @@ void Model::Shutdown()
 		}
 	}
 
+	if (textureShaderResource)
+	{
+		textureShaderResource->Release();
+		textureShaderResource = 0;
+	}
+
 	if (normalShaderResource)
 	{
 		normalShaderResource->Release();
