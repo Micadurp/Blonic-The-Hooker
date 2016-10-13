@@ -213,6 +213,13 @@ void System::Shutdown()
 		direct3D = 0;
 	}
 
+	if (timer)
+	{
+		timer->ShutDown();
+		delete timer;
+		timer = 0;
+	}
+
 	// Shutdown the window.
 	ShutdownWindows();
 }

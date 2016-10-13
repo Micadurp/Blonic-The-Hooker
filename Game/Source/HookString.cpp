@@ -64,7 +64,7 @@ void HookString::Shutdown()
 {
 	if (hookStringGSCB)
 	{
-		delete hookStringGSCB;
+		hookStringGSCB->Release();
 		hookStringGSCB = 0;
 	}
 }

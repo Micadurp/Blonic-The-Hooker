@@ -53,7 +53,6 @@ class TextClass
 		IDXGIKeyedMutex *keyedMutex10;
 		ID2D1RenderTarget *d2dRenderTarget;
 		ID2D1SolidColorBrush *brush;
-		ID3D11Texture2D *backBuffer11;
 		ID3D11Texture2D *sharedTex11;
 		ID3D11Buffer *d2dVertBuffer;
 		ID3D11Buffer *d2dIndexBuffer;
@@ -73,7 +72,7 @@ class TextClass
 
 		void Update(double _time);
 		void Render(ID3D11DeviceContext* _deviceContext);
-		void shutDown();
+		void ShutDown();
 
 	private:
 		bool InitializeD2DSquare(ID3D11Device* _device);

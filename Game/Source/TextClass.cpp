@@ -189,71 +189,6 @@ bool TextClass::Initialize(ID3D11Device* _device, IDXGIAdapter1* _adapter, int _
 	return true;
 }
 
-bool TextClass::InitializeD2DSquare(ID3D11Device* _device)
-{
-	HRESULT result;
-	D3D11_BUFFER_DESC indexBufferDesc;
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	D3D11_SUBRESOURCE_DATA iinitData;
-	D3D11_SUBRESOURCE_DATA vertexBufferData;
-
-
-
-	VertexType v[] = 
-	{
-		VertexType(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
-		VertexType(-1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
-		VertexType( 1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
-		VertexType( 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f)
-	};
-
-	DWORD indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(DWORD) * 2 * 3;
-	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.CPUAccessFlags = 0;
-	indexBufferDesc.MiscFlags = 0;
-
-	ZeroMemory(&iinitData, sizeof(D3D11_SUBRESOURCE_DATA));
-	iinitData.pSysMem = indices;
-
-	result = _device->CreateBuffer(&indexBufferDesc, &iinitData, &d2dIndexBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * 4;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-
-	ZeroMemory(&vertexBufferData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vertexBufferData.pSysMem = v;
-
-	result = _device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &d2dVertBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	result = _device->CreateShaderResourceView(sharedTex11, NULL, &d2dTexture);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
-	return true;
-}
-
 void TextClass::Update(double _time)
 {
 	// Create our string
@@ -324,4 +259,144 @@ void TextClass::Render(ID3D11DeviceContext* _deviceContext)
 	
 	//Draw the second cube
 	_deviceContext->DrawIndexed(6, 0, 0);
+}
+
+void TextClass::ShutDown()
+{
+	if (textCBuffer)
+	{
+		textCBuffer->Release();
+		textCBuffer = 0;
+	}
+
+	if (d3d101Device)
+	{
+		d3d101Device->Release();
+		d3d101Device = 0;
+	}
+
+	if (keyedMutex11)
+	{
+		keyedMutex11->Release();
+		keyedMutex11 = 0;
+	}
+
+	if (keyedMutex10)
+	{
+		keyedMutex10->Release();
+		keyedMutex10 = 0;
+	}
+
+	if (d2dRenderTarget)
+	{
+		d2dRenderTarget->Release();
+		d2dRenderTarget = 0;
+	}
+
+	if (brush)
+	{
+		brush->Release();
+		brush = 0;
+	}
+
+	if (sharedTex11)
+	{
+		sharedTex11->Release();
+		sharedTex11 = 0;
+	}
+
+	if (d2dVertBuffer)
+	{
+		d2dVertBuffer->Release();
+		d2dVertBuffer = 0;
+	}
+
+	if (d2dIndexBuffer)
+	{
+		d2dIndexBuffer->Release();
+		d2dIndexBuffer = 0;
+	}
+
+	if (d2dTexture)
+	{
+		d2dTexture->Release();
+		d2dTexture = 0;
+	}
+
+	if (dwriteFactory)
+	{
+		dwriteFactory->Release();
+		dwriteFactory = 0;
+	}
+
+	if (textFormat)
+	{
+		textFormat->Release();
+		textFormat = 0;
+	}
+}
+
+bool TextClass::InitializeD2DSquare(ID3D11Device* _device)
+{
+	HRESULT result;
+	D3D11_BUFFER_DESC indexBufferDesc;
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	D3D11_SUBRESOURCE_DATA iinitData;
+	D3D11_SUBRESOURCE_DATA vertexBufferData;
+
+
+
+	VertexType v[] =
+	{
+		VertexType(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
+		VertexType(-1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		VertexType(1.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f),
+		VertexType(1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f)
+	};
+
+	DWORD indices[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+
+	ZeroMemory(&indexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * 2 * 3;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	ZeroMemory(&iinitData, sizeof(D3D11_SUBRESOURCE_DATA));
+	iinitData.pSysMem = indices;
+
+	result = _device->CreateBuffer(&indexBufferDesc, &iinitData, &d2dIndexBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	ZeroMemory(&vertexBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof(VertexType) * 4;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+
+	ZeroMemory(&vertexBufferData, sizeof(D3D11_SUBRESOURCE_DATA));
+	vertexBufferData.pSysMem = v;
+
+	result = _device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &d2dVertBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	result = _device->CreateShaderResourceView(sharedTex11, NULL, &d2dTexture);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
 }
