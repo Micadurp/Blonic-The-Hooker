@@ -9,8 +9,7 @@ Note: Most likely would work other ways (such as other versions), but this is th
 3) In visual studio Set Game as startup project
 4) Run the game
 
-Debug: If you are missing files you probably need to build _resourceCopy (should get built when you do build all). 
-You can also copy assets and stuff manually, but that is a hassle.
+Debug: If you are missing files you probably need to build _resourceCopy (should get built when you do build all). You can also copy assets and stuff manually, but that is a hassle.
 
 
 Authors
