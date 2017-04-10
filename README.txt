@@ -5,6 +5,7 @@ How to Compile
 ----------------
 Note: Most likely would work other ways (such as other versions), but this is the tested method
 1) Use cmake to build the solution files for visual studio 2015.
+  - When building with cmake, remember to configure it to visual studio 14 2015. Visual studio numbering always fools me.
 2) Startup visual studio and build all
 3) In visual studio Set Game as startup project
 4) Run the game
